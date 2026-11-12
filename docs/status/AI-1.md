@@ -36,3 +36,4 @@ SCAFFOLD READY
 - `/answer/:id` (AI-5) and `/export` (AI-6) have no routes yet; they show placeholders / 404 until pushed. Library links to /answer/:id.
 - AI-7 writes its own localStorage key in srs/progress.ts (try/catch, fine).
 - AI-1 fixed own sub-44px controls (Tabs, API key buttons).
+- Lint error (not mine): src/lib/tts.ts:31 `no-useless-escape` on `\[` (AI-5: drop the backslash). `npm run lint` is red until then.

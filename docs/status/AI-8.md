@@ -17,6 +17,8 @@
 
 - secret-scan.sh: excluded vendored `public/tesseract/` (false positive: an `AIza...` byte pattern inside the Tesseract wasm JS, line 116). Still scans everything else.
 
+- eslint.config.js: also ignore `public` (vendored minified Tesseract files gave 1127 lint errors, failing the web job). Ran the whole web job locally on latest main: secret-scan, typecheck, lint (0 errors), 350 tests, build, size check (entry 174 kB) all pass.
+
 ## In progress
 - Waiting for the first Android APK run with Node 22 to see if another failure appears.
 

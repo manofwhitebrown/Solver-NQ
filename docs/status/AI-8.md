@@ -15,6 +15,8 @@
 
 - DEVICE-TEST.md merged from AI-1/4/5/6/7; ARCHITECTURE.md updated.
 
+- secret-scan.sh: excluded vendored `public/tesseract/` (false positive: an `AIza...` byte pattern inside the Tesseract wasm JS, line 116). Still scans everything else.
+
 ## In progress
 - Waiting for the first Android APK run with Node 22 to see if another failure appears.
 

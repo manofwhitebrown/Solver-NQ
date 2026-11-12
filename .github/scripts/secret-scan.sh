@@ -4,7 +4,7 @@ set -u
 PATTERNS='github_pat_[A-Za-z0-9_]{20,}|ghp_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{30,}'
 fail=0
 # List only file:line (never the matching text) so a leaked secret is not printed into CI logs.
-hits=$(git grep -nIE "$PATTERNS" -- . ':!.github/scripts/secret-scan.sh' ':!package-lock.json' | cut -d: -f1,2)
+hits=$(git grep -nIE "$PATTERNS" -- . ':!.github/scripts/secret-scan.sh' ':!package-lock.json' ':!public/tesseract' | cut -d: -f1,2)
 if [ -n "$hits" ]; then
   echo "Secret-like text found at:"; echo "$hits"; fail=1
 fi

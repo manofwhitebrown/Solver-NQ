@@ -13,6 +13,7 @@
 - AI-1: apply docs/PWA-CONFIG.md to vite.config.ts (registerType 'prompt', icons, navigateFallback, runtime caching) and render <UpdatePrompt /> from '@/sw' once in App.tsx
 - AI-4: caching rule for jsdelivr tesseract assets and /tesseract/ is in PWA-CONFIG.md; tell me if you self-host under another path
 ## Notes for the manager
+- Deviation from the task file: the Android workflow uses Java 21, not 17. Capacitor 8 and its plugins compile with Java 21 (sourceCompatibility VERSION_21), so Java 17 would fail the APK build.
 - Daily-reminder survival after a device reboot is untested (no device here). Test on a phone: set a reminder, reboot, check it still fires.
 - The Gradle download is blocked in my sandbox, so the APK has not been built locally; the Actions run is the first real test.
 - GitHub Pages must be switched on once: Settings -> Pages -> Source: GitHub Actions.

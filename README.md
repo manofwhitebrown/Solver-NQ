@@ -35,7 +35,7 @@ Prefer Vercel? Import the repo; `vercel.json` is already set up.
 
 Tagged releases (`v*`) build a signed APK and attach it to a GitHub Release. Signing needs these repository secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
 
-Build locally: `npm run build && npx cap sync android && cd android && ./gradlew assembleDebug` (needs Java 17 and the Android SDK).
+Build locally: `npm run build && npx cap sync android && cd android && ./gradlew assembleDebug` (needs Java 21 and the Android SDK).
 The app version is the `version` in `package.json`; the Android build reads it from there.
 
 ## AI keys (BYOK)

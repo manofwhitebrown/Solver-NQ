@@ -10,6 +10,7 @@ export function useLibrary() {
   const [items, setItems] = useState<LibraryItem[] | null>(null);
   const [tags, setTags] = useState<Array<{ tag: string; count: number }>>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selectMode, setSelectMode] = useState(false);
   const [undo, setUndo] = useState<DeletedSnapshot | null>(null);
   const seq = useRef(0);
 
@@ -30,15 +31,19 @@ export function useLibrary() {
     return () => clearTimeout(id);
   }, [reload, query]);
 
-  const toggle = (id: string) => setSelected(s => {
-    const n = new Set(s);
-    if (!n.delete(id)) n.add(id);
-    return n;
-  });
-  const clearSelection = () => setSelected(new Set());
+  const toggle = (id: string) => {
+    setSelectMode(true);
+    setSelected(s => {
+      const n = new Set(s);
+      if (!n.delete(id)) n.add(id);
+      return n;
+    });
+  };
+  const clearSelection = () => { setSelected(new Set()); setSelectMode(false); };
   const ids = () => [...selected];
 
   const patch = async (fn: Parameters<typeof updateQuestions>[1]) => {
+    if (!selected.size) return;
     await updateQuestions(ids(), fn); clearSelection(); await reload();
   };
   const star = (on: boolean) => patch(q => { q.starred = on; });
@@ -46,12 +51,13 @@ export function useLibrary() {
   const toggleStar = async (id: string, on: boolean) => { await updateQuestions([id], q => { q.starred = on; }); await reload(); };
 
   const remove = async () => {
+    if (!selected.size) return;
     const snap = await deleteQuestions(ids());
     clearSelection(); setUndo(snap); await reload();
   };
   const dismissUndo = useCallback(() => setUndo(null), []);
   const doUndo = async () => { if (undo) { await restoreDeleted(undo); setUndo(null); await reload(); } };
 
-  return { filters, setFilters, query, setQuery, items, tags, selected, toggle, clearSelection, star, addTag, toggleStar,
+  return { filters, setFilters, query, setQuery, items, tags, selected, selectMode, startSelecting: () => setSelectMode(true), toggle, clearSelection, star, addTag, toggleStar,
     remove, undo, dismissUndo, doUndo, reload };
 }

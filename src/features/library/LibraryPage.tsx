@@ -14,7 +14,7 @@ export default function LibraryPage() {
   const nav = useNavigate();
   const [sheet, setSheet] = useState<'add' | 'manage' | null>(null);
   const [shown, setShown] = useState(PAGE);
-  const selecting = lib.selected.size > 0;
+  const selecting = lib.selectMode;
 
   useEffect(() => setShown(PAGE), [lib.query, lib.filters]);
   useEffect(() => {
@@ -28,7 +28,10 @@ export default function LibraryPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 pt-4 pb-32">
-      <h1 className="mb-3 text-2xl font-semibold">Library</h1>
+      <div className="mb-3 flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Library</h1>
+        {!selecting && !!lib.items?.length && <Button variant="ghost" onClick={lib.startSelecting}>Select</Button>}
+      </div>
       <Input type="search" value={lib.query} onChange={e => lib.setQuery(e.target.value)} placeholder="Search questions, answers, tags"
         aria-label="Search library" className="mb-3" />
       <FilterBar filters={lib.filters} tags={lib.tags} onChange={lib.setFilters} onManageTags={() => setSheet('manage')} />
@@ -60,11 +63,11 @@ export default function LibraryPage() {
 
       {selecting && (
         <SelectionBar count={lib.selected.size} onCancel={lib.clearSelection}
-          onExport={() => nav(`/export?ids=${[...lib.selected].join(',')}`)}
+          onExport={() => lib.selected.size && nav(`/export?ids=${[...lib.selected].join(',')}`)}
           onTag={() => setSheet('add')} onStar={() => void lib.star(true)} onDelete={() => void lib.remove()} />
       )}
       {lib.undo && (
-        <div role="status" className="fixed inset-x-4 bottom-20 z-50 mx-auto flex max-w-md items-center justify-between rounded-md bg-ink px-4 py-1 text-surface shadow-lift">
+        <div role="status" className="fixed inset-x-4 bottom-[calc(4.75rem+var(--sab))] z-50 mx-auto flex max-w-md items-center justify-between rounded-md bg-ink px-4 py-1 text-surface shadow-lift">
           <span>{lib.undo.questions.length} deleted</span>
           <button type="button" className="min-h-[44px] px-3 font-semibold underline" onClick={() => void lib.doUndo()}>Undo</button>
         </div>

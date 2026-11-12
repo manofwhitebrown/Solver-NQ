@@ -39,7 +39,7 @@ export function Row({ item, selecting, selected, onToggle, onStar }: Props) {
         <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-muted">
           <span className="rounded-full bg-raised px-2 py-0.5">{subjectLabel(q.subject)}</span>
           {q.tags.slice(0, 3).map(t => <span key={t}>#{t}</span>)}
-          <span className="ml-auto">{new Date(q.createdAt).toLocaleDateString()}</span>
+          <span className="ml-auto whitespace-nowrap">{new Date(q.createdAt).toLocaleDateString()}</span>
         </div>
       </div>
     </div>
@@ -49,7 +49,7 @@ export function Row({ item, selecting, selected, onToggle, onStar }: Props) {
     <li className={cn('flex items-start gap-2 rounded-md border p-3', selected ? 'border-accent bg-accent/10' : 'border-line bg-surface')}
       onPointerDown={down} onPointerUp={up} onPointerLeave={up} onPointerCancel={up}>
       {selecting && (
-        <input type="checkbox" checked={selected} onChange={onToggle} aria-label="Select" className="mt-2.5 h-5 w-5 shrink-0 accent-[var(--accent,currentColor)]" />
+        <input type="checkbox" checked={selected} onChange={onToggle} aria-label="Select" className="mt-2.5 h-5 w-5 shrink-0 accent-[rgb(var(--accent))]" />
       )}
       {selecting
         ? <button type="button" onClick={onToggle} className="min-w-0 flex-1 text-left">{body}</button>

@@ -9,7 +9,6 @@
 ## Remaining
 - Only the screenshots of /answer and /graph (no browser in my sandbox, `npm run shots` not built yet).
 - P0: "Retry with best model" is wired. Cross-owner edit (AI-2, tiny, user approved): `askQuestion(input, signal, { skipCache })` in `src/lib/ai/ask.ts`; the retry opens the new answer (replace) or says the best model is busy.
-P1: screenshots of /answer and /graph (needs `npm run shots`; no browser here).  Retry with best model (see above). P2: TTS cleanup, remove `any`.
 ## Needs from others
 - AI-2: FYI I added the optional `skipCache` to `askQuestion`/`answerNow` (3 lines).
 - AI-3: `npm run shots` does not exist yet, so I could not produce the /answer and /graph screenshots.

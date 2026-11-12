@@ -36,8 +36,6 @@ export function weakTopics(results: QuizResult[], minSamples = 1): TopicStat[] {
 export const wrongIds = (results: QuizResult[]): string[] =>
   [...new Set(results.filter((r) => !r.correct).map((r) => r.questionId))];
 
-/** Short-answer self-grade: "got it" counts as correct. Multiple choice: compare chosen index. */
-export const gradeChoice = (chosen: number, answerIndex: number) => chosen === answerIndex;
 
 /** Remaining seconds for timed exam mode; never negative. */
 export function remainingSeconds(startedAt: number, limitSeconds: number, now = Date.now()): number {

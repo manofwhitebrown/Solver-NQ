@@ -10,6 +10,7 @@ export * from './cardMaker';
 export * from './csv';
 export * from './quizScore';
 export * from './session';
+export * from './quizBuild';
 
 /**
  * Build (not save) cards for a saved answer. Local first; if online, try to

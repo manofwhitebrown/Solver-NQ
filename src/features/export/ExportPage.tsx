@@ -59,7 +59,7 @@ export default function ExportPage() {
 
   if (items && !items.length && !isPack) {
     return <EmptyState title="Nothing to export" text="Pick answers in your library, then choose Export."
-      action={<Link to="/library"><Button>Open library</Button></Link>} />;
+      action={<Link to="/library" className="inline-flex"><Button>Open library</Button></Link>} />;
   }
 
   const pct = Math.round((progress[0] / Math.max(1, progress[1])) * 100);

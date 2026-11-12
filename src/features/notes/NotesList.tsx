@@ -22,7 +22,7 @@ export function NotesList() {
         actions={<Link to="/notes/new"><Button size="md">New note</Button></Link>} />
       <Stack gap={5}>
         <Toolbar><Input aria-label="Search notes" type="search" placeholder="Search notes" value={q} onChange={(e) => setQ(e.target.value)} /></Toolbar>
-        {tags.length > 0 && <Cluster>{tags.map((t) => <Chip key={t} selected={tag === t} onClick={() => setTag(tag === t ? undefined : t)}>{t}</Chip>)}</Cluster>}
+        {tags.length > 0 && <Cluster>{tags.map((t) => <Chip key={t} className="min-h-[44px]" selected={tag === t} onClick={() => setTag(tag === t ? undefined : t)}>{t}</Chip>)}</Cluster>}
         {!notes ? <Skeleton className="h-28 w-full" /> : notes.length === 0 ? (
           <EmptyState title={q || tag ? 'No notes match' : 'No notes yet'} text={q || tag ? 'Try a different search.' : 'Paste a page of notes or import a PDF to get a summary and cards.'}
             action={<Link to="/notes/new"><Button>Add your first note</Button></Link>} />

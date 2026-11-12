@@ -36,7 +36,7 @@ export function SettingsPage() {
       </Section>
 
       <Section title="AI">
-        <p className="text-sm text-muted">Free Gemini works best. <Link to="/welcome" className="font-semibold text-accent underline">Show setup guide</Link></p>
+        <p className="text-sm text-muted">Free Gemini works best. <Link to="/welcome" className="inline-flex min-h-[44px] items-center font-semibold text-accent underline">Show setup guide</Link></p>
         <AiSettingsPanel />
         <details className="group">
           <summary className="flex min-h-[44px] cursor-pointer items-center text-base font-semibold text-ink-2">Other providers (advanced)</summary>

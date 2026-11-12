@@ -170,7 +170,7 @@ export function ScanPage() {
                 1. Take a photo. 2. Drag the corners around the question. 3. Check the text and ask.
                 {!touch && ' You can also paste or drop an image here.'}
               </p>
-              <Button variant="ghost" size="sm" onClick={() => setLangs(true)}>Scan languages</Button>
+              <Button variant="ghost" size="sm" className="min-h-[44px]" onClick={() => setLangs(true)}>Scan languages</Button>
               {loading && <Spinner />}
               <input ref={cam} type="file" accept="image/*" capture="environment" hidden onChange={pick} />
               <input ref={gal} type="file" accept="image/*,application/pdf" hidden onChange={pick} />

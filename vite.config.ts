@@ -7,10 +7,31 @@ import { fileURLToPath } from 'node:url';
 // VITE_BASE lets GitHub Pages serve the app from /Solver-NQ/
 const base = process.env.VITE_BASE || '/';
 
+// Content-Security-Policy for production builds only (the dev server needs inline scripts).
+// connect-src stays open on purpose: users bring their own AI endpoint (Gemini, OpenAI-compatible, Ollama, proxy).
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'wasm-unsafe-eval'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self' data:",
+  "worker-src 'self' blob:",
+  "connect-src * data: blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ');
+const cspPlugin = () => ({
+  name: 'solver-nq-csp',
+  apply: (_c: unknown, env: { command: string }) => env.command === 'build' && process.env.VITE_DEMO !== '1',
+  transformIndexHtml: () => [{ tag: 'meta', attrs: { 'http-equiv': 'Content-Security-Policy', content: CSP }, injectTo: 'head-prepend' as const }],
+});
+
 export default defineConfig({
   base,
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   plugins: [
+    cspPlugin(),
     react(),
     process.env.ANALYZE ? visualizer({ filename: 'stats.json', template: 'raw-data' }) : null,
     VitePWA({

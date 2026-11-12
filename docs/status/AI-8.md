@@ -63,3 +63,11 @@
 - AI-7: screenshots added for `/notes/new` and `/notes/:id` (`notes-new-*`, `note-detail-*`).
 - shots.mjs: reloads after setting the onboarded flag, so the first captured route is no longer the welcome screen.
 - Not done on purpose: AI-2 streaming and shared proxy logic (larger, risky changes); all real-device tests.
+
+## Phase 3 sweep (12 Nov 2026)
+- Security: git history scanned (no real secrets), CSP added to production builds, Android auto-backup off, saved AI-key state is now validated on load (a damaged value no longer crashes the app, 2 new tests), review written in docs/SECURITY.md.
+- E2E: real-browser run with mocked Gemini (ask -> answer page with steps, 8 routes visited): no console or CSP errors.
+- Performance: entry chunk 174 kB, mathjs lazy.
+- Accessibility/layout: tap targets raised to 44 px on Scan languages, question Show more, Settings setup-guide link, Export Open library, note tag chips. Still under 44: plan day buttons at 320 px wide (37 px), laptop-only plan links, raw checkboxes inside larger labels.
+- Not run: full screenshot/axe re-run after these fixes (takes ~10 min); run `npm run shots` locally. Note: shots/demo builds skip the CSP so axe can inject.
+- Needs the user: real-device test (docs/DEVICE-TEST.md), signing secrets + `v1.0.0` tag for the signed APK.

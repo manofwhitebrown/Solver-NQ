@@ -21,7 +21,7 @@ export function QuestionCard({ subject, text }: { subject: string; text: string 
         {clipped && <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-surface to-transparent" />}
       </div>
       {long && (
-        <Button variant="ghost" size="sm" className="mt-2 -ml-4" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        <Button variant="ghost" size="sm" className="mt-2 -ml-4 min-h-[44px]" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
           {open ? 'Show less' : 'Show more'}
         </Button>
       )}

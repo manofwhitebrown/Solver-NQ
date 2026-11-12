@@ -30,11 +30,32 @@ export function migrate(old: { provider?: string; model?: string; apiKey?: strin
   return s;
 }
 
+/** A saved value from an older/partial/corrupted write must never crash the app: keep what is valid, default the rest. */
+function sanitize(v: unknown): FallbackState | null {
+  if (!v || typeof v !== 'object') return null;
+  const o = v as Partial<FallbackState>;
+  if (!Array.isArray(o.keys) || !Array.isArray(o.chain)) return null;
+  const base = migrate({});
+  const isObj = (x: unknown): x is Record<string, unknown> => !!x && typeof x === 'object';
+  return {
+    ...base,
+    ...o,
+    version: 1,
+    keys: o.keys.filter((k) => isObj(k) && typeof k.id === 'string' && typeof k.key === 'string' && typeof k.provider === 'string').map((k) => ({ ...k, label: typeof k.label === 'string' ? k.label : 'My key' })),
+    chain: o.chain.filter((c) => isObj(c) && typeof c.model === 'string' && typeof c.provider === 'string').map((c) => ({ ...c, enabled: c.enabled !== false, keyId: typeof c.keyId === 'string' ? c.keyId : '' })),
+    cooldowns: isObj(o.cooldowns) ? (o.cooldowns as FallbackState['cooldowns']) : {},
+    invalidKeys: Array.isArray(o.invalidKeys) ? o.invalidKeys : [],
+    fetchedFor: Array.isArray(o.fetchedFor) ? o.fetchedFor : [],
+    saveQuota: typeof o.saveQuota === 'boolean' ? o.saveQuota : base.saveQuota,
+    perMinute: typeof o.perMinute === 'number' && o.perMinute > 0 ? o.perMinute : base.perMinute,
+  };
+}
+
 export function loadState(): FallbackState {
   if (cache) return cache;
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) { cache = JSON.parse(raw) as FallbackState; return cache; }
+    if (raw) { const ok = sanitize(JSON.parse(raw)); if (ok) { cache = ok; return cache; } }
   } catch { /* fall through to migration */ }
   let old = {};
   try { old = getSettings(); } catch { /* settings not ready */ }

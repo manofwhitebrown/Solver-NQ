@@ -1,12 +1,19 @@
 import { OcrError, preprocess } from '@/lib/ocr';
 import { toPixels, type Rect } from './cropMath';
+import { decodeSize, parseImageInfo } from './imageSize';
 
 export const MAX_FILE_BYTES = 25 * 1024 * 1024;
 
 export async function loadBitmap(blob: Blob): Promise<ImageBitmap> {
   if (blob.size > MAX_FILE_BYTES) throw new OcrError('too-large');
   try {
-    return await createImageBitmap(blob, { imageOrientation: 'from-image' });
+    const head = new Uint8Array(await blob.slice(0, 65536).arrayBuffer());
+    const t = decodeSize(parseImageInfo(head));
+    // Decode straight to a smaller bitmap so a 48 MP photo never sits in memory.
+    return await createImageBitmap(blob, {
+      imageOrientation: 'from-image',
+      ...(t ? { resizeWidth: t.width, resizeHeight: t.height, resizeQuality: 'high' as const } : {}),
+    });
   } catch {
     throw new OcrError('ocr-failed');
   }

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Spinner, toast } from '@/components/ui';
-import { friendlyMessage, recognize } from '@/lib/ocr';
+import { friendlyMessage, OcrError, recognize } from '@/lib/ocr';
 import { isNative } from '@/lib/ocr/platform';
 import { CropEditor } from './CropEditor';
 import { cropBlob, loadBitmap, rotate90 } from './imageTools';
@@ -30,6 +30,7 @@ export function ScanPage() {
   const cancelPdf = useCallback(() => setPdf(null), []);
   const open = useCallback(async (blob: Blob) => {
     if (blob.type === 'application/pdf') { setPdf(blob); return; }
+    if (!/^image\/(jpeg|png|webp|gif|bmp|heic|heif)$/.test(blob.type)) { toast(friendlyMessage(new OcrError('unsupported')), 'error'); return; }
     setLoading(true);
     try {
       (await loadBitmap(blob)).close(); // validates size and that it decodes
@@ -81,6 +82,7 @@ export function ScanPage() {
       try {
         const r = await recognize(c.ocrBlob);
         patch(id, { text: r.text, confidence: r.confidence, busy: false });
+        if (r.backup) toast('Using backup reader', 'info');
       } catch (e) {
         patch(id, { busy: false });
         toast(friendlyMessage(e), 'error');

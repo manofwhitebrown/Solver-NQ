@@ -17,8 +17,8 @@ async function toBase64(image: Blob | string): Promise<string> {
 export async function recognizeNative(image: Blob | string): Promise<{ text: string; confidence: number }> {
   try {
     const { CapacitorPluginMlKitTextRecognition } = await import('@pantrist/capacitor-plugin-ml-kit-text-recognition');
-    const { text } = await CapacitorPluginMlKitTextRecognition.detectText({ base64Image: await toBase64(image) });
-    const t = text.trim();
+    const res = await CapacitorPluginMlKitTextRecognition.detectText({ base64Image: await toBase64(image) });
+    const t = (res?.text ?? '').trim();
     return { text: t, confidence: t ? 85 : 0 };
   } catch {
     throw new OcrError('ocr-failed');

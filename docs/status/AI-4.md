@@ -1,3 +1,22 @@
+## Phase 2 (12 Nov 2026)
+### Done (P0)
+- Native OCR: `recognize()` uses ML Kit on Android; any failure OR empty result falls back to Tesseract and returns `backup: true`; Scan shows toast "Using backup reader". Plugin call checked against its README (`detectText({ base64Image })`). 9 mocked-plugin tests: success, empty, plugin missing, permission denied, plugin throws, fallback, web-only.
+- Large images: `src/features/scan/imageSize.ts` reads JPEG/PNG header size (incl. EXIF rotation) and `loadBitmap` decodes straight to <= 2400 px with `createImageBitmap` resize options, so a 48 MP photo is never fully decoded. 8 tests for the size math.
+- Error flows with kind next steps: camera denied (how to enable in Settings), no camera, file over 25 MB, unsupported file type, PDF with 0 pages.
+### Remaining
+- P1 (after `DESIGN V2 READY`): Scan v2 layout, Read-with-AI button, rotate hint, 320 px / landscape checks. P2: language packs manager, remove `any`.
+### Notes for the manager
+- `npm run lint` currently fails with 24 errors outside my folders: `docs/audit/tools/layout-audit.mjs` (browser/node globals not declared; needs an eslint ignore or globals) and `api/ask.ts`. My folders lint clean.
+- `scale.test.ts` (AI-3) is still a timing flake in slow sandboxes.
+### Manual tests for the user
+1. Android, camera: Scan > Take a photo > photograph printed text > crop > Read text. Text should appear within a few seconds.
+2. Offline: turn on airplane mode, repeat step 1. Native ML Kit should still read it (first run may need the model download once online).
+3. Rotated photo: take a photo with the phone sideways; it should display upright. If text is poor, use Rotate and read again.
+4. PDF: choose a multi-page PDF, pick a page, crop, read.
+5. Permission denied: deny Camera in system settings, tap Take a photo; you should see a message explaining how to allow it.
+6. Huge photo: choose a 48 MP photo (or the biggest you have); the app must not freeze or crash.
+7. Wrong file: choose a .txt file; you should see "We can only read photos and PDFs".
+
 ## Done
 - At the user's request I finished AI-5's open items (cross-owner edits, kept minimal): added @capacitor-community/text-to-speech 8.0.2; fixed src/lib/tts.ts, which looked the plugin up via Capacitor.Plugins (empty until the plugin's JS is imported) so Android read-aloud could never find it; it now imports the plugin; ran `npx cap sync android` and committed the resulting gradle lines. Checked the other two: AI-2 already added /?text= prefill, and all 19 KaTeX woff2 fonts are in the service-worker precache. AI-5/AI-8/AI-2 please pull before touching those files.
 - Batch queue persists across the Ask round-trip (sessionStorage, 3 tests).

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Spinner, toast } from '@/components/ui';
-import { friendlyMessage } from '@/lib/ocr';
+import { friendlyMessage, OcrError } from '@/lib/ocr';
 import { openPdf, renderPage } from './pdfPages';
 
 interface Props { file: Blob; onPage: (img: Blob) => void; onCancel: () => void }
@@ -13,7 +13,7 @@ export function PdfPicker({ file, onPage, onCancel }: Props) {
 
   useEffect(() => {
     let live = true;
-    openPdf(file).then(d => live && setDoc(d)).catch(e => { toast(friendlyMessage(e), 'error'); onCancel(); });
+    openPdf(file).then(d => { if (!live) return; if (d.numPages < 1) throw new OcrError('empty-pdf'); setDoc(d); }).catch(e => { toast(friendlyMessage(e), 'error'); onCancel(); });
     return () => { live = false; };
   }, [file, onCancel]);
 

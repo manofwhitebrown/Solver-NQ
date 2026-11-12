@@ -14,6 +14,7 @@ export interface Settings {
   defaultSubject: Subject;
   defaultMode: Mode;
   ocrLang: string; // Tesseract-style code, e.g. 'eng'
+  onboarded: boolean; // first-run welcome finished or skipped
 }
 
 export const SUGGESTED_MODELS: Record<Provider, string> = {
@@ -23,8 +24,8 @@ export const SUGGESTED_MODELS: Record<Provider, string> = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-  provider: 'anthropic',
-  model: SUGGESTED_MODELS.anthropic,
+  provider: 'gemini',
+  model: SUGGESTED_MODELS.gemini,
   apiKey: '',
   baseUrl: '',
   proxyUrl: '',
@@ -32,6 +33,7 @@ export const DEFAULT_SETTINGS: Settings = {
   defaultSubject: 'math',
   defaultMode: 'learn',
   ocrLang: 'eng',
+  onboarded: false,
 };
 
 const KEY = 'solver-nq:settings';
@@ -40,7 +42,11 @@ const listeners = new Set<() => void>();
 function load(): Settings {
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    if (raw) {
+      const saved = JSON.parse(raw);
+      // People who already set a key before onboarding existed skip it.
+      return { ...DEFAULT_SETTINGS, ...(saved.apiKey && saved.onboarded === undefined ? { onboarded: true } : {}), ...saved };
+    }
   } catch {
     /* storage can be blocked or corrupted: fall back to defaults */
   }

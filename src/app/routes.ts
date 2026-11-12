@@ -9,6 +9,7 @@ import { routes as exportRoutes } from '@/features/export';
 import { routes as graph } from '@/features/graph';
 import { routes as learn } from '@/features/learn';
 import { routes as library } from '@/features/library';
+import { routes as onboarding } from '@/features/onboarding';
 import { routes as scan } from '@/features/scan';
 import { routes as settings } from '@/features/settings';
 import { Layout } from './Layout';
@@ -16,7 +17,7 @@ import { NotFound } from './NotFound';
 import { Placeholder } from './Placeholder';
 
 const featureRoutes: RouteObject[] = [
-  ...ask, ...scan, ...answer, ...library, ...learn, ...exportRoutes, ...settings, ...graph, ...backup, ...design,
+  ...ask, ...scan, ...answer, ...library, ...learn, ...exportRoutes, ...settings, ...graph, ...backup, ...design, ...onboarding,
 ];
 
 // Any main path nobody has claimed yet gets a placeholder, so every tab always works.

@@ -1,11 +1,12 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { useSettings } from '@/lib/settings';
 import { Toaster, cn } from '@/components/ui';
 import { AskIcon, LearnIcon, LibraryIcon, SettingsIcon } from './icons';
 import { NAV } from './nav';
 import { OnlineBanner } from './OnlineBanner';
 
 /** Focused flows own the bottom edge, so the tab bar is hidden there. */
-const FOCUSED = [/^\/learn\/(review|quiz)/, /^\/answer\//];
+const FOCUSED = [/^\/learn\/(review|quiz)/, /^\/answer\//, /^\/welcome/];
 
 const ICONS = { Ask: AskIcon, Library: LibraryIcon, Learn: LearnIcon, Settings: SettingsIcon };
 
@@ -39,7 +40,9 @@ function Links({ side }: { side: boolean }) {
 
 export function Layout() {
   const { pathname } = useLocation();
+  const { onboarded } = useSettings();
   const hideTabs = FOCUSED.some((r) => r.test(pathname));
+  if (!onboarded && !pathname.startsWith('/welcome') && !pathname.startsWith('/design')) return <Navigate to="/welcome" replace />;
   return (
     <div className="min-h-full lg:flex" style={hideTabs ? ({ '--tabbar-h': '0rem' } as React.CSSProperties) : undefined}>
       <aside className="hidden w-[264px] shrink-0 border-r border-line bg-surface px-4 py-8 lg:flex lg:flex-col lg:gap-1">

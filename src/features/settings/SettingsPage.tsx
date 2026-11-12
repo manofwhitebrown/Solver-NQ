@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
-import { Button, Card, Dialog, Field, Input, Select, Tabs, toast } from '@/components/ui';
+import { Link } from 'react-router-dom';
+import { Button, Card, Dialog, Field, Input, PageHeader, Section as Group, Select, Stack, Tabs, toast } from '@/components/ui';
 import { SUGGESTED_MODELS, updateSettings, useSettings, type Provider, type ThemePref } from '@/lib/settings';
 import type { Mode, Subject } from '@/types';
 import { ApiKeyField } from './ApiKeyField';
@@ -8,10 +9,9 @@ import { MODES, OCR_LANGS, PROVIDERS, SUBJECTS } from './options';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="space-y-3">
-      <h2 className="px-1 text-sm font-semibold text-muted">{title}</h2>
-      <Card className="space-y-5">{children}</Card>
-    </section>
+    <Group title={title}>
+      <Card><Stack gap={5}>{children}</Stack></Card>
+    </Group>
   );
 }
 
@@ -26,10 +26,16 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+    <>
+      <PageHeader title="Settings" />
 
-      <Section title="AI provider">
+      <Section title="Appearance">
+        <Tabs<ThemePref> label="Theme" value={s.theme} onChange={(theme) => updateSettings({ theme })}
+          items={[{ value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]} />
+      </Section>
+
+      <Section title="AI">
+        <p className="text-sm text-muted">Free Gemini works best. <Link to="/welcome" className="font-semibold text-accent underline">Show setup guide</Link></p>
         <Field label="Provider" htmlFor="provider">
           <Select id="provider" value={s.provider} options={PROVIDERS} onChange={(e) => changeProvider(e.target.value as Provider)} />
         </Field>
@@ -47,11 +53,6 @@ export function SettingsPage() {
         </Field>
       </Section>
 
-      <Section title="Appearance">
-        <Tabs<ThemePref> label="Theme" value={s.theme} onChange={(theme) => updateSettings({ theme })}
-          items={[{ value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]} />
-      </Section>
-
       <Section title="Defaults">
         <Field label="Subject" htmlFor="subject">
           <Select id="subject" value={s.defaultSubject} options={SUBJECTS} onChange={(e) => updateSettings({ defaultSubject: e.target.value as Subject })} />
@@ -64,11 +65,15 @@ export function SettingsPage() {
         </Field>
       </Section>
 
-      <Section title="Your data">
-        <p className="text-[15px] leading-relaxed text-muted">
+      <Section title="Data">
+        <p className="text-base text-muted">
           Removes your library, flashcards, queue and settings from this device. Export a backup first if you want to keep them.
         </p>
         <Button variant="danger" onClick={() => setConfirm(true)}>Clear all data</Button>
+      </Section>
+
+      <Section title="About">
+        <p className="text-base text-muted">Solver-NQ keeps everything on this device. Your key is sent only to your AI provider.</p>
       </Section>
 
       <Dialog
@@ -82,6 +87,6 @@ export function SettingsPage() {
       >
         This permanently deletes everything stored by Solver-NQ on this device, including your API key.
       </Dialog>
-    </div>
+    </>
   );
 }

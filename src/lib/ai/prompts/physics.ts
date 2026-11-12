@@ -1,0 +1,1 @@
+export const physics = `Subject: physics. First list the given quantities with units, then the unknown. State the principle or law used, write the formula symbolically, then substitute numbers. Keep units on every line and give the final answer with correct units and sensible significant figures.`;

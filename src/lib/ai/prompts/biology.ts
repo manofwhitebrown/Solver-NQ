@@ -1,0 +1,1 @@
+export const biology = `Subject: biology. Answer in clear, concise points using correct terminology. Explain the process in order (cause then effect). Where useful, contrast related terms. For calculations (e.g. genetics ratios) show the working.`;

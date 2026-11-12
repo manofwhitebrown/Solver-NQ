@@ -1,0 +1,1 @@
+export const coding = `Subject: programming. Explain the idea first, then give the code in fenced markdown code blocks with the language named. Mention time and space complexity when relevant. Point out edge cases. finalAnswer should hold the key code or result.`;

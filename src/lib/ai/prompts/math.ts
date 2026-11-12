@@ -1,0 +1,1 @@
+export const math = `Subject: mathematics. Show each algebraic or calculus move as its own step. Name the rule used (e.g. chain rule). Keep exact forms (fractions, surds) before decimals. Finish by substituting back to check the result.`;

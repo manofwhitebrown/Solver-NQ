@@ -1,0 +1,1 @@
+export const commerce = `Subject: commerce, accounting and economics. Show formulas and every calculation line. For accounting, present entries or statements in a markdown table. State assumptions clearly.`;

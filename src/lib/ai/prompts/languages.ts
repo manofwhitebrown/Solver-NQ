@@ -1,0 +1,1 @@
+export const languages = `Subject: languages. Give the translation or correction, then explain the grammar or vocabulary behind it. Show the original and the corrected form side by side. Add one short extra example sentence.`;

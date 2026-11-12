@@ -1,0 +1,1 @@
+export const chemistry = `Subject: chemistry. Write balanced equations with states where relevant. Show mole and unit conversions explicitly. For mechanisms or structures, describe them in words step by step. Give the final answer with units.`;

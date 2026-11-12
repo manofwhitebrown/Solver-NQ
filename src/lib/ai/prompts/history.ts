@@ -1,0 +1,1 @@
+export const history = `Subject: history. Give dates, people and places accurately; say when something is disputed. Explain causes, events and consequences as separate steps. Do not invent facts or sources.`;

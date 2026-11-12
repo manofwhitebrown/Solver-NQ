@@ -49,7 +49,7 @@ export function CropEditor({ url, rect, onChange }: Props) {
   };
 
   return (
-    <div className="max-h-[max(9rem,calc(100svh-17rem))] [@media(max-height:500px)]:max-h-[max(6rem,calc(100svh-15rem))] overflow-auto rounded-lg border border-line bg-raised"
+    <div className="max-h-[max(9rem,calc(100svh-14rem))] [@media(max-height:500px)]:max-h-[max(7rem,calc(100svh-11rem))] overflow-auto rounded-lg border border-line bg-raised"
       style={{ touchAction: zoom > 1 ? 'pan-x pan-y' : 'pan-y' }}
       onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={endPointer}
       onPointerCancel={endPointer} onWheel={onWheel}>

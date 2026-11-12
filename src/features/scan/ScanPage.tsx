@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ActionBar, Button, Card, PageHeader, Spinner, Stack, toast } from '@/components/ui';
+import { useHideTabBar } from '@/app/tabbar';
 import { transcribeImage } from '@/lib/ai';
 import { friendlyMessage, OcrError, onOcrProgress, recognize } from '@/lib/ocr';
 import { isNative } from '@/lib/ocr/platform';
@@ -144,6 +145,7 @@ export function ScanPage() {
     if (f) void open(f); else toast('Please drop an image or PDF file.', 'error');
   };
 
+  useHideTabBar(!!source && !pdf); // crop step: more room, the ActionBar sits at the bottom
   const step = !source ? 1 : items.length ? 3 : 2;
   const touch = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
   const [hint, setHint] = useState(() => { try { return !localStorage.getItem('scanHintSeen'); } catch { return false; } });
@@ -153,7 +155,7 @@ export function ScanPage() {
   return (
     <div onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={onDrop}
       className={source ? 'pb-24' : ''}>
-      <PageHeader title="Scan a question" subtitle="Photograph it, crop it, check the text."
+      <PageHeader title="Scan a question" back={source && !pdf ? true : undefined} subtitle="Photograph it, crop it, check the text."
         actions={source && !pdf ? <Button variant="ghost" size="sm" onClick={() => setSource(null)}>New image</Button> : undefined} />
       <Stack gap={6}>
         <div className="[@media(max-height:500px)]:hidden"><StepIndicator step={step} /></div>

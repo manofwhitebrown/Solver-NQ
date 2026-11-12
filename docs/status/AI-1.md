@@ -21,3 +21,7 @@ SCAFFOLD READY
 - Until a feature exports real routes, main tabs show a placeholder, so nothing 404s.
 - Settings also has an optional `baseUrl` (OpenAI-compatible servers).
 - Stubs throw 'not implemented'; owners replace the bodies and keep the signatures.
+
+## Update
+- Accessibility: Tabs support arrow keys; Dialog/BottomSheet trap focus and restore it on close.
+- Needs from AI-8: PWA manifest has `icons: []` (vite.config.ts). Please supply 192/512 PNG icons in `public/` and tell me the filenames, or send the manifest block to wire in.

@@ -1,17 +1,13 @@
 /* Design tokens. Colors are "r g b" triplets so Tailwind can add alpha. */
 :root {
-  --bg: 247 246 243;
-  --surface: 255 255 255;
-  --raised: 241 239 234;
-  --line: 226 223 216;
-  --ink: 28 31 40;
-  --muted: 108 112 124;
-  --accent: 44 74 140;
-  --accent-ink: 255 255 255;
-  --ok: 38 130 92;
-  --warn: 176 118 20;
-  --bad: 190 60 60;
-  --shadow: 28 31 40;
+  --bg: 240 242 246;  --surface: 255 255 255;  --raised: 247 248 251;  --overlay: 255 255 255;
+  --line: 221 225 233;  --line-strong: 122 131 150; /* line = decoration, line-strong = control borders */
+  --ink: 16 22 38;  --ink-2: 61 70 89;  --muted: 94 103 122;
+  --accent: 70 60 200;  --accent-ink: 255 255 255;  --accent-soft: 236 238 255;
+  --ok: 18 120 82;  --warn: 138 84 0;  --bad: 176 36 48;
+  --ok-soft: 222 244 234;  --warn-soft: 252 238 211;  --bad-soft: 252 229 231;
+  --disabled-bg: 228 231 238;  --disabled-ink: 128 136 152;
+  --shadow: 16 22 38;
   --tabbar-h: 3.5rem; /* phone tab bar height, excluding the safe-area inset */
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
@@ -21,20 +17,31 @@
 }
 
 :root[data-theme='dark'] {
-  --bg: 18 20 26;
-  --surface: 27 30 38;
-  --raised: 36 40 50;
-  --line: 52 57 70;
-  --ink: 235 236 240;
-  --muted: 150 155 168;
-  --accent: 130 164 235;
-  --accent-ink: 14 18 30;
-  --ok: 90 190 146;
-  --warn: 224 170 80;
-  --bad: 236 120 120;
+  --bg: 13 15 21;  --surface: 21 24 33;  --raised: 29 33 44;  --overlay: 38 43 57;
+  --line: 43 49 64;  --line-strong: 112 121 142;
+  --ink: 236 238 244;  --ink-2: 193 198 210;  --muted: 150 158 176;
+  --accent: 158 170 250;  --accent-ink: 14 16 40;  --accent-soft: 33 38 72;
+  --ok: 96 204 158;  --warn: 232 182 96;  --bad: 246 132 138;
+  --ok-soft: 20 52 42;  --warn-soft: 56 44 20;  --bad-soft: 66 30 36;
+  --disabled-bg: 33 37 49;  --disabled-ink: 108 117 138;
   --shadow: 0 0 0;
   color-scheme: dark;
 }
+
+/* Elevation: light = border + soft shadow; dark = lighter surface + hairline border. */
+.elev-1 { background: rgb(var(--surface)); border: 1px solid rgb(var(--line));
+  box-shadow: 0 1px 2px rgb(var(--shadow) / .05), 0 2px 8px rgb(var(--shadow) / .06); }
+.elev-2 { background: rgb(var(--surface)); border: 1px solid rgb(var(--line));
+  box-shadow: 0 2px 4px rgb(var(--shadow) / .06), 0 8px 24px rgb(var(--shadow) / .08); }
+.elev-3 { background: rgb(var(--overlay)); border: 1px solid rgb(var(--line));
+  box-shadow: 0 4px 8px rgb(var(--shadow) / .08), 0 16px 40px rgb(var(--shadow) / .12); }
+.elev-4 { background: rgb(var(--overlay)); border: 1px solid rgb(var(--line));
+  box-shadow: 0 8px 16px rgb(var(--shadow) / .1), 0 24px 64px rgb(var(--shadow) / .18); }
+:root[data-theme='dark'] .elev-1 { background: rgb(var(--surface)); }
+:root[data-theme='dark'] .elev-2 { background: rgb(var(--raised)); }
+:root[data-theme='dark'] .elev-3, :root[data-theme='dark'] .elev-4 { background: rgb(var(--overlay)); }
+
+@media (pointer: coarse) { textarea { resize: none; } }
 
 html, body, #root { height: 100%; }
 body {
@@ -42,6 +49,7 @@ body {
   background: rgb(var(--bg));
   color: rgb(var(--ink));
   font-family: 'Figtree Variable', system-ui, sans-serif;
+  font-size: 16px; line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   transition: background-color 200ms, color 200ms;

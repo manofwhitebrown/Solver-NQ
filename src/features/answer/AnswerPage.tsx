@@ -4,6 +4,7 @@ import { Share } from '@capacitor/share';
 import type { Answer, Question } from '@/types';
 import { BottomSheet, Button, Card, EmptyState, Skeleton, Spinner, toast } from '@/components/ui';
 import { tts } from '@/lib/tts';
+import * as ai from '@/lib/ai';
 import { ActionChips } from './ActionChips';
 import { answerToMarkdown } from './answerText';
 import { copyText } from './clipboard';
@@ -12,6 +13,7 @@ import { FollowUpChat } from './FollowUpChat';
 import { findGraphable } from './graphFind';
 import { Icon } from './icons';
 import { Markdown } from './Markdown';
+import { ModelLabel } from './ModelLabel';
 import { Steps } from './Steps';
 import { TagsSheet } from './TagsSheet';
 import { Toolbar } from './Toolbar';
@@ -25,8 +27,8 @@ export default function AnswerPage() {
 
   if (state.status === 'loading') return <Shell><LoadingSkeleton /></Shell>;
   if (state.status === 'queued') return (
-    <Shell><EmptyState icon={<Spinner label="Waiting" />} title="Queued - will answer when you're online"
-      text="Your question is saved. The answer appears here and in your library as soon as the connection returns."
+    <Shell><EmptyState icon={<Spinner label="Waiting" />} title="Saved - will answer when it can"
+      text="Your question is safe. It will be answered when you're back online or the free quota resets, and the answer will appear here and in your library."
       action={<Link to="/library" className="text-accent underline">Go to library</Link>} /></Shell>
   );
   if (state.status === 'missing') return (
@@ -43,6 +45,10 @@ export default function AnswerPage() {
     </Shell>
   );
 }
+
+/** AI-2 exports getPrimaryModel(); until it exists we only show the model name. */
+const primaryModel = (): string | undefined =>
+  (ai as unknown as { getPrimaryModel?: () => string }).getPrimaryModel?.();
 
 const Shell = ({ children }: { children: React.ReactNode }) => (
   <div className="mx-auto w-full max-w-5xl px-4 py-4 pb-8">{children}</div>
@@ -89,6 +95,7 @@ function AnswerBody({ q, a, updateQuestion, addFollowUp }: {
           onShare={() => void share()} onCopy={() => void copy()} />
         <FinalAnswerCard text={a.finalAnswer} hidden={!revealed} onReveal={() => setRevealed(true)} />
         {revealed && <VerifyBadge verified={a.verified} />}
+        {revealed && <ModelLabel model={a.model} primary={primaryModel()} />}
         <Steps steps={a.steps} initialMode={a.mode} onAllRevealed={(done) => done && setRevealed(true)} />
         <ActionChips answerId={a.id} onStep={addFollowUp} />
         <Button variant="secondary" block className="lg:hidden" onClick={() => setChatOpen(true)}>

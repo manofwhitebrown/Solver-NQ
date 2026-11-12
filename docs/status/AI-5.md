@@ -1,11 +1,12 @@
 ## Done (Phase 2)
 - P0: `mathToPlain` in `src/features/answer/plainText.ts`, re-exported from `src/features/answer/index.ts`; 25 unit tests.
 ## In progress
-- P0: "Answered by <model>" + Retry (waiting for AI-2 `getPrimaryModel`; will show model name only until then).
+- P0: "Answered by <model>" line (`ModelLabel.tsx`); reads `getPrimaryModel` from `@/lib/ai` if it exists and shows a soft chip for backup models. Queued copy now says it answers when online or free quota resets.
 ## Remaining
-- P0: queued/fallback state copy. P1: 30+ verify cases, Answer v2 layout, bottom action bar, Learn polish, Graph v2, question card collapse (after `DESIGN V2 READY`). P2: TTS cleanup, remove `any`.
+- P0: "Retry with best model" button is built into `ModelLabel` (`onRetry`) but not wired: needs AI-2 to export `getPrimaryModel()` AND a way to make `askQuestion` skip the cache (e.g. `{ skipCache: true }`). Then I pass `onRetry` in AnswerPage.
+P1: 30+ verify cases, Answer v2 layout, bottom action bar, Learn polish, Graph v2, question card collapse (after `DESIGN V2 READY`). P2: TTS cleanup, remove `any`.
 ## Needs from others
-- AI-2: export `getPrimaryModel()`.
+- AI-2: export `getPrimaryModel()` and an `askQuestion` option to skip the cache.
 - AI-3: `scale.test.ts` (2000 items) is timing-based and failed once on a slow sandbox. AI-8: `docs/audit/tools/layout-audit.mjs` has lint errors (`process`, `indexedDB` undefined; needs node globals in ESLint config).
 ## Notes for the manager
 - No browser in my environment: nothing visually verified yet.

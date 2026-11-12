@@ -1,4 +1,5 @@
+import { createElement } from 'react';
 import type { RouteObject } from 'react-router-dom';
+import LibraryPage from './LibraryPage';
 
-// Owner replaces [] with real routes. Nobody edits src/app/routes.ts.
-export const routes: RouteObject[] = [];
+export const routes: RouteObject[] = [{ path: '/library', element: createElement(LibraryPage) }];

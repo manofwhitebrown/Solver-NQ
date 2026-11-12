@@ -8,3 +8,5 @@ export const routes: RouteObject[] = [{
   path: 'answer/:id',
   element: createElement(Suspense, { fallback: null }, createElement(AnswerPage)),
 }];
+
+export { mathToPlain } from './plainText';

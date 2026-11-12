@@ -9,7 +9,7 @@ export const EXTRA_DEVICES = [
   { name: 'w430', w: 430, h: 932, dpr: 2, mobile: true }, { name: 'land640x360', w: 640, h: 360, dpr: 2, mobile: true },
 ];
 export const THEMES = ['light', 'dark'];
-export const ONBOARDED_KEY = 'solver-nq:onboarded';
+export const SETTINGS_KEY = 'solver-nq:settings'; // onboarded: true skips the welcome screen
 
 /** [file name, hash route, optional action]. `ids` are the demo ids returned by seedDemoData(). */
 export const routesFor = (ids) => [
@@ -22,5 +22,5 @@ export const routesFor = (ids) => [
   ['learn-stats', '#/learn/stats'], ['learn-cards', '#/learn/cards'],
   ['export', `#/export?ids=${ids.all.slice(0, 3).join(',')}`],
   ['settings', '#/settings'], ['graph', '#/graph'], ['backup', '#/backup'], ['notes', '#/notes'], ['plan', '#/plan'],
-  ['design', '#/design'], ['onboarding', '#/onboarding', 'fresh'],
+  ['design', '#/design'], ['onboarding', '#/welcome', 'fresh'],
 ];

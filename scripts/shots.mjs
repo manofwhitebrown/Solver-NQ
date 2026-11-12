@@ -7,7 +7,7 @@ import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
 import { auditFn } from './shots-audit.mjs';
-import { EXTRA_DEVICES, SHOT_DEVICES, THEMES, routesFor } from './shots-config.mjs';
+import { EXTRA_DEVICES, SETTINGS_KEY, SHOT_DEVICES, THEMES, routesFor } from './shots-config.mjs';
 import { writeA11y, writeLayout } from './shots-report.mjs';
 
 const PORT = 4173, BASE = `http://localhost:${PORT}/`;
@@ -42,11 +42,7 @@ async function newPage(dev, theme, { onboarded = true, seed = true } = {}) {
     await page.waitForFunction(() => window.__solverDemo, { timeout: 15000 });
     ids = await page.evaluate(() => window.__solverDemo.seedDemoData());
   }
-  if (onboarded) {
-    // The real flag is `onboarded` inside the settings JSON; reload so the settings store picks it up.
-    await page.evaluate((k) => { try { const s = JSON.parse(localStorage.getItem(k) || '{}'); localStorage.setItem(k, JSON.stringify({ ...s, onboarded: true })); } catch { /* ignore */ } }, 'solver-nq:settings');
-    await page.reload({ waitUntil: 'networkidle2' });
-  }
+  if (onboarded) await page.evaluate((k) => { try { localStorage.setItem(k, JSON.stringify({ onboarded: true })); } catch { /* ignore */ } }, SETTINGS_KEY);
   return { page, ctx, ids };
 }
 
@@ -65,7 +61,7 @@ async function jpeg(page, file) {
 
 const isMissing = (text) => /page not found|this screen is being built/i.test(text);
 const layout = {}, a11y = {}, errors = {}, skipped = new Map(), shots = [];
-const outDir = OUT; // images always go to docs/screenshots (partial runs replace only the matching ones)
+const outDir = full ? OUT : TMP;
 fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(outDir, { recursive: true });
 for (const f of fs.readdirSync(OUT)) if (/\.jpg$/.test(f) && (full || only.some((o) => f.startsWith(o + '__') || f.startsWith(o + '-')))) fs.rmSync(path.join(OUT, f));
 
@@ -87,7 +83,7 @@ for (const dev of [...SHOT_DEVICES, ...EXTRA_DEVICES]) {
       if (isMissing(await page.evaluate(() => document.body.innerText))) { skipped.set(name, 'route not built yet'); continue; }
       const key = `${name}__${dev.name}__${theme}`;
       if (isShot) {
-        await jpeg(page, path.join(outDir, `${key}.jpg`)); shots.push(key);
+        await jpeg(page, path.join(OUT, `${key}.jpg`)); shots.push(key);
         try {
           await page.addScriptTag({ path: axePath });
           a11y[`${name}|${dev.name}|${theme}`] = (await page.evaluate(() => window.axe.run({ resultTypes: ['violations'] }))).violations;
@@ -105,9 +101,10 @@ for (const dev of [...SHOT_DEVICES, ...EXTRA_DEVICES]) {
 if (routesFor({ all: [] }).some(([n]) => n === 'onboarding' && matches(n, '#/onboarding'))) {
   for (const dev of SHOT_DEVICES) for (const theme of THEMES) {
     const { page, ctx } = await newPage(dev, theme, { onboarded: false, seed: false });
+    await page.goto(BASE + '#/welcome', { waitUntil: 'networkidle2' });
     await sleep(600);
     const text = await page.evaluate(() => document.body.innerText);
-    if (/welcome|get started|let.s begin|onboard/i.test(text) && !isMissing(text)) await jpeg(page, path.join(outDir, `onboarding__${dev.name}__${theme}.jpg`));
+    if (/welcome|get started|let.s begin|onboard/i.test(text) && !isMissing(text)) await jpeg(page, path.join(OUT, `onboarding__${dev.name}__${theme}.jpg`));
     else skipped.set('onboarding', 'no first-run screen yet');
     await ctx.close();
   }

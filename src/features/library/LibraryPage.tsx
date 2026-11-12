@@ -47,7 +47,7 @@ export default function LibraryPage() {
       <Section>
         <Stack gap={4}>
           <Toolbar className="flex-nowrap">
-            <Input type="search" value={lib.query} onChange={e => lib.setQuery(e.target.value)} placeholder="Search questions, answers, tags"
+            <Input type="search" value={lib.query} onChange={e => lib.setQuery(e.target.value)} placeholder="Search your library"
               aria-label="Search library" className="min-w-0 flex-1" />
             <Button variant="secondary" className="shrink-0" onClick={() => setSheet('filters')} aria-label={active ? `Filters, ${active} active` : 'Filters'}>
               Filters{active > 0 && <span className="ml-2 rounded-full bg-accent px-2 text-caption text-white">{active}</span>}

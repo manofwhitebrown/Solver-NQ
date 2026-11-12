@@ -7,7 +7,7 @@
 - Heads-up for all: the old `docs/audit/tools/layout-audit.mjs` is now superseded by `npm run shots`.
 
 ## Remaining (Phase 2)
-- Re-run `npm run shots` and review `/library` and `/backup` screenshots + `layout.md` after Library v2 / Backup v2 (not yet re-captured).
+- Everyone: full `npm run shots` re-run is committed (88 images: now includes notes, plan, design, onboarding at `#/welcome`). Re-run for your routes after your layout pass: `npm run shots -- /yourroute`.
 - P2: replace remaining `any` (none found in my folders), keep reviewing keyboard use.
 
 ## Phase 2 P1 done

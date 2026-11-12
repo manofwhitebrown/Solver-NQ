@@ -7,7 +7,7 @@ type Progress = (done: number, total: number) => void;
 
 /** "Selectable text" PDF: real text, math as readable plain text. jsPDF is lazy-loaded. */
 export async function buildTextPdf(
-  items: ExportItem[], opts: ResolvedOptions, title: string, onProgress?: Progress,
+  items: ExportItem[], opts: ResolvedOptions, title: string, onProgress?: Progress, pages?: number[],
 ): Promise<Blob> {
   const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({ unit: 'pt', format: opts.pageSize });
@@ -31,6 +31,7 @@ export async function buildTextPdf(
   items.forEach(({ q, a, image }, i) => {
     ensure(lh * 4);
     write(`${i + 1}. ${plainTitle(q.text, 90)}`, opts.fontSize + 3, true);
+    if (pages) pages[i] = doc.getNumberOfPages();
     if (opts.includeDate) write(`${q.subject} · ${dateStamp(q.createdAt)}`, opts.fontSize - 1);
     const rest = q.text.split('\n').slice(1).join('\n').trim();
     if (rest) write(markdownToPlain(rest), opts.fontSize); // heading already shows line 1
@@ -55,13 +56,13 @@ export async function buildTextPdf(
     onProgress?.(i + 1, items.length);
   });
 
-  const pages = doc.getNumberOfPages();
-  for (let p = 1; p <= pages; p++) {
+  const total = doc.getNumberOfPages();
+  for (let p = 1; p <= total; p++) {
     doc.setPage(p);
     doc.setFontSize(9);
     doc.setTextColor(120);
     doc.text('Solver-NQ', M, H - 28);
-    doc.text(`${p} / ${pages}`, W - M, H - 28, { align: 'right' });
+    doc.text(`${p} / ${total}`, W - M, H - 28, { align: 'right' });
   }
   return doc.output('blob');
 }

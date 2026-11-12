@@ -43,6 +43,8 @@ async function newPage(dev, theme, { onboarded = true, seed = true } = {}) {
     ids = await page.evaluate(() => window.__solverDemo.seedDemoData());
   }
   if (onboarded) await page.evaluate((k) => { try { localStorage.setItem(k, JSON.stringify({ onboarded: true })); } catch { /* ignore */ } }, SETTINGS_KEY);
+  // The app reads settings at start-up, so reload for the flag to take effect on the first route too.
+  if (onboarded) await page.reload({ waitUntil: 'networkidle2' });
   return { page, ctx, ids };
 }
 

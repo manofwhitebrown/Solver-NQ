@@ -21,6 +21,6 @@ export const routesFor = (ids) => [
   ['learn', '#/learn'], ['learn-review', '#/learn/review'], ['learn-quiz', '#/learn/quiz'],
   ['learn-stats', '#/learn/stats'], ['learn-cards', '#/learn/cards'],
   ['export', `#/export?ids=${ids.all.slice(0, 3).join(',')}`],
-  ['settings', '#/settings'], ['graph', '#/graph'], ['backup', '#/backup'], ['notes', '#/notes'], ['plan', '#/plan'],
+  ['settings', '#/settings'], ['graph', '#/graph'], ['backup', '#/backup'], ['notes', '#/notes'], ['notes-new', '#/notes/new'], ['note-detail', '#/notes/demo-n01'], ['plan', '#/plan'],
   ['design', '#/design'], ['onboarding', '#/welcome', 'fresh'],
 ];

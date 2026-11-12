@@ -156,7 +156,7 @@ export function ScanPage() {
     <div onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={onDrop}
       className={source ? 'pb-24' : ''}>
       <PageHeader title="Scan a question" back={source && !pdf ? true : undefined} subtitle="Photograph it, crop it, check the text."
-        actions={source && !pdf ? <Button variant="ghost" size="sm" onClick={() => setSource(null)}>New image</Button> : undefined} />
+        actions={source && !pdf ? <Button variant="ghost" size="sm" onClick={() => setSource(null)} aria-label="New image">New</Button> : undefined} />
       <Stack gap={6}>
         <div className="[@media(max-height:500px)]:hidden"><StepIndicator step={step} /></div>
         {pdf ? (

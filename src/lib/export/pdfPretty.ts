@@ -30,7 +30,7 @@ export class AbortError extends Error {
 const check = (s?: AbortSignal) => { if (s?.aborted) throw new AbortError(); };
 const tick = () => new Promise<void>((r) => setTimeout(r, 0)); // let the UI breathe between blocks
 
-export interface PrettyHooks { signal?: AbortSignal; onWarn?: (failed: number) => void }
+export interface PrettyHooks { signal?: AbortSignal; onWarn?: (failed: number) => void; /** Filled with the page each answer starts on (1-based). */ pages?: number[] }
 
 /**
  * "Pretty" PDF: each block is rasterised, so math is perfect. Blocks never split across pages.
@@ -117,6 +117,7 @@ export async function buildPrettyPdf(
         for (const html of await blocksFor(it, opts)) {
           check(signal);
           try { await renderBlock(html); } catch (e) { if (e instanceof AbortError) throw e; noteFailure('A part of this answer'); }
+          if (hooks.pages && hooks.pages[i] === undefined) hooks.pages[i] = doc.getNumberOfPages();
           await tick();
         }
       } catch (e) {

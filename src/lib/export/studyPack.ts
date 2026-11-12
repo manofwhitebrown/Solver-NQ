@@ -19,6 +19,17 @@ export async function buildPackPdf(
   const H = doc.internal.pageSize.getHeight();
   const M = 56;
 
+  const toc = buildToc(items);
+  // Contents pages needed (same layout rules as the drawing loop below), so answer page numbers are exact.
+  let tocPages = 1; let ty = M + 44;
+  for (let i = 0; i < toc.length; i++) { if (ty > H - M) { tocPages++; ty = M; } ty += 20; }
+  const startPages: number[] = [];
+  const packOpts = { ...opts, includeCards: false };
+  const body = opts.pdfMode === 'pretty'
+    ? await (await import('./pdfPretty')).buildPrettyPdf(items, packOpts, 'Answers', onProgress, { ...hooks, pages: startPages })
+    : await (await import('./pdfText')).buildTextPdf(items, packOpts, 'Answers', onProgress, startPages);
+  const firstBodyPage = 1 + tocPages + 1; // cover + contents, then body page 1
+
   doc.setFont('helvetica', 'bold').setFontSize(30).setTextColor(0);
   doc.text('Study pack', W / 2, H / 3, { align: 'center' });
   doc.setFont('helvetica', 'normal').setFontSize(14);
@@ -30,18 +41,17 @@ export async function buildPackPdf(
   doc.setFont('helvetica', 'bold').setFontSize(20).text('Contents', M, M + 10);
   doc.setFont('helvetica', 'normal').setFontSize(11);
   let y = M + 44;
-  for (const t of buildToc(items)) {
+  toc.forEach((t, i) => {
     if (y > H - M) { doc.addPage(); y = M; }
-    doc.text(pdfSafe(`${t.n}. ${t.title}`), M, y);
+    const label = pdfSafe(`${t.n}. ${t.title}`);
+    const page = startPages[i] !== undefined ? String(firstBodyPage + startPages[i] - 1) : '';
+    doc.text(label.length > 80 ? `${label.slice(0, 79)}...` : label, M, y);
+    if (page) doc.text(page, W - M, y, { align: 'right' });
     y += 20;
-  }
+  });
+
 
   const frontCount = doc.getNumberOfPages();
-  const packOpts = { ...opts, includeCards: false };
-  const body = opts.pdfMode === 'pretty'
-    ? await (await import('./pdfPretty')).buildPrettyPdf(items, packOpts, 'Answers', onProgress, hooks)
-    : await (await import('./pdfText')).buildTextPdf(items, packOpts, 'Answers', onProgress);
-
   if (cards.length) {
     doc.addPage();
     doc.setFont('helvetica', 'bold').setFontSize(20).text('Flashcards', M, M + 10);

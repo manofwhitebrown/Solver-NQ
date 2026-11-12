@@ -54,3 +54,12 @@
 - README documents the proxy env vars (`AI_API_KEY`, `AI_PROVIDER`, `AI_BASE_URL`).
 - Verified: typecheck, 358/358 tests, build, and latest Android APK + Pages runs green.
 - Left as is: 4 low npm-audit findings in the pinned KaTeX/remark-math chain (needs a breaking upgrade).
+
+## Leftovers finished (12 Nov 2026, second sweep)
+- AI-5/AI-8: `verify()` loads its math checks lazily and `/graph` is a lazy route, so `vendor-math` (641 kB) is no longer fetched at startup. Entry chunk 174 kB (limit 400).
+- AI-6: study-pack Contents page now shows the page number of each answer (body is built first so numbers are exact; text and pretty PDFs both record start pages).
+- AI-5: inline equations in paragraphs/list items no longer widen the page (`answer.css`); needs a phone check.
+- AI-4: Scan header button shortened to "New" (aria-label "New image") so the title stays on one line.
+- AI-7: screenshots added for `/notes/new` and `/notes/:id` (`notes-new-*`, `note-detail-*`).
+- shots.mjs: reloads after setting the onboarded flag, so the first captured route is no longer the welcome screen.
+- Not done on purpose: AI-2 streaming and shared proxy logic (larger, risky changes); all real-device tests.

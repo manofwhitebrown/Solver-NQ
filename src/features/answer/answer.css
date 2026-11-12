@@ -17,3 +17,8 @@
 .prose-answer code:not(pre code) { border-radius: 0.375rem; background: rgb(var(--raised)); padding: 0.125rem 0.375rem; font-size: 0.9em; }
 @keyframes step-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .step-in { animation: step-in 260ms ease-out; }
+
+/* Long inline equations inside a paragraph must not push the page sideways. */
+.prose-answer p, .prose-answer li { overflow-wrap: anywhere; }
+.prose-answer p > .katex, .prose-answer li > .katex { max-width: 100%; }
+.prose-answer .katex-html { max-width: 100%; }

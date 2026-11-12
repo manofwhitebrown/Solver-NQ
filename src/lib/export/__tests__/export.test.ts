@@ -5,6 +5,7 @@ import { latexToText, markdownToPlain } from '../plaintext';
 import { itemsToMarkdown } from '../markdown';
 import { filterItems, buildToc } from '../pack';
 import { defaultOptions, resolveOptions } from '../options';
+import { findCutRow, planSlices } from '../slice';
 
 const q = (over: Partial<Question> = {}): Question => ({
   id: 'q1', text: 'Solve $x^2-5x+6=0$', subject: 'math', tags: ['algebra'],
@@ -70,5 +71,26 @@ describe('pack + options', () => {
     expect(resolveOptions({ paper: 'letter', includeSteps: false }).pageSize).toBe('letter');
     expect(resolveOptions({ includeSteps: false }).stepsMode).toBe('final');
     expect(resolveOptions({ fontSize: 99 }).fontSize).toBe(16);
+  });
+});
+
+
+describe('slice (tall blocks)', () => {
+  // rows 0-99 text; blank gaps at 40-44 and 80-84
+  const blank = (y: number) => (y >= 40 && y <= 44) || (y >= 80 && y <= 84) || y >= 120;
+  it('cuts inside a blank gap, not through a line', () => {
+    const cut = findCutRow(blank, 0, 90);
+    expect(cut).toBeGreaterThanOrEqual(80);
+    expect(cut).toBeLessThanOrEqual(84);
+  });
+  it('falls back to the limit when there is no gap', () => {
+    expect(findCutRow(() => false, 0, 90)).toBe(90);
+  });
+  it('plans slices that cover every row exactly once', () => {
+    const s = planSlices(130, 90, blank);
+    expect(s[0][0]).toBe(0);
+    expect(s[s.length - 1][1]).toBe(130);
+    for (let i = 1; i < s.length; i++) expect(s[i][0]).toBe(s[i - 1][1]);
+    expect(s.every(([a, b]) => b - a <= 90)).toBe(true);
   });
 });

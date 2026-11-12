@@ -10,7 +10,7 @@
 - NOT measured yet: pretty-mode PDF time/size, anything on Android. No browser is available in my environment, so the pretty PDF (KaTeX + rasterising) and the screen have only been typechecked and built, never rendered.
 
 ## In progress / not done
-- Pretty PDF: needs a real browser check (math rendering, page breaks, time and size for a 20-answer pack). A single block taller than a page is currently scaled down to fit, not split.
+- Pretty PDF: needs a real browser check (math rendering, page breaks, time and size for a 20-answer pack). A block taller than a page is now cut at blank rows between lines (one slice per page); that path is only unit-tested on the pure row-picking logic, not rendered.
 - "Include original question image" now works for PDF (both styles), study pack and DOCX (downscaled JPEG, white background). Not in Markdown/TXT/JSON. Only verified with a generated JPEG in Node tests, not with real saved scans in a browser.
 - Markdown "round-trips" is only checked as: math delimiters and structure are preserved. There is no importer, so no true round-trip test.
 - DOCX is checked structurally (valid zip with word/document.xml). Not opened in Word.

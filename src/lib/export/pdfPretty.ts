@@ -2,6 +2,7 @@ import type { ExportItem } from './markdown';
 import type { ResolvedOptions } from './options';
 import { mdToHtml } from './html';
 import { dateStamp } from './filename';
+import { planSlices } from './slice';
 
 type Progress = (done: number, total: number) => void;
 const SCALE = 2; // raster resolution multiplier
@@ -61,9 +62,26 @@ export async function buildPrettyPdf(
     for (const [i, node] of nodes.entries()) {
       const canvas = await toCanvas(node, { pixelRatio: SCALE, backgroundColor: '#fff' });
       const h = (canvas.height / canvas.width) * contentW;
-      if (y + h > H - M && y > M) { doc.addPage(); y = M; }
-      doc.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', M, y, contentW, Math.min(h, H - M * 2));
-      y += h;
+      const room = H - M * 2;
+      if (h <= room) {
+        if (y + h > H - M && y > M) { doc.addPage(); y = M; }
+        doc.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', M, y, contentW, h);
+        y += h;
+      } else {
+        // Taller than a page: cut at gaps between lines, one slice per page.
+        if (y > M) { doc.addPage(); y = M; }
+        const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+        const blank = (row: number) => ctx.getImageData(0, row, canvas.width, 1).data.every((v, i) => i % 4 === 3 || v > 245);
+        const ptPerRow = contentW / canvas.width;
+        for (const [from, to] of planSlices(canvas.height, Math.floor(room / ptPerRow), blank)) {
+          const part = document.createElement('canvas');
+          part.width = canvas.width; part.height = to - from;
+          part.getContext('2d')!.drawImage(canvas, 0, from, canvas.width, to - from, 0, 0, canvas.width, to - from);
+          if (y > M) { doc.addPage(); y = M; }
+          doc.addImage(part.toDataURL('image/jpeg', 0.92), 'JPEG', M, y, contentW, (to - from) * ptPerRow);
+          y += (to - from) * ptPerRow;
+        }
+      }
       onProgress?.(items.length + Math.round(((i + 1) / nodes.length) * items.length), items.length * 2);
     }
   } finally {

@@ -44,17 +44,21 @@
 - P0.2 Memory safety: `pdfPretty` now renders one block at a time (node removed and canvas zeroed right after use), yields to the UI between blocks, forces white paper (`color-scheme:light`), supports **Cancel** (AbortSignal through `buildExport` -> pretty PDF and study pack; leaving the page also aborts), and a block/answer that fails to draw is replaced by a short note while the rest continues (`onWarn` shows "N parts could not be drawn").
 - P0.3 `saveFile`: cache dir + file URI + Share (`canShare` check, closed share sheet = `'cancelled'`, not an error), safe file names, chunked base64 (no `FileReader`). 7 mocked-plugin tests in `__tests__/saveFile.test.ts`.
 
+- P1 Study Planner built: `src/lib/plan` (pure `buildPlan`, weak-subject + urgency weighting, 2-4 tasks/day, rest day before an exam, off-days, 60-day cap, re-plans from today so skipped days vanish; storage on AI-3 `kvGet/kvSet` key `study-plan`, also reads the older demo shape; subject stats from flashcards/library/notes). 16 tests. `/plan` screen on Page/PageHeader/Section/Card: exam countdown cards, Today card with progress ring + checkable tasks that deep-link to `/learn/review`, `/learn/quiz?subject=`, `/library?subject=`, `/notes/<id>`, week view (tap a day), Add exam + Settings sheets, friendly empty state. `TodayCard` exported from `@/features/plan` for AI-7.
+- Cross-owner edit (tiny, as the task allows): `src/app/routes.ts` registers `...plan`.
+
 ## In progress / Remaining
-- P1 Study Planner (`src/lib/plan`, `src/features/plan`, `/plan`, `TodayCard`) - next.
+- P1 polish: reminder (optional, skipped), visual check at 320/390/1280 px (no browser here), `TodayCard` mount on `/learn` by AI-7.
 - P2 export layout pass (waits for `DESIGN V2 READY`), Obsidian front matter, remove `any`.
 
 ## Needs from others
-- AI-3: `kvSet/kvGet` not in `src/lib/db` yet; planner will use a small wrapper behind one interface until then.
+- AI-7: mount `<TodayCard />` from `@/features/plan` on `/learn` (it renders nothing while loading).
 
 ## Notes for the manager
 - Not mine, seen in a full run: `scale.test.ts` (AI-3) fails under load again; lint errors in `api/ask.ts` (AI-2) and `docs/audit/tools/layout-audit.mjs` (AI-8: node/browser globals not declared in eslint config).
 
 ## Manual tests for the user
+0. Open `/plan` at 320, 390 and 1280 px, light and dark: add an exam 8 days away, tick a task, tap a week day, open Settings (days off, harder subject). Nothing should scroll sideways. Tell the manager what looks wrong.
 1. Laptop Chrome: open `/export` with 1, then 5, then 20 saved answers, format PDF + "Pretty". Note time and size. Check math is sharp, no formula cut across pages, page numbers bottom right, white paper in dark theme. Repeat with Letter.
 2. Same 20-answer export: tap **Cancel** halfway. It must stop within a second or two and show "Export cancelled".
 3. Android: export a PDF, tap Save/Share, pick Drive or WhatsApp, confirm the file arrives and opens. Close the share sheet without choosing: no error should appear.

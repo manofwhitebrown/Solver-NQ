@@ -63,7 +63,7 @@ const isMissing = (text) => /page not found|this screen is being built/i.test(te
 const layout = {}, a11y = {}, errors = {}, skipped = new Map(), shots = [];
 const outDir = full ? OUT : TMP;
 fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(outDir, { recursive: true });
-for (const f of fs.readdirSync(OUT)) if (/\.jpg$/.test(f) && (full || only.some((o) => f.startsWith(o + '__') || f.startsWith(o + '-')))) fs.rmSync(path.join(OUT, f));
+for (const f of fs.readdirSync(OUT)) if (/__(phone|laptop)__(light|dark)\.jpg$/.test(f) && (full || only.some((o) => f.startsWith(o + '__') || f.startsWith(o + '-')))) fs.rmSync(path.join(OUT, f));
 
 for (const dev of [...SHOT_DEVICES, ...EXTRA_DEVICES]) {
   const isShot = SHOT_DEVICES.includes(dev);

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { COLORS, formatTick, niceStep, samplePath, viewBounds, zoomAt, type Fn, type Mark, type View } from './plot';
+import { IconButton } from '@/components/ui';
+import { COLORS, DASHES, formatTick, niceStep, samplePath, viewBounds, zoomAt, type Fn, type Mark, type View } from './plot';
 
 interface Props { fns: Array<Fn | null>; view: View; onView: (v: View) => void; marks: Mark[] }
 
@@ -54,6 +55,8 @@ export function GraphCanvas({ fns, view, onView, marks }: Props) {
     }
     pointers.current.set(e.pointerId, next);
   };
+  const zoomBy = (f: number) => onView(zoomAt(view, f, w / 2, h / 2, w, h));
+  const stop = (e: React.PointerEvent) => e.stopPropagation(); // buttons must not start a pan
   const onUp = (e: React.PointerEvent) => { pointers.current.delete(e.pointerId); };
   const onWheel = (e: React.WheelEvent) => {
     const r = ref.current!.getBoundingClientRect();
@@ -61,7 +64,7 @@ export function GraphCanvas({ fns, view, onView, marks }: Props) {
   };
 
   return (
-    <div ref={ref} className="h-full min-h-[280px] w-full select-none overflow-hidden rounded-lg border border-line bg-surface"
+    <div ref={ref} className="relative h-full min-h-[320px] w-full select-none overflow-hidden rounded-lg border border-line-strong bg-surface"
       style={{ touchAction: 'none' }} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp}
       onPointerCancel={onUp} onWheel={onWheel}>
       <svg width={w} height={h} role="img" aria-label="Function graph">
@@ -70,14 +73,18 @@ export function GraphCanvas({ fns, view, onView, marks }: Props) {
         <line x1={0} x2={w} y1={sy(0)} y2={sy(0)} stroke="rgb(var(--muted))" strokeWidth={1.5} />
         <line y1={0} y2={h} x1={sx(0)} x2={sx(0)} stroke="rgb(var(--muted))" strokeWidth={1.5} />
         {ticks(b.xmin, b.xmax).filter((t) => t !== 0).map((t) => (
-          <text key={`tx${t}`} x={sx(t)} y={axisX + 14} textAnchor="middle" fontSize={11} fill="rgb(var(--muted))">{formatTick(t)}</text>))}
+          <text key={`tx${t}`} x={sx(t)} y={axisX + 14} textAnchor="middle" fontSize={12} fill="rgb(var(--ink-2))">{formatTick(t)}</text>))}
         {ticks(b.ymin, b.ymax).filter((t) => t !== 0).map((t) => (
-          <text key={`ty${t}`} x={axisY + 4} y={sy(t) - 3} fontSize={11} fill="rgb(var(--muted))">{formatTick(t)}</text>))}
-        {paths.map((d, i) => d && <path key={i} d={d} fill="none" stroke={COLORS[i % COLORS.length]} strokeWidth={2.5} strokeLinejoin="round" />)}
+          <text key={`ty${t}`} x={axisY + 4} y={sy(t) - 3} fontSize={12} fill="rgb(var(--ink-2))">{formatTick(t)}</text>))}
+        {paths.map((d, i) => d && <path key={i} d={d} fill="none" stroke={COLORS[i % COLORS.length]} strokeWidth={2.5} strokeLinejoin="round" strokeDasharray={DASHES[i % DASHES.length] || undefined} />)}
         {marks.map((m, i) => (
           <circle key={i} cx={sx(m.x)} cy={sy(m.y)} r={5} fill={m.kind === 'zero' ? 'rgb(var(--surface))' : 'rgb(var(--ink))'}
             stroke="rgb(var(--ink))" strokeWidth={2}><title>{`(${formatTick(+m.x.toPrecision(6))}, ${formatTick(+m.y.toPrecision(6))})`}</title></circle>))}
       </svg>
+      <div className="absolute bottom-3 right-3 flex flex-col gap-2" onPointerDown={stop} onPointerMove={stop} onWheel={(e) => e.stopPropagation()}>
+        <IconButton label="Zoom in" className="elev-2 bg-surface text-xl" onClick={() => zoomBy(1.4)}>+</IconButton>
+        <IconButton label="Zoom out" className="elev-2 bg-surface text-xl" onClick={() => zoomBy(1 / 1.4)}>−</IconButton>
+      </div>
     </div>
   );
 }

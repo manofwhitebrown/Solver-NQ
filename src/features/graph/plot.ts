@@ -6,6 +6,8 @@ export type Fn = (x: number) => number;
 export interface Mark { x: number; y: number; kind: 'zero' | 'cross' }
 
 export const COLORS = ['#2563eb', '#dc2626', '#16a34a', '#9333ea', '#ea580c'];
+/** Dash patterns so lines differ by more than colour. */
+export const DASHES = ['', '9 5', '2 5', '10 4 2 4', '1 6'];
 export const DEFAULT_VIEW: View = { cx: 0, cy: 0, scale: 40 };
 
 /** Parse "x^2", "y = sin(x)" or "f(x) = x/2". Returns an error message instead of throwing. */

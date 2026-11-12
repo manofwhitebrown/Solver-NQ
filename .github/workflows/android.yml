@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - uses: actions/setup-java@v4
         with:
@@ -24,11 +24,20 @@ jobs:
           java-version: 21
       - uses: gradle/actions/setup-gradle@v4
       - run: npm ci
-      - run: npm run build
-      - run: npx cap sync android
+      - name: npm run build
+        run: |
+          npm run build 2>&1 | tee step.log; s=${PIPESTATUS[0]}
+          if [ $s -ne 0 ]; then echo "::error title=npm run build failed::$(tail -n 40 step.log | tr '\n' ' ' | cut -c1-3500)"; exit $s; fi
+      - name: cap sync
+        run: |
+          npx cap sync android 2>&1 | tee step.log; s=${PIPESTATUS[0]}
+          if [ $s -ne 0 ]; then echo "::error title=cap sync failed::$(tail -n 40 step.log | tr '\n' ' ' | cut -c1-3500)"; exit $s; fi
+      - run: chmod +x android/gradlew
       - name: Debug APK
         working-directory: android
-        run: ./gradlew assembleDebug
+        run: |
+          ./gradlew assembleDebug 2>&1 | tee step.log; s=${PIPESTATUS[0]}
+          if [ $s -ne 0 ]; then echo "::error title=gradle assembleDebug failed::$(tail -n 40 step.log | tr '\n' ' ' | cut -c1-3500)"; exit $s; fi
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:

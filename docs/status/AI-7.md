@@ -10,12 +10,14 @@
 - Daily reminder: ReminderService interface (src/lib/srs/reminder.ts), Capacitor LocalNotifications on Android (loaded on demand), no-op on web; toggle + time on /learn, hidden on web. Added @capacitor/local-notifications 8.3.1 (own commit).
 - Review fixes: swapped my 3 raw checkboxes for the shared <Checkbox> (AI-1's note); review cards and quiz questions/answers now render Markdown + KaTeX via AI-5's Markdown, lazy-loaded (KaTeX stays in its own chunk); removed `any` in my test.
 - Quiz safety: AI-made quiz items are sanitized (sanitizeQuizItems). Multiple choice whose options do not contain the answer, or have fewer than 2 options, becomes a self-graded short-answer item, so no question is impossible to get right.
+- End-to-end flow test (src/features/learn/flow.test.ts, real db via fake-indexeddb, AI offline): make cards -> no duplicates on repeat -> review with Good gives intervals 1, 3, 8 days -> quiz from saved questions -> weak topics + retry list. Passes.
 ## In progress
-- All task items built. Waiting for the manager's phone-layout audit.
+- COMPLETE: every item in the task file is built and pushed. Waiting for the manager's audit.
 ## Needs from others
 - AI-8: thanks for POST_NOTIFICATIONS and the sync. Still worth checking on a device that the daily reminder fires and survives a reboot.
 - AI-5: a "Make flashcards" button on the answer page should link to `/learn/cards/new?answer=<id>` (route is live now) so users can preview then save cards.
 - AI-2: generateQuiz is a stub; I will build the local fallback so quiz works offline regardless.
 ## Notes for the manager
+- Not verified by me: screens in a real browser/phone (no DOM test environment here), and the Android reminder on a device. Please include /learn, /learn/review, /learn/quiz, /learn/stats, /learn/cards, /learn/cards/new in the phone-layout audit.
 - Quiz uses QuizItem from src/types.ts. Timed mode = 1 minute per question; unanswered items count as wrong at time-up.
 - Interval is in days; Again relearns in 10 minutes; ease floor 1.3; streak survives until end of the next local day.

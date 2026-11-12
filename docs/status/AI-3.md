@@ -1,9 +1,15 @@
 ## Done
-- Data layer written locally, NOT pushed yet (waiting for AI-1 `SCAFFOLD READY`): Dexie schema v1 + v2 migration, all contract functions, MiniSearch index, images + thumbnails, backup/restore with validation and merge, 11 unit tests passing.
+- Data layer (`src/lib/db`): Dexie schema v1 + v2 migration, every contract function, MiniSearch offline search (kept in sync on save/delete, rebuilt on startup), images with thumbnails, transactional writes. 15 tests pass (migration, CRUD, search, backup round trip, import validation, all-or-nothing import).
+- Backup (`src/features/backup`): `BackupPanel` (download, restore, storage usage, `navigator.storage.persist()`), route `/backup`. Import validates, merges without overwriting, skips duplicates, never throws.
+- Library (`/library`): search, subject/tag/starred filters, multi-select (long-press or checkbox), Export to `/export?ids=...`, Add tag, Star, Delete with Undo, tag rename/delete sheet, empty state, paged list (40 at a time).
+- typecheck, lint, build and tests green at last push.
 ## In progress
-- Library screen (`/library`) and backup screen.
+- Phone-layout polish after the manager's audit.
 ## Needs from others
-- AI-1: scaffold (package.json, src/types.ts, ui kit incl. BottomSheet). I will need `dexie`, `minisearch`, `fake-indexeddb` and `vitest` (dev) added with exact versions.
+- AI-1: add a link to `/backup` in the settings screen (or embed `<BackupPanel />` from `@/features/backup`).
+- AI-6: `saveFile` is still a stub; backup download uses it.
+- AI-2: `queuePending` now takes a full `PendingItem` (with id), as in `src/types.ts`.
 ## Notes for the manager
 - `starred` is a boolean and IndexedDB cannot index booleans, so it is filtered in code, not indexed.
-- Extra exports beyond the contract: deleteQuestions/restoreDeleted (Undo), listTags/renameTag, updateQuestions, saveImage/getImageUrl, requestPersistence/storageUsage.
+- Extra db exports beyond the contract: deleteQuestions/restoreDeleted (Undo), listTags/renameTag, updateQuestions, saveImage/getImageUrl, requestPersistence/storageUsage.
+- Library renders 40 rows at a time with "Show more" instead of virtualising, to avoid a new dependency.

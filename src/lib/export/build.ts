@@ -62,7 +62,7 @@ export async function buildExport(req: BuildRequest): Promise<BuildResult> {
   } else if (req.format === 'json') {
     blob = new Blob([JSON.stringify(items, null, 2)], { type: MIME.json });
   } else {
-    const md = itemsToMarkdown(items, opts, title);
+    const md = itemsToMarkdown(items, opts, title, req.format === 'md'); // front matter for Obsidian, Markdown only
     blob = new Blob([req.format === 'txt' ? markdownToPlain(md) : md], { type: MIME[req.format] });
   }
   return { blob, filename: makeFilename(subject, title, ext), ms: Math.round(performance.now() - t0), count: items.length };

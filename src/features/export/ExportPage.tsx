@@ -1,6 +1,6 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ActionBar, Button, Chip, EmptyState, Spinner, toast } from '@/components/ui';
+import { ActionBar, Button, Chip, Cluster, EmptyState, Page, PageHeader, Section, Spinner, Stack, toast } from '@/components/ui';
 import { listLibrary } from '@/lib/db';
 import {
   buildExport, defaultOptions, loadItems,
@@ -65,50 +65,49 @@ export default function ExportPage() {
   const pct = Math.round((progress[0] / Math.max(1, progress[1])) * 100);
   const isPdf = format === 'pdf';
 
-  return (
-    <div className="mx-auto max-w-3xl space-y-5 px-4 pb-40 pt-5">
-      <div data-no-print className="space-y-4">
-        <div>
-          <h1 className="text-2xl font-semibold">{isPack ? 'Study pack' : 'Export'}</h1>
-          <p className="text-[15px] text-muted">
-            {items === null ? 'Loading…' : `${items.length} answer${items.length === 1 ? '' : 's'}`}
-            {isPack ? ' · cover, contents, answers' : ''} · works offline
-          </p>
-        </div>
+  const count = items === null ? 'Loading…' : `${items.length} answer${items.length === 1 ? '' : 's'}`;
+  // Page clears the tab bar; add room for the Export bar that sits above it (no magic padding on the page).
+  const clearBar = { '--page-bottom': 'calc(var(--tabbar-h) + 5rem)' } as CSSProperties;
 
+  return (
+    <Page style={clearBar}>
+      <div data-no-print>
+        <PageHeader title={isPack ? 'Study pack' : 'Export'} subtitle={`${count}${isPack ? ' · cover, contents, answers' : ''} · works offline`}
+          actions={<Button variant="secondary" size="md" onClick={() => setSheet(true)}>Options</Button>} />
         {!isPack && (
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Format">
+          <Cluster className="mb-8" role="group" aria-label="Format">
             {FORMATS.map((f) => (
               <Chip key={f.value} selected={format === f.value} onClick={() => { setFormat(f.value); setResult(null); }}>{f.label}</Chip>
             ))}
-          </div>
+          </Cluster>
         )}
-        <Button variant="secondary" onClick={() => setSheet(true)}>Options</Button>
       </div>
 
-      {items === null ? (
-        <div className="flex justify-center py-12"><Spinner /></div>
-      ) : items.length === 0 ? (
-        <p data-no-print className="py-10 text-center text-muted">No answers match these filters.</p>
-      ) : (
-        <Suspense fallback={<div className="flex justify-center py-10"><Spinner /></div>}>
-          <Preview items={items} opts={opts} />
-        </Suspense>
-      )}
-
-      <div data-no-print className="space-y-3">
-        {busy && (
-          <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} className="space-y-1">
-            <div className="h-2 overflow-hidden rounded-full bg-line"><div className="h-full bg-accent transition-all" style={{ width: `${pct}%` }} /></div>
-            <p className="text-[13px] text-muted">Building… {pct}%</p>
-          </div>
+      <Section title="Preview">
+        {items === null ? (
+          <div className="flex justify-center py-12"><Spinner /></div>
+        ) : items.length === 0 ? (
+          <p data-no-print className="py-10 text-center text-base text-muted">No answers match these filters.</p>
+        ) : (
+          <Suspense fallback={<div className="flex justify-center py-10"><Spinner /></div>}>
+            <Preview items={items} opts={opts} />
+          </Suspense>
         )}
-        {warn > 0 && <p className="text-[15px] text-muted">{warn} part{warn > 1 ? 's' : ''} could not be drawn and {warn > 1 ? 'were' : 'was'} replaced by a note.</p>}
-        {error && <p role="alert" className="text-[15px] text-bad">{error}</p>}
-        {result && <ResultCard result={result} onShareError={(m) => toast(m, 'error')} />}
-      </div>
+      </Section>
 
       <div data-no-print>
+        <Stack gap={4}>
+          {busy && (
+            <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} className="space-y-2">
+              <div className="h-2 overflow-hidden rounded-full bg-line"><div className="h-full bg-accent transition-all" style={{ width: `${pct}%` }} /></div>
+              <p className="text-sm text-muted">Building… {pct}%</p>
+            </div>
+          )}
+          {warn > 0 && <p className="text-base text-muted">{warn} part{warn > 1 ? 's' : ''} could not be drawn and {warn > 1 ? 'were' : 'was'} replaced by a note.</p>}
+          {error && <p role="alert" className="text-base text-bad">{error}</p>}
+          {result && <ResultCard result={result} onShareError={(m) => toast(m, 'error')} />}
+        </Stack>
+
         <ActionBar>
           <Button block loading={busy} disabled={!items?.length} onClick={run}>
             {isPack ? 'Build study pack' : `Export ${FORMATS.find((f) => f.value === format)?.label}`}
@@ -120,6 +119,6 @@ export default function ExportPage() {
 
       <OptionsSheet open={sheet} onClose={() => setSheet(false)} isPack={isPack} isPdf={isPdf} isDocx={format === 'docx'}
         opts={opts} setOpts={setOpts} filter={filter} setFilter={setFilter} />
-    </div>
+    </Page>
   );
 }

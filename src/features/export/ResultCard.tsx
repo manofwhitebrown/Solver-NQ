@@ -12,10 +12,10 @@ export function ResultCard({ result, onShareError }: { result: BuildResult; onSh
   }
   return (
     <Card className="space-y-3" role="status">
-      <p className="text-[15px] font-semibold">Ready</p>
-      <p className="break-words text-[15px]">{result.filename}</p>
-      <p className="text-[13px] text-muted">{result.count} answer{result.count === 1 ? '' : 's'} · {fmtSize(result.blob.size)} · made in {(result.ms / 1000).toFixed(1)}s</p>
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <p className="text-lg font-semibold text-ink">Ready</p>
+      <p className="break-words text-base text-ink">{result.filename}</p>
+      <p className="text-sm text-muted">{result.count} answer{result.count === 1 ? '' : 's'} · {fmtSize(result.blob.size)} · made in {(result.ms / 1000).toFixed(1)}s</p>
+      <div className="flex flex-col gap-3 pt-2 sm:flex-row">
         <Button block onClick={() => saveFile(result.blob, result.filename).catch((e) => onShareError(String(e?.message ?? e)))}>
           Save / Share
         </Button>

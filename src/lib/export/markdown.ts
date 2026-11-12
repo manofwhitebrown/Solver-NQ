@@ -3,6 +3,7 @@ import type { ResolvedOptions } from './options';
 import { dateStamp } from './filename';
 
 import type { LoadedImage } from './image';
+import { frontMatter } from './frontMatter';
 
 export interface ExportItem { q: Question; a?: Answer; image?: LoadedImage }
 
@@ -23,9 +24,9 @@ export function itemToMarkdown(item: ExportItem, opts: ResolvedOptions, level = 
   return out.join('\n\n');
 }
 
-export function itemsToMarkdown(items: ExportItem[], opts: ResolvedOptions, title = 'Solver-NQ export'): string {
+export function itemsToMarkdown(items: ExportItem[], opts: ResolvedOptions, title = 'Solver-NQ export', withFrontMatter = false): string {
   const body = items.map((it) => itemToMarkdown(it, opts)).join('\n\n---\n\n');
-  return `# ${title}\n\n${body}\n`;
+  return `${withFrontMatter ? frontMatter(items, title) : ''}# ${title}\n\n${body}\n`;
 }
 
 export function firstLine(text: string): string {

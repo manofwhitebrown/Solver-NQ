@@ -47,9 +47,12 @@
 - P1 Study Planner built: `src/lib/plan` (pure `buildPlan`, weak-subject + urgency weighting, 2-4 tasks/day, rest day before an exam, off-days, 60-day cap, re-plans from today so skipped days vanish; storage on AI-3 `kvGet/kvSet` key `study-plan`, also reads the older demo shape; subject stats from flashcards/library/notes). 16 tests. `/plan` screen on Page/PageHeader/Section/Card: exam countdown cards, Today card with progress ring + checkable tasks that deep-link to `/learn/review`, `/learn/quiz?subject=`, `/library?subject=`, `/notes/<id>`, week view (tap a day), Add exam + Settings sheets, friendly empty state. `TodayCard` exported from `@/features/plan` for AI-7.
 - Cross-owner edit (tiny, as the task allows): `src/app/routes.ts` registers `...plan`.
 
+- P2 done: `/export` rebuilt on `Page`/`PageHeader`/`Section`/`Cluster`/`Stack`; the magic `pb-40` is gone (Page's `--page-bottom` hook clears the tab bar + Export bar); paper preview is a white sheet that shrinks to the screen width (long math scrolls inside its own block, nothing makes the page scroll sideways); options sheet uses shared `Input`; result card on the type scale. Obsidian-friendly Markdown: YAML front matter (title, subject, tags, date, source, answers) for the `.md` format only (TXT/JSON unchanged), tags slugged for Obsidian, 4 tests. `any`: none left in my folders.
+
 ## In progress / Remaining
 - P1 polish: reminder (optional, skipped), visual check at 320/390/1280 px (no browser here), `TodayCard` mount on `/learn` by AI-7.
-- P2 export layout pass (waits for `DESIGN V2 READY`), Obsidian front matter, remove `any`.
+- Visual check of `/export` and `/plan` (no browser here): 320/390/1280 px, light/dark; commit screenshots via AI-3's `npm run shots`.
+- Pretty PDF at 1 and 5 answers, Letter size (Manual tests).
 
 ## Needs from others
 - AI-7: mount `<TodayCard />` from `@/features/plan` on `/learn` (it renders nothing while loading).

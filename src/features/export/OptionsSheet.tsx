@@ -1,4 +1,4 @@
-import { BottomSheet, Button, Checkbox, Field, Select, Tabs } from '@/components/ui';
+import { BottomSheet, Button, Checkbox, Field, Input, Select, Tabs } from '@/components/ui';
 import type { Subject } from '@/types';
 import type { ResolvedOptions, StudyPackFilter } from '@/lib/export';
 import { SUBJECT_OPTIONS } from './subjects';
@@ -16,7 +16,7 @@ export function OptionsSheet({ open, onClose, isPack, isPdf, isDocx, opts, setOp
   const set = <K extends keyof ResolvedOptions>(k: K, v: ResolvedOptions[K]) => setOpts({ ...opts, [k]: v });
   return (
     <BottomSheet open={open} onClose={onClose} title="Export options">
-      <div className="space-y-5">
+      <div className="space-y-6">
         {isPack && (
           <div className="space-y-3">
             <Field label="Subject" htmlFor="ex-subject">
@@ -25,13 +25,13 @@ export function OptionsSheet({ open, onClose, isPack, isPdf, isDocx, opts, setOp
                 onChange={(e) => setFilter({ ...filter, subject: (e.target.value || undefined) as Subject | undefined })}
               />
             </Field>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="From" htmlFor="ex-from">
-                <input id="ex-from" type="date" className="min-h-[44px] w-full rounded-md border border-line bg-surface px-3 text-[16px]"
+                <Input id="ex-from" type="date"
                   onChange={(e) => setFilter({ ...filter, from: toMs(e.target.value) })} />
               </Field>
               <Field label="To" htmlFor="ex-to">
-                <input id="ex-to" type="date" className="min-h-[44px] w-full rounded-md border border-line bg-surface px-3 text-[16px]"
+                <Input id="ex-to" type="date"
                   onChange={(e) => setFilter({ ...filter, to: toMs(e.target.value, true) })} />
               </Field>
             </div>
@@ -52,11 +52,11 @@ export function OptionsSheet({ open, onClose, isPack, isPdf, isDocx, opts, setOp
               <p className="text-sm font-medium">PDF style</p>
               <Tabs label="PDF style" value={opts.pdfMode} onChange={(v) => set('pdfMode', v)}
                 items={[{ value: 'pretty', label: 'Pretty (math as image)' }, { value: 'text', label: 'Selectable text' }]} />
-              <p className="text-[13px] text-muted">
+              <p className="text-sm text-muted">
                 {opts.pdfMode === 'pretty' ? 'Math looks perfect; text can’t be selected.' : 'Text can be selected; math is written as plain text.'}
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="Paper" htmlFor="ex-paper">
                 <Select id="ex-paper" value={opts.pageSize} onChange={(e) => set('pageSize', e.target.value as 'a4' | 'letter')}
                   options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }]} />

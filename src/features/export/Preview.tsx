@@ -33,12 +33,15 @@ export default function Preview({ items, opts }: { items: ExportItem[]; opts: Re
 
   if (!html) return <div className="flex justify-center py-10"><Spinner /></div>;
   return (
-    <div className="mx-auto max-w-[44rem] space-y-4 rounded-lg border border-line bg-white p-5 text-[15px] leading-relaxed text-black shadow-soft">
-      {html.map((h, i) => (
-        <div key={i} className={`print-item border-b border-black/10 pb-4 last:border-0 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:mt-3 [&_h3]:font-semibold [&_h4]:mt-2 [&_h4]:font-medium [&_.meta]:text-[13px] [&_.meta]:text-black/55 ${i >= 3 ? 'hidden print:block' : ''}`}
-          dangerouslySetInnerHTML={{ __html: h }} />
-      ))}
-      {html.length > 3 && <p data-no-print className="text-center text-[13px] text-black/55">+ {html.length - 3} more in the export</p>}
+    <div className="w-full min-w-0">
+      {/* A sheet of paper: always white with dark ink, whatever the app theme; shrinks with the screen. */}
+      <div className="w-full min-w-0 overflow-hidden rounded-md border border-line bg-white p-5 text-base leading-relaxed text-black elev-2 sm:p-8 lg:p-10">
+        {html.map((h, i) => (
+          <div key={i} className={`print-item min-w-0 break-words border-b border-black/10 py-4 first:pt-0 last:border-0 last:pb-0 [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mt-4 [&_h3]:font-semibold [&_h4]:mt-3 [&_h4]:font-semibold [&_img]:max-w-full [&_.meta]:text-sm [&_.meta]:text-black/60 ${i >= 3 ? 'hidden print:block' : ''}`}
+            dangerouslySetInnerHTML={{ __html: h }} />
+        ))}
+      </div>
+      {html.length > 3 && <p data-no-print className="mt-3 text-center text-sm text-muted">+ {html.length - 3} more in the export</p>}
     </div>
   );
 }

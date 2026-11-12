@@ -1,4 +1,6 @@
+import { createElement } from 'react';
 import type { RouteObject } from 'react-router-dom';
+import { GraphPage } from './GraphPage';
 
-// Owner replaces [] with real routes. Nobody edits src/app/routes.ts.
-export const routes: RouteObject[] = [];
+// /graph?f=x^2&f=sin(x) opens with those functions already entered.
+export const routes: RouteObject[] = [{ path: 'graph', element: createElement(GraphPage) }];

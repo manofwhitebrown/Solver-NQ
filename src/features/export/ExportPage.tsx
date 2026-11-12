@@ -1,6 +1,6 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ActionBar, Button, Chip, Cluster, EmptyState, Page, PageHeader, Section, Spinner, Stack, toast } from '@/components/ui';
+import { ActionBar, Button, Chip, Cluster, EmptyState, PageHeader, Section, Spinner, Stack, toast } from '@/components/ui';
 import { listLibrary } from '@/lib/db';
 import {
   buildExport, defaultOptions, loadItems,
@@ -66,11 +66,8 @@ export default function ExportPage() {
   const isPdf = format === 'pdf';
 
   const count = items === null ? 'Loading…' : `${items.length} answer${items.length === 1 ? '' : 's'}`;
-  // Page clears the tab bar; add room for the Export bar that sits above it (no magic padding on the page).
-  const clearBar = { '--page-bottom': 'calc(var(--tabbar-h) + 5rem)' } as CSSProperties;
-
   return (
-    <Page style={clearBar}>
+    <>
       <div data-no-print>
         <PageHeader title={isPack ? 'Study pack' : 'Export'} subtitle={`${count}${isPack ? ' · cover, contents, answers' : ''} · works offline`}
           actions={<Button variant="secondary" size="md" onClick={() => setSheet(true)}>Options</Button>} />
@@ -119,6 +116,7 @@ export default function ExportPage() {
 
       <OptionsSheet open={sheet} onClose={() => setSheet(false)} isPack={isPack} isPdf={isPdf} isDocx={format === 'docx'}
         opts={opts} setOpts={setOpts} filter={filter} setFilter={setFilter} />
-    </Page>
+      <div aria-hidden data-no-print className="h-20" /> {/* room for the Export bar; the route's Page already clears the tab bar */}
+    </>
   );
 }

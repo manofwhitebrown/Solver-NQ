@@ -17,7 +17,8 @@ export default function Preview({ items, opts }: { items: ExportItem[]; opts: Re
       for (const { q, a } of items) {
         let h = `<h2>${await mdToHtml(q.text.split('\n')[0])}</h2>`;
         if (opts.includeDate) h += `<div class="meta">${q.subject} · ${new Date(q.createdAt).toLocaleDateString()}</div>`;
-        h += `<p>${await mdToHtml(q.text)}</p>`;
+        const rest = q.text.split('\n').slice(1).join('\n').trim(); // line 1 is already the heading
+        if (rest) h += `<p>${await mdToHtml(rest)}</p>`;
         if (a) {
           h += `<h3>Final answer</h3><p>${await mdToHtml(a.finalAnswer)}</p>`;
           if (opts.stepsMode === 'full') {
@@ -37,7 +38,7 @@ export default function Preview({ items, opts }: { items: ExportItem[]; opts: Re
       {/* A sheet of paper: always white with dark ink, whatever the app theme; shrinks with the screen. */}
       <div className="w-full min-w-0 overflow-hidden rounded-md border border-line bg-white p-5 text-base leading-relaxed text-black elev-2 sm:p-8 lg:p-10">
         {html.map((h, i) => (
-          <div key={i} className={`print-item min-w-0 break-words border-b border-black/10 py-4 first:pt-0 last:border-0 last:pb-0 [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mt-4 [&_h3]:font-semibold [&_h4]:mt-3 [&_h4]:font-semibold [&_img]:max-w-full [&_.meta]:text-sm [&_.meta]:text-black/60 ${i >= 3 ? 'hidden print:block' : ''}`}
+          <div key={i} className={`print-item min-w-0 overflow-x-auto break-words border-b border-black/10 py-4 first:pt-0 last:border-0 last:pb-0 [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mt-4 [&_h3]:font-semibold [&_h4]:mt-3 [&_h4]:font-semibold [&_img]:max-w-full [&_.meta]:text-sm [&_.meta]:text-black/60 ${i >= 3 ? 'hidden print:block' : ''}`}
             dangerouslySetInnerHTML={{ __html: h }} />
         ))}
       </div>

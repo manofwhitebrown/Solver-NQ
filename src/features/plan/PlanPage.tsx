@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, EmptyState, Page, PageHeader, Section, Skeleton, Stack } from '@/components/ui';
+import { Button, Card, Cluster, EmptyState, PageHeader, Section, Skeleton, Stack } from '@/components/ui';
 import { progressOf, type Exam } from '@/lib/plan';
 import { ExamCard } from './ExamCard';
 import { ExamSheet } from './ExamSheet';
@@ -15,7 +15,7 @@ export default function PlanPage() {
   const [settings, setSettings] = useState(false);
   const [picked, setPicked] = useState<string | null>(null);
 
-  if (loading || !state) return <Page><Skeleton className="h-40 w-full" /></Page>;
+  if (loading || !state) return <Skeleton className="h-40 w-full" />;
   const upcoming = state.exams.filter((e) => e.date >= today).sort((a, b) => a.date.localeCompare(b.date));
   const selected = picked && plan.some((d) => d.day === picked) ? picked : today;
   const day = plan.find((d) => d.day === selected);
@@ -23,16 +23,14 @@ export default function PlanPage() {
   const prog = progressOf(todayDay?.tasks ?? [], state.done);
   const addExam = (e: Exam) => update({ exams: [...state.exams, e] });
 
-  const actions = (
-    <>
-      <Button variant="secondary" size="md" onClick={() => setSettings(true)}>Settings</Button>
-      <Button size="md" onClick={() => setAdding(true)}>Add exam</Button>
-    </>
-  );
-
+  // The app's route wrapper already provides <Page> (gutters), so this screen starts with the header.
   return (
-    <Page>
-      <PageHeader title="Study plan" subtitle="A calm plan, one day at a time." actions={actions} />
+    <>
+      <PageHeader title="Study plan" subtitle="A calm plan, one day at a time." />
+      <Cluster gap={3} className="-mt-4 mb-8">
+        <Button size="md" onClick={() => setAdding(true)}>Add exam</Button>
+        <Button variant="secondary" size="md" onClick={() => setSettings(true)}>Settings</Button>
+      </Cluster>
       {!upcoming.length ? (
         <EmptyState title="Plan your exams"
           text="Add an exam date and we will spread your revision over the days before it."
@@ -78,6 +76,6 @@ export default function PlanPage() {
       )}
       <ExamSheet open={adding} onClose={() => setAdding(false)} today={today} onAdd={addExam} />
       <SettingsSheet open={settings} onClose={() => setSettings(false)} state={state} onChange={update} />
-    </Page>
+    </>
   );
 }

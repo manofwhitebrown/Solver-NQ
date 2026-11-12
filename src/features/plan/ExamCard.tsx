@@ -12,8 +12,8 @@ export function ExamCard({ exam, today, onRemove }: { exam: Exam; today: string;
         <span className="text-caption">{n < 0 ? '' : n === 1 ? 'day' : 'days'}</span>
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-lg font-semibold text-ink">{exam.name || exam.subject}</p>
-        <p className="text-sm capitalize text-muted">{exam.subject} · {shortDate(exam.date)} · {when(n)}</p>
+        <p className="break-words text-lg font-semibold text-ink">{exam.name || exam.subject}</p>
+        <p className="text-sm capitalize text-muted">{exam.subject} · {shortDate(exam.date)}{n <= 1 ? ` · ${when(n)}` : ''}</p>
       </div>
       <IconButton label={`Remove ${exam.name || exam.subject}`} onClick={() => onRemove(exam.id)}>
         <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg>

@@ -40,7 +40,7 @@
 # Phase 2 (AI-6, resumed 12 Nov 2026)
 
 ## Done (Phase 2)
-- P0.1 Pretty PDF numbers: no browser in my environment. I rely on AI-8's real-browser run (20 answers: 12 pages, ~480-610 KB, 23-26 s). Still open: 1 and 5 answer packs, Letter size, visual check of page breaks (see Manual tests).
+- P0.1 Pretty PDF measured in real headless Chromium (npm `@sparticuz/chromium`, software rendering, laptop 1280x800, demo data, real Export button): **1 answer 96 KB / 2.2 s; 5 answers 324 KB / 5.5 s; 13 answers 992 KB / 8.9 s** (AI-8 earlier: 20 answers ~480-610 KB / 23-26 s). Not yet looked at: the PDF pages themselves (page breaks, Letter size).
 - P0.2 Memory safety: `pdfPretty` now renders one block at a time (node removed and canvas zeroed right after use), yields to the UI between blocks, forces white paper (`color-scheme:light`), supports **Cancel** (AbortSignal through `buildExport` -> pretty PDF and study pack; leaving the page also aborts), and a block/answer that fails to draw is replaced by a short note while the rest continues (`onWarn` shows "N parts could not be drawn").
 - P0.3 `saveFile`: cache dir + file URI + Share (`canShare` check, closed share sheet = `'cancelled'`, not an error), safe file names, chunked base64 (no `FileReader`). 7 mocked-plugin tests in `__tests__/saveFile.test.ts`.
 
@@ -49,10 +49,12 @@
 
 - P2 done: `/export` rebuilt on `Page`/`PageHeader`/`Section`/`Cluster`/`Stack`; the magic `pb-40` is gone (Page's `--page-bottom` hook clears the tab bar + Export bar); paper preview is a white sheet that shrinks to the screen width (long math scrolls inside its own block, nothing makes the page scroll sideways); options sheet uses shared `Input`; result card on the type scale. Obsidian-friendly Markdown: YAML front matter (title, subject, tags, date, source, answers) for the `.md` format only (TXT/JSON unchanged), tags slugged for Obsidian, 4 tests. `any`: none left in my folders.
 
+- Seen in a real browser: `/plan` and `/export` at 320/390/1280 px, light/dark. No sideways scroll anywhere. Fixed from what I saw: routes.ts already wraps screens in `<Page>`, so my own `<Page>` doubled the gutters (removed in both; Export now ends with a spacer for its action bar); header buttons squeezed the plan title (now a button row under it); exam names truncated; export preview repeated the question under its heading and clipped wide inline math. Screenshots in `docs/screenshots/` (plan-*, export-*, JPEG q70, all < 100 KB).
+- Tip for others: the app uses HashRouter, so screenshot URLs are `/#/plan`; reload after setting `solver-nq:settings` `{onboarded:true}`. A headless browser works here via npm `@sparticuz/chromium` + `puppeteer-core`.
+
 ## In progress / Remaining
 - P1 polish: reminder (optional, skipped), visual check at 320/390/1280 px (no browser here), `TodayCard` mount on `/learn` by AI-7.
-- Visual check of `/export` and `/plan` (no browser here): 320/390/1280 px, light/dark; commit screenshots via AI-3's `npm run shots`.
-- Pretty PDF at 1 and 5 answers, Letter size (Manual tests).
+- Open the generated PDF and check page breaks, A4 vs Letter (Manual tests).
 
 ## Needs from others
 - AI-7: mount `<TodayCard />` from `@/features/plan` on `/learn` (it renders nothing while loading).

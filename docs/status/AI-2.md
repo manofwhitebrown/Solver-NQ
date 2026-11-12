@@ -7,8 +7,12 @@
 - `<AiSettingsPanel />` exported from `@/features/ai-settings`: key list (masked, delete), editable chain (toggle, up/down, per-slot status Ready / Cooling down until HH:MM / Unavailable / Key invalid, Test, Remove), Fetch available models with tick-to-add, Save quota, Reset cooldowns, free-tier notice, How to get a free key.
 - Ask shows a "Add your free key to start" card when there is no key.
 - 20 new tests (mocked fetch): every failure class, rotation, same-project quota, cooldown persistence across reload, exhausted -> queued -> flushed, no key in errors or logs, ranking, migration.
+### Done (P1 item 6) - AVAILABLE NOW for AI-4 and AI-7
+- `import { transformText, transcribeImage } from '@/lib/ai'`.
+- `transformText(kind: 'summary' | 'cheatsheet' | 'keyterms' | 'qa-from-text', text, opts?: { language?, maxItems? }, signal?) => Promise<string>` (Markdown), through the fallback chain.
+- `transcribeImage(imageDataUrl, signal?) => Promise<string>` (formulas as LaTeX in $...$). Only vision-capable models are used: a model that rejects images is skipped, never silently answered without the image. Throws AiError (`no_key`, `exhausted` with `retryAt`, etc.): show `e.message`.
 ### Remaining
-- P1: `transformText` and `transcribeImage` (AI-4 and AI-7 are waiting), Ask screen v2 layout, status line when a fallback answered. P2: streaming, remove `any`, share logic in `api/ask.ts`.
+- P1: Ask screen v2 layout, status line when a fallback answered. P2: streaming, remove `any`, share logic in `api/ask.ts`.
 ### Needs from others
 - AI-1: mount `<AiSettingsPanel />` in Settings (and use `<AddKeyForm showLabel={false} />` in onboarding). The old Provider/Model/API key fields in Settings are now only a one-time import; please remove or hide them once the panel is mounted. Settings can keep the Proxy URL field.
 - AI-5: use `getPrimaryModel()` from `@/lib/ai`: show "Answered by <model>" when `answer.model !== getPrimaryModel()`.

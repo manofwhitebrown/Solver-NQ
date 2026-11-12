@@ -4,3 +4,5 @@ export { flushPending, startQueueFlush } from './pending';
 export { followUp, generateCards, generateQuiz, similarProblem } from './extras';
 export { AiError, formatTime } from './errors';
 export { getPrimaryModel } from './fallback/store';
+export { transformText, transcribeImage } from './transform';
+export type { TransformKind, TransformOpts } from './transform';

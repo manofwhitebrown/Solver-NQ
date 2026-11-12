@@ -6,7 +6,7 @@ import { activeCooldown, cooldownId, earliestRetry, importLegacy, loadState, upd
 import type { KeyEntry, ModelSlot } from './types';
 
 export interface FallbackResult { text: string; model: string; keyId: string; usedFallback: boolean }
-export interface FallbackOptions { light?: boolean; now?: () => number; sleep?: (ms: number) => Promise<void> }
+export interface FallbackOptions { light?: boolean; requireImage?: boolean; now?: () => number; sleep?: (ms: number) => Promise<void> }
 
 const rotation = new Map<string, number>();
 const UNAVAILABLE_MS = 6 * 3_600_000;
@@ -55,6 +55,7 @@ export async function callWithFallback(req: CompletionRequest, opts: FallbackOpt
           const f = e.failure;
           if (f.kind === 'safety') throw new AiError('blocked');
           if (f.kind === 'badrequest') {
+            if (opts.requireImage) break; // this model cannot read images: try the next one
             if (req2.imageDataUrl) { req2 = { ...req2, imageDataUrl: undefined }; continue; } // model may not accept images
             throw new AiError('bad_request');
           }

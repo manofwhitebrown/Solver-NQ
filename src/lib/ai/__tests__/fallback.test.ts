@@ -173,6 +173,16 @@ describe('callWithFallback', () => {
   });
 });
 
+describe('image-only calls', () => {
+  it('skips a model that rejects images instead of dropping the image', async () => {
+    seed([['k1', 'A']], ['m-a', 'm-b']);
+    fetchMock.mockResolvedValueOnce(fail(400, 'Image input is not supported')).mockResolvedValueOnce(ok('text from image'));
+    const r = await callWithFallback({ ...req, imageDataUrl: 'data:image/png;base64,AAAA' }, { ...opts, requireImage: true });
+    expect(r.model).toBe('m-b');
+    expect(String(fetchMock.mock.calls[1][1].body)).toContain('inlineData');
+  });
+});
+
 describe('cooldown math', () => {
   it('defaults to 60 s', () => expect(cooldownUntil({ kind: 'quota' }, 1000)).toBe(61_000));
   it('midnight Pacific is within 24 h', () => {

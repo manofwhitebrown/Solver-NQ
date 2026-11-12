@@ -12,7 +12,7 @@ function quickHash(s: string): string {
   return String(h >>> 0);
 }
 
-export interface RunOpts { imageDataUrl?: string; signal?: AbortSignal; light?: boolean }
+export interface RunOpts { imageDataUrl?: string; signal?: AbortSignal; light?: boolean; requireImage?: boolean }
 
 /** One call to the AI. Goes through the free-tier fallback chain (or the proxy if one is set). */
 export async function runModel(
@@ -23,7 +23,7 @@ export async function runModel(
   // Identical request already in flight (double tap): share its answer instead of spending quota twice.
   return dedupe(key, async () => {
     await acquire(loadState().perMinute);
-    return callWithFallback({ system, messages, imageDataUrl: opts.imageDataUrl, signal: opts.signal }, { light: opts.light });
+    return callWithFallback({ system, messages, imageDataUrl: opts.imageDataUrl, signal: opts.signal }, { light: opts.light, requireImage: opts.requireImage });
   });
 }
 

@@ -57,3 +57,17 @@ describe('capText', () => {
     expect(c.text.endsWith('.')).toBe(true);
   });
 });
+
+describe('transform wrapper', () => {
+  it('puts the summary length in front of the text and returns trimmed markdown', async () => {
+    const { vi } = await import('vitest');
+    vi.resetModules();
+    const calls: string[] = [];
+    vi.doMock('@/lib/ai', () => ({ transformText: async (_k: string, t: string) => { calls.push(t); return '  ## Hi  '; } }));
+    const { transform } = await import('./ai');
+    expect(await transform('summary', 'body text', { length: 'short' })).toBe('## Hi');
+    expect(calls[0]).toContain('SHORT');
+    expect(calls[0]).toContain('body text');
+    vi.doUnmock('@/lib/ai');
+  });
+});

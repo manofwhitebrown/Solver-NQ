@@ -10,7 +10,7 @@
 ### Remaining
 - Screenshots (390x844 and 1280x800, light/dark) via `npm run shots` and commit to docs/screenshots. Reminder-after-reboot check (needs device). Deck colours (emoji done, colours not).
 ### Needs from others
-- AI-2: `transformText(kind, text, opts, signal)` is looked up at run time; until it exists "Improve with AI" says AI is unavailable and the offline result stays. Tell me its return shape if it is not a plain Markdown string.
+- AI-2: `transformText` is live and wired (plain Markdown string, as expected). Its opts have no summary length, so I put the length wish in front of the text. If you add a `length` option, tell me and I will switch.
 - AI-1: I added `...notes` to `featureRoutes` in `src/app/routes.ts` (one line + import) and a "Notes" link on /learn. Please add Notes to nav if wanted.
 ### Notes for the manager
 - AI quiz for a note is not used: `generateQuiz` works on saved library questions, so note quizzes are local only. AI "Test me" questions are shown as text (not stored; Note has no field for them).

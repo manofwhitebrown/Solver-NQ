@@ -34,7 +34,7 @@ export function ManageTagsSheet({ open, tags, onChanged, onClose }: { open: bool
           return (
             <li key={tag} className="flex items-center gap-2">
               <Input value={value} aria-label={`Rename ${tag}`} onChange={e => setEdits(s => ({ ...s, [tag]: e.target.value }))} />
-              <span className="w-6 text-center text-xs text-muted">{count}</span>
+              <span className="w-6 text-center text-caption text-muted">{count}</span>
               <Button variant="secondary" disabled={!clean(value) || clean(value) === tag} onClick={() => void apply(tag, value)}>Save</Button>
               <IconButton label={`Delete ${tag}`} onClick={() => { if (window.confirm(`Remove #${tag} from ${count} item(s)?`)) void apply(tag, ''); }}>🗑</IconButton>
             </li>

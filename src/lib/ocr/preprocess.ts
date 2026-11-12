@@ -4,6 +4,7 @@ export interface PreprocessOptions {
   contrast?: number;     // 1 = none, default 1.4
   threshold?: boolean;   // hard black/white
   rotate?: 0 | 90 | 180 | 270;
+  color?: boolean;       // keep colours (no grayscale), used for the image sent to the AI
 }
 
 export function fitSize(w: number, h: number, maxSide: number) {
@@ -45,8 +46,8 @@ export function enhancePixels(data: Uint8ClampedArray, contrast: number, thresho
   }
 }
 
-export async function preprocess(src: ImageBitmap | HTMLImageElement, o: PreprocessOptions = {}): Promise<Blob> {
-  const { maxSide = 2000, contrast = 1.4, threshold = false, rotate = 0 } = o;
+export async function preprocess(src: ImageBitmap | HTMLImageElement | HTMLCanvasElement, o: PreprocessOptions = {}): Promise<Blob> {
+  const { maxSide = 2000, contrast = 1.4, threshold = false, rotate = 0, color = false } = o;
   const sw = 'naturalWidth' in src ? src.naturalWidth : src.width;
   const sh = 'naturalHeight' in src ? src.naturalHeight : src.height;
   const { width, height } = fitSize(sw, sh, maxSide);
@@ -58,9 +59,12 @@ export async function preprocess(src: ImageBitmap | HTMLImageElement, o: Preproc
   ctx.translate(canvas.width / 2, canvas.height / 2);
   ctx.rotate((rotate * Math.PI) / 180);
   ctx.drawImage(src, -width / 2, -height / 2, width, height);
-  const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  enhancePixels(img.data, contrast, threshold);
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.putImageData(img, 0, 0);
-  return new Promise((res, rej) => canvas.toBlob(b => (b ? res(b) : rej(new Error('encode failed'))), 'image/png'));
+  if (!color) {
+    const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    enhancePixels(img.data, contrast, threshold);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.putImageData(img, 0, 0);
+  }
+  const type = color ? 'image/jpeg' : 'image/png';
+  return new Promise((res, rej) => canvas.toBlob(b => (b ? res(b) : rej(new Error('encode failed'))), type, 0.9));
 }

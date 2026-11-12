@@ -10,6 +10,14 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: weekly }
+    # Major action bumps need a test run first (upload-artifact 4 -> 7 was merged untested).
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: gradle
     directory: /android
     schedule: { interval: weekly }
+    # Capacitor 8 and AGP 8.13 are built for Gradle 8.x; a Gradle 9 bump is the likely cause of the APK build failing.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]

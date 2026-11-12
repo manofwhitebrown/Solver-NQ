@@ -21,6 +21,8 @@
 
 - Also finished AI-7's remaining items (see docs/status/AI-7.md) and verified AI-4 is complete. `engines.node >= 22` is in package.json (AI-4 added it).
 
+- **APK failure, most likely cause #2:** Dependabot had merged `gradle-wrapper 8.14.3 -> 9.9.0` (android/) and `actions/upload-artifact 4 -> 7`. Capacitor 8 / AGP 8.13 are built for Gradle 8.x. Reverted the wrapper files to 8.14.3 (jar, gradlew, gradlew.bat, properties), pinned upload-artifact back to v4, and set Dependabot to ignore major bumps for gradle and github-actions too. Could not run Gradle here (services.gradle.org and dl.google.com are blocked in my sandbox), so this is unconfirmed until the Actions run.
+
 ## In progress
 - Waiting for the first Android APK run with Node 22 to see if another failure appears.
 

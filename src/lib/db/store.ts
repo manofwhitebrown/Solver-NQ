@@ -19,9 +19,12 @@ export const getAnswer = (id: string) => db.answers.get(id);
 
 /** Latest answer per question, in one query. */
 async function latestAnswers(ids: string[]): Promise<Map<string, Answer>> {
-  const all = await db.answers.where('questionId').anyOf(ids).toArray();
+  // Many ids: one full scan is much cheaper than thousands of index lookups.
+  const all = ids.length > 150 ? await db.answers.toArray() : await db.answers.where('questionId').anyOf(ids).toArray();
+  const want = ids.length > 150 ? new Set(ids) : null;
   const out = new Map<string, Answer>();
   for (const a of all) {
+    if (want && !want.has(a.questionId)) continue;
     const cur = out.get(a.questionId);
     if (!cur || a.createdAt > cur.createdAt) out.set(a.questionId, a);
   }

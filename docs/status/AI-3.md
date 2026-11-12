@@ -7,8 +7,14 @@
 - Heads-up for all: the old `docs/audit/tools/layout-audit.mjs` is now superseded by `npm run shots`.
 
 ## Remaining (Phase 2)
-- P1: Library v2 (one compact filter bar + Filters sheet, rows >= 64 px, `mathToPlain()` in snippets) and Backup v2 (storage card "6 MB of 10 GB used", Back up now, 14-day reminder, `PageHeader`); both wait for `DESIGN V2 READY` in `docs/status/AI-1.md`. Performance test with 2,000 items.
-- P2: `<Checkbox>` decision, remove `any`, keyboard navigation in the library list.
+- Re-run `npm run shots` and review `/library` and `/backup` screenshots + `layout.md` after Library v2 / Backup v2 (not yet re-captured).
+- P2: replace remaining `any` (none found in my folders), keep reviewing keyboard use.
+
+## Phase 2 P1 done
+- Library v2: one search + "Filters" button (sheet with subject, starred, tags, Edit tags), selected filters as removable wrapping chips, rows >= 64 px (thumbnail, 2-line title, 2-line answer preview, subject badge, tags, date), `PageHeader`, one sticky `ActionBar` for selection, Undo snackbar above the tab bar, snippets through `mathToPlain()`, empty states with a "Clear search and filters" action, keyboard navigation (Up/Down/Home/End between rows).
+- P2 decision: kept a bare checkbox in rows, wrapped in a 44 px label with a descriptive aria-label (`<Checkbox>` needs visible text and the row already has it).
+- Backup v2: `PageHeader`, Storage card ("6 MB of 10 GB used" + bar + last backup date), "Back up now", gentle reminder after 14 days (or never) when there is data; last backup stored in kv `last-backup-at`.
+- Performance (2000 items, fake-indexeddb in Node): list 30 ms (was 1132 ms before a one-scan fix in `latestAnswers`), warm search 19-26 ms, `exportBackup` ~25 ms (524 KB), first page of 40 rows renders in ~57 ms (server render). The list is paged 40 at a time, so no virtualisation needed. Real-device numbers still to confirm.
 
 ## Manual tests for the user
 - Backup, clear data, restore, confirm everything came back (questions, notes, cards). Download a backup and open it in a text editor to confirm it is valid JSON.

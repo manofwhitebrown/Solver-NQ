@@ -35,3 +35,16 @@ it('lists and searches 2000 items quickly and newest first', async () => {
   expect(performance.now() - t).toBeLessThan(900);
   expect((await listLibrary({ subject: 'math', tag: 't3' })).every(i => i.q.subject === 'math' && i.q.tags.includes('t3'))).toBe(true);
 }, 20000);
+
+it('measures list, warm search, backup export and the first page of rows (2000 items)', async () => {
+  const ms = async (fn: () => Promise<unknown>) => { const t = performance.now(); await fn(); return Math.round(performance.now() - t); };
+  const list = await ms(() => listLibrary({}));
+  const warmSearch = await ms(() => search('series'));
+  const { exportBackup } = await import('../backup');
+  let size = 0;
+  const backup = await ms(async () => { size = (await exportBackup()).length; });
+  console.log(`PERF (2000 items, fake-indexeddb): list ${list} ms, warm search ${warmSearch} ms, exportBackup ${backup} ms (${Math.round(size / 1024)} KB)`);
+  expect(list).toBeLessThan(1500);
+  expect(warmSearch).toBeLessThan(300);
+  expect(backup).toBeLessThan(3000);
+}, 20000);

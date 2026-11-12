@@ -71,3 +71,7 @@
 - Accessibility/layout: tap targets raised to 44 px on Scan languages, question Show more, Settings setup-guide link, Export Open library, note tag chips. Still under 44: plan day buttons at 320 px wide (37 px), laptop-only plan links, raw checkboxes inside larger labels.
 - Not run: full screenshot/axe re-run after these fixes (takes ~10 min); run `npm run shots` locally. Note: shots/demo builds skip the CSP so axe can inject.
 - Needs the user: real-device test (docs/DEVICE-TEST.md), signing secrets + `v1.0.0` tag for the signed APK.
+
+## Where things stand (12 Nov 2026)
+- Done: Phase 2 and Phase 3 parts 2, 3, 5; part 4 mostly. Credit "Built by Mohammed Abdul Nayeem" added in Settings > About and README.
+- Left: part 7 full audit re-run; user-only items (real-device tests, signing secrets + v1.0.0 tag). Full table in `docs/ROADMAP.md` ("Current status").

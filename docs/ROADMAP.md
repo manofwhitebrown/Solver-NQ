@@ -2,6 +2,30 @@
 
 *Written by the manager, 12 Nov 2026. Counts assume each phase passes its sign-off.*
 
+## Current status (updated 12 Nov 2026)
+
+**Phase 2: finished.** All 8 AI lanes are complete. Typecheck, lint (0 warnings) and 360 tests pass; Android APK and Pages builds were green at last check. Leftovers closed in the final sweeps: lazy-loaded math (entry chunk 174 kB), study-pack contents page numbers, inline-math overflow, Scan header, notes screenshots, proxy env vars documented, `api/ask.ts` typed.
+
+**Phase 3: about 80% done.**
+
+| Part | State |
+|---|---|
+| 1. Real-device fix loop | **Waiting for the user**: run `docs/DEVICE-TEST.md` on a phone and a laptop, send the findings |
+| 2. End-to-end QA | Done: real-browser run with mocked Gemini (ask -> answer, 8 routes), no console or CSP errors |
+| 3. Performance | Done: entry chunk 174 kB (was 1.1 MB), mathjs lazy; 2,000-item library measured earlier |
+| 4. Accessibility | Mostly done: key tap targets raised to 44 px. Still small: plan day buttons at 320 px (37 px), a few laptop-only links |
+| 5. Security review | Done: history scanned, CSP added, Android auto-backup off, saved key state validated; see `docs/SECURITY.md` |
+| 6. Release v1.0 | **Waiting for the user**: add the 4 Android signing secrets, then push tag `v1.0.0` |
+| 7. Final audit | Not finished: full `npm run shots` re-run (about 10 min) after the tap-target fixes |
+
+**Deliberately skipped (optional, low value):** AI-2 streaming answers and sharing provider logic between `api/ask.ts` and the app.
+
+**Not verified anywhere:** the real Gemini API (no AI had a key), and everything that needs a physical Android phone (camera, ML Kit OCR, reminders after reboot, PDF share sheet).
+
+**Next steps, in order:** (1) install the APK and run DEVICE-TEST, (2) add a free Gemini key and ask one question, (3) send me what breaks, (4) re-run `npm run shots` and fix leftovers, (5) create the keystore, add secrets, tag `v1.0.0`. Then Phase 4 extras only if wanted.
+
+*Credit: built by Mohammed Abdul Nayeem (shown in Settings > About).*
+
 ## The product we are building (definition of "v1.0")
 
 1. Scan a question or type it, and get a clear step-by-step answer in seconds.

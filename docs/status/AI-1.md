@@ -21,6 +21,7 @@ DESIGN V2 READY
 - (none)
 
 ## Remaining
+- (done) Settings AI card now hosts `<AiSettingsPanel />`; old provider/model/key fields sit under "Other providers (advanced)"
 - P0: screenshot check of the gallery (no browser here)
 - P1: `/scan` crop-step tab bar flag, 64 rem width for the answer follow-up panel (AI-5), swap stub for AI-2's `<AddKeyForm />` and `<AiSettingsPanel />`
 - P1: lazy routes NOT done: feature index files import pages eagerly and `ask` wakes the offline queue at start; entry chunk is already 141 kB (target 600 kB), so low value. Revisit only if the budget grows.
@@ -28,7 +29,6 @@ DESIGN V2 READY
 
 ## Needs from others
 - AI-4: call `useHideTabBar(true)` (from `@/app/tabbar`) while the /scan crop step is shown.
-- AI-2: push `<AiSettingsPanel />`; I will put it in the Settings AI card (AddKeyForm is already in onboarding).
 - AI-3: `npm run shots` so the gallery can be reviewed visually.
 - Owners: do the layout pass now (use `PageHeader`, `Section`, `Stack`; drop own paddings).
 

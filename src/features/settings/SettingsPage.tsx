@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button, Card, Dialog, Field, Input, PageHeader, Section as Group, Select, Stack, Tabs, toast } from '@/components/ui';
 import { SUGGESTED_MODELS, updateSettings, useSettings, type Provider, type ThemePref } from '@/lib/settings';
 import type { Mode, Subject } from '@/types';
+import { AiSettingsPanel } from '@/features/ai-settings';
 import { ApiKeyField } from './ApiKeyField';
 import { clearAllData } from './clearData';
 import { MODES, OCR_LANGS, PROVIDERS, SUBJECTS } from './options';
@@ -36,6 +37,10 @@ export function SettingsPage() {
 
       <Section title="AI">
         <p className="text-sm text-muted">Free Gemini works best. <Link to="/welcome" className="font-semibold text-accent underline">Show setup guide</Link></p>
+        <AiSettingsPanel />
+        <details className="group">
+          <summary className="flex min-h-[44px] cursor-pointer items-center text-base font-semibold text-ink-2">Other providers (advanced)</summary>
+          <Stack gap={5} className="pt-3">
         <Field label="Provider" htmlFor="provider">
           <Select id="provider" value={s.provider} options={PROVIDERS} onChange={(e) => changeProvider(e.target.value as Provider)} />
         </Field>
@@ -51,6 +56,8 @@ export function SettingsPage() {
         <Field label="Proxy URL (optional)" htmlFor="proxy" hint="Only needed if your provider blocks direct browser requests.">
           <Input id="proxy" type="url" inputMode="url" value={s.proxyUrl} placeholder="https://" onChange={(e) => updateSettings({ proxyUrl: e.target.value.trim() })} />
         </Field>
+          </Stack>
+        </details>
       </Section>
 
       <Section title="Defaults">

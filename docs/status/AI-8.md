@@ -5,6 +5,10 @@
 - Risky steps (`npm run build`, `cap sync`, `gradlew assembleDebug`) wrapped so the real error becomes an annotation; `chmod +x gradlew` added.
 - `scripts/ci-status.sh` added (lists runs; for failures prints failing step + annotations). Usage: `GITHUB_TOKEN=... bash scripts/ci-status.sh`.
 
+- P1 bundle: added `rollup-plugin-visualizer` (dev, run `ANALYZE=1 npm run build` -> stats.json), `manualChunks` vendor groups in `vite.config.ts` build options, and `scripts/ci-size.mjs` (CI fails if entry chunk > 400 kB; wired into web.yml). **Entry chunk: 1,132.8 kB raw / 339 kB gzip -> 135.7 kB raw / 45.4 kB gzip.** Cause was mathjs (~1 MB) imported statically by `src/lib/verify`; now its own `vendor-math` chunk (641 kB, loaded separately).
+- `eslint.config.js`: tiny cross-owner edit, ignore `docs/audit/tools` and `scripts` (manager's audit tool had 28 lint errors).
+- Docs: `docs/USER-GUIDE.md`, `docs/RELEASE.md`.
+
 ## In progress
 - Waiting for the first Android APK run with Node 22 to see if another failure appears.
 
@@ -14,6 +18,7 @@
 - P2: Dependabot major-ignore, README update, ARCHITECTURE.md accuracy, optional layout-audit workflow.
 
 ## Needs from others
+- AI-5: `vendor-math` (641 kB) still loads at startup because `src/lib/verify/mathEnv.ts` imports mathjs statically. Lazy-load verify (dynamic import in `useAnswer.ts`/`graph/plot.ts`) for a faster first load.
 - AI-1: add `"engines": {"node": ">=22"}` to package.json (not done by me yet).
 
 ## Notes for the manager

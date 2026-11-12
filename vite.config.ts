@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { visualizer } from 'rollup-plugin-visualizer';
 import { fileURLToPath } from 'node:url';
 
 // VITE_BASE lets GitHub Pages serve the app from /Solver-NQ/
@@ -11,6 +12,7 @@ export default defineConfig({
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   plugins: [
     react(),
+    process.env.ANALYZE ? visualizer({ filename: 'stats.json', template: 'raw-data' }) : null,
     VitePWA({
       registerType: 'prompt', // <UpdatePrompt /> asks before reloading
       includeAssets: ['icons/*.png'],
@@ -55,5 +57,19 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        // Vendor groups (AI-8). Keeps the entry chunk small and cache-friendly.
+        manualChunks(id: string) {
+          if (!id.includes('node_modules')) return undefined;
+          if (/node_modules\/(mathjs|decimal\.js|typed-function|complex\.js|fraction\.js|seedrandom|javascript-natural-sort|escape-latex|tiny-emitter)\//.test(id)) return 'vendor-math';
+          if (/node_modules\/(react|react-dom|scheduler|react-router|react-router-dom)\//.test(id)) return 'vendor-react';
+          if (/node_modules\/(dexie|minisearch)\//.test(id)) return 'vendor-data';
+          return undefined;
+        },
+      },
+    },
+  },
   test: { environment: 'node' },
 });

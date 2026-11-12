@@ -25,6 +25,7 @@ jobs:
       - run: npm run lint --if-present
       - run: npm test --if-present
       - run: npm run build
+      - run: node scripts/ci-size.mjs
         env:
           VITE_BASE: /Solver-NQ/
       - uses: actions/upload-pages-artifact@v3

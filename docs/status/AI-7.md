@@ -4,10 +4,11 @@
 - P0 screens `src/features/notes`: `/notes` (search, tags), `/notes/new` (paste / file / PDF / photo / transcript, edit before processing, counts, cap notice with "Use the first part"), `/notes/:id` (Summary short/medium/detailed, Cheat sheet, Terms, Test me, Text; "Quick summary (offline)" + "Improve with AI"; flashcards, quiz, save .md/.txt, print/PDF, delete, tags).
 - Links: `/learn/cards/new?note=<id>` (preview, dedupe) and `/learn/quiz?note=<id>` (offline quiz from key terms); "Notes" link on /learn.
 - P1 layout pass (code): all `/learn/*` screens use `PageHeader`/`Section`/`Stack` (no own padding/`<main>`). Review: close button, progress bar + "N left", content-sized centred card (17/1.7), 64 px grade buttons with next-interval hints, keyboard hints hidden on touch. Home: 128 px goal ring, roomy deck rows, `TodayCard` mounted, 44 px buttons. Stats: empty states, 12 px chart labels with fewer ticks. Quiz: 44 px timed-mode row, 56 px options with ✓/✗ text (not colour alone), weak topics as rows. Cards: `mathToPlain()` in lists, `ActionBar` on the preview.
+- P2 done: cram mode (`/learn/review?cram=1`, cards due within 3 days, button on /learn, tested), deck emoji on /learn, no `any` left in my folders.
 ### In progress
 - Screenshots of /learn/* and /notes/* (not seen in a browser by me yet).
 ### Remaining
-- Screenshots (390x844 and 1280x800, light/dark) via `npm run shots` and commit to docs/screenshots. Reminder-after-reboot check (needs device). P2: deck colours/emoji, cram mode, `any` cleanup.
+- Screenshots (390x844 and 1280x800, light/dark) via `npm run shots` and commit to docs/screenshots. Reminder-after-reboot check (needs device). Deck colours (emoji done, colours not).
 ### Needs from others
 - AI-2: `transformText(kind, text, opts, signal)` is looked up at run time; until it exists "Improve with AI" says AI is unavailable and the offline result stays. Tell me its return shape if it is not a plain Markdown string.
 - AI-1: I added `...notes` to `featureRoutes` in `src/app/routes.ts` (one line + import) and a "Notes" link on /learn. Please add Notes to nav if wanted.

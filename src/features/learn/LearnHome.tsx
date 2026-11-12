@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Button, Card, Cluster, EmptyState, PageHeader, Section, Select, Skeleton, Stack } from '@/components/ui';
 import { TodayCard } from '@/features/plan';
-import { currentStreak, goalProgress } from '@/lib/srs';
+import { CRAM_DAYS, currentStreak, goalProgress } from '@/lib/srs';
 import type { Subject } from '@/types';
+import { DECK_EMOJI } from './deckStyle';
 import { ProgressRing } from './ProgressRing';
 import { ReminderToggle } from './ReminderToggle';
 import { useLearnData } from './useLearnData';
@@ -13,6 +14,7 @@ export function LearnHome() {
 
   const now = Date.now();
   const due = cards.filter((c) => c.due <= now);
+  const soon = cards.filter((c) => c.due > now && c.due <= now + CRAM_DAYS * 86_400_000).length;
   const goal = goalProgress(progress, now);
   const streak = currentStreak(progress, now);
   const decks = new Map<Subject, { total: number; due: number }>();
@@ -39,6 +41,7 @@ export function LearnHome() {
             <Link to="/learn/review" aria-disabled={!due.length}><Button block disabled={!due.length}>Start review</Button></Link>
             <Link to="/learn/quiz"><Button block variant="secondary">Start quiz</Button></Link>
           </div>
+          {soon > 0 && <Link to="/learn/review?cram=1"><Button block variant="ghost">Cram: also review {soon} card{soon === 1 ? '' : 's'} due within {CRAM_DAYS} days</Button></Link>}
           <TodayCard />
         </Stack>
       </Section>
@@ -53,7 +56,7 @@ export function LearnHome() {
               <li key={subject}>
                 <Link to={`/learn/review?subject=${subject}`} aria-label={`Review ${subject} deck`}>
                   <Card interactive className="flex min-h-[64px] items-center justify-between gap-4 py-4 lg:py-4">
-                    <span className="text-lg font-semibold capitalize text-ink">{subject}</span>
+                    <span className="text-lg font-semibold capitalize text-ink"><span aria-hidden className="mr-3">{DECK_EMOJI[subject]}</span>{subject}</span>
                     <span className="text-[15px] text-ink-2">{d.due} due · {d.total} cards</span>
                   </Card>
                 </Link>

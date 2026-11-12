@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { IconButton, Skeleton, Button } from '@/components/ui';
 import { putCard } from '@/lib/db';
-import { answerCurrent, previewIntervals, recordReview, startSession, summary, type Grade, type Session } from '@/lib/srs';
+import { answerCurrent, CRAM_DAYS, previewIntervals, recordReview, startSession, summary, type Grade, type Session } from '@/lib/srs';
 import { CardText } from './CardText';
 import { GradeBar } from './GradeBar';
 import { ReviewDone } from './ReviewDone';
@@ -11,7 +11,9 @@ import { useLearnData } from './useLearnData';
 import { useSwipe } from './useSwipe';
 
 export function ReviewPage() {
-  const deck = useSearchParams()[0].get('subject');
+  const params = useSearchParams()[0];
+  const deck = params.get('subject');
+  const cram = params.get('cram') === '1';
   const { cards: allCards, progress, loading, updateProgress } = useLearnData();
   const cards = useMemo(() => (deck ? allCards.filter((c) => c.subject === deck) : allCards), [allCards, deck]);
   const [session, setSession] = useState<Session | null>(null);
@@ -22,7 +24,7 @@ export function ReviewPage() {
 
   useEffect(() => {
     if (loading || session) return;
-    const s = startSession(cards); setSession(s); setTotal(s.queue.length);
+    const s = startSession(cards, Date.now(), 50, cram ? CRAM_DAYS : 0); setSession(s); setTotal(s.queue.length);
   }, [loading, cards, session]);
 
   const current = session?.queue[0];

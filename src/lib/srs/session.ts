@@ -7,9 +7,12 @@ export interface Session {
   startedAt: number;
 }
 
-/** Build a review queue: due cards, most overdue first, capped. */
-export function startSession(cards: Flashcard[], now = Date.now(), cap = 50): Session {
-  const queue = cards.filter((c) => c.due <= now).sort((a, b) => a.due - b.due).slice(0, cap);
+export const CRAM_DAYS = 3;
+
+/** Build a review queue: due cards, most overdue first, capped. `aheadDays` > 0 is cram mode (also cards due soon). */
+export function startSession(cards: Flashcard[], now = Date.now(), cap = 50, aheadDays = 0): Session {
+  const limit = now + aheadDays * 86_400_000;
+  const queue = cards.filter((c) => c.due <= limit).sort((a, b) => a.due - b.due).slice(0, cap);
   return { queue, done: [], startedAt: now };
 }
 

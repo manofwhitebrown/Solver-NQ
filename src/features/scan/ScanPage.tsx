@@ -2,9 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Spinner, toast } from '@/components/ui';
 import { friendlyMessage, recognize } from '@/lib/ocr';
+import { isNative } from '@/lib/ocr/platform';
 import { CropEditor } from './CropEditor';
 import { cropBlob, loadBitmap, rotate90 } from './imageTools';
 import type { Rect } from './cropMath';
+import { takeNativePhoto } from './nativeCamera';
 import { PdfPicker } from './PdfPicker';
 import { ResultCard, type ScanItem } from './ResultCard';
 import type { ScanResult } from './result';
@@ -51,6 +53,13 @@ export function ScanPage() {
     return () => window.removeEventListener('paste', onPaste);
   }, [open]);
 
+  const native = async (src: 'camera' | 'gallery') => {
+    try {
+      const b = await takeNativePhoto(src);
+      if (b) await open(b);
+    } catch (e) { toast(friendlyMessage(e), 'error'); }
+  };
+
   const pick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     e.target.value = '';
@@ -96,7 +105,7 @@ export function ScanPage() {
         <Card className={`space-y-4 p-6 text-center ${dragging ? 'ring-2 ring-accent' : ''}`}>
           <p className="text-ink-soft">Take a photo, choose an image, paste one, or drop it here.</p>
           <div className="flex flex-wrap justify-center gap-2">
-            <Button onClick={() => cam.current?.click()}>Take a photo</Button>
+            <Button onClick={() => (isNative() ? native('camera') : cam.current?.click())}>Take a photo</Button>
             <Button variant="secondary" onClick={() => gal.current?.click()}>Choose image or PDF</Button>
           </div>
           {loading && <Spinner />}

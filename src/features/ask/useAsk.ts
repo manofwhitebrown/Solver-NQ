@@ -9,6 +9,7 @@ export type AskStatus = 'idle' | 'busy' | 'queued';
 export function useAsk() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<AskStatus>('idle');
+  const [retryAt, setRetryAt] = useState<number | undefined>();
   const [error, setError] = useState('');
   const ctrl = useRef<AbortController | null>(null);
 
@@ -22,7 +23,7 @@ export function useAsk() {
     setStatus('busy');
     try {
       const r = await askQuestion(input, c.signal);
-      if ('queued' in r) { setStatus('queued'); return true; }
+      if ('queued' in r) { setRetryAt(r.retryAt); setStatus('queued'); return true; }
       navigate(`/answer/${r.answerId}`);
       return true;
     } catch (e) {
@@ -36,5 +37,5 @@ export function useAsk() {
 
   const cancel = useCallback(() => ctrl.current?.abort(), []);
   const reset = useCallback(() => { setStatus('idle'); setError(''); }, []);
-  return { status, error, submit, cancel, reset };
+  return { status, error, submit, cancel, reset, retryAt };
 }

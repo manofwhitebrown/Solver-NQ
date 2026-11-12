@@ -3,3 +3,6 @@ export { addModels, fetchGeminiModels, prefillChain } from './models';
 export { getPrimaryModel, loadState, maskKey, subscribe, update } from './store';
 export { testKey } from './testKey';
 export type { FallbackState, KeyEntry, ModelSlot, SlotStatus } from './types';
+export { callWithFallback } from './callWithFallback';
+export type { FallbackResult } from './callWithFallback';
+export { earliestRetry } from './store';

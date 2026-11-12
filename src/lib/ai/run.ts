@@ -1,18 +1,38 @@
 import type { ChatMessage } from './types';
-import { getAiConfig } from './config';
+import { getAiConfig, usesProxy } from './config';
 import { getProvider } from './providers';
 import { AiError } from './errors';
+import { callWithFallback } from './fallback/callWithFallback';
+import { loadState } from './fallback/store';
+import { acquire, dedupe } from './fallback/throttle';
 
-/** One call to the configured provider. Returns raw model text and the model name used. */
+function quickHash(s: string): string {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return String(h >>> 0);
+}
+
+export interface RunOpts { imageDataUrl?: string; signal?: AbortSignal; light?: boolean }
+
+/** One call to the AI. Goes through the free-tier fallback chain (or the proxy if one is set). */
 export async function runModel(
-  system: string, messages: ChatMessage[], opts: { imageDataUrl?: string; signal?: AbortSignal } = {},
-): Promise<{ text: string; model: string }> {
+  system: string, messages: ChatMessage[], opts: RunOpts = {},
+): Promise<{ text: string; model: string; usedFallback?: boolean }> {
+  if (usesProxy()) return runViaProxy(system, messages, opts);
+  const key = quickHash(system + JSON.stringify(messages)) + ':' + (opts.imageDataUrl?.length ?? 0);
+  // Identical request already in flight (double tap): share its answer instead of spending quota twice.
+  return dedupe(key, async () => {
+    await acquire(loadState().perMinute);
+    return callWithFallback({ system, messages, imageDataUrl: opts.imageDataUrl, signal: opts.signal }, { light: opts.light });
+  });
+}
+
+async function runViaProxy(system: string, messages: ChatMessage[], opts: RunOpts) {
   const cfg = getAiConfig();
   const provider = getProvider(cfg);
   try {
     return { text: await provider.complete({ system, messages, ...opts }), model: cfg.model };
   } catch (e) {
-    // Some models reject images; retry once with the OCR text only.
     if (opts.imageDataUrl && e instanceof AiError && e.code === 'bad_request') {
       return { text: await provider.complete({ system, messages, signal: opts.signal }), model: cfg.model };
     }

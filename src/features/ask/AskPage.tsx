@@ -1,3 +1,4 @@
+import { formatTime } from '@/lib/ai/errors';
 import { useEffect, useState, type KeyboardEvent } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, Card, Chip, Tabs, Textarea } from '@/components/ui';
@@ -24,7 +25,7 @@ export function AskPage() {
   const [subject, setSubject] = useState<Subject>(settings.defaultSubject);
   const [mode, setMode] = useState<Mode>(settings.defaultMode);
   const [image, setImage] = useState<string | undefined>();
-  const { status, error, submit, cancel, reset } = useAsk();
+  const { status, error, submit, cancel, reset, retryAt } = useAsk();
   const location = useLocation();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -67,8 +68,12 @@ export function AskPage() {
           <Thinking onCancel={cancel} />
         ) : status === 'queued' ? (
           <Card className="flex flex-col items-start gap-3" role="status">
-            <p className="font-semibold">Saved - will answer when you&apos;re online</p>
-            <p className="text-[15px] text-muted">You can keep asking. Answers appear in your library.</p>
+            <p className="font-semibold">{retryAt ? 'Saved - all free limits are used up' : "Saved - will answer when you're online"}</p>
+            <p className="text-[15px] text-muted">
+              {retryAt
+                ? `I'll answer automatically when quota resets (about ${formatTime(retryAt)}). Answers appear in your library.`
+                : 'You can keep asking. Answers appear in your library.'}
+            </p>
             <Button variant="secondary" onClick={reset}>Ask another</Button>
           </Card>
         ) : (

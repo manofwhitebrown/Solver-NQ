@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { resetCache, update } from '../fallback/store';
 import type { Answer } from '@/types';
 
 type Row = { id: string; [k: string]: unknown };
@@ -31,6 +32,7 @@ const okFetch = () => vi.fn(async () => new Response(JSON.stringify({ content: [
 const input = { text: 'Solve x+1=3', subject: 'math', mode: 'learn' } as const;
 
 beforeEach(() => {
+  resetCache(); // each test starts with a fresh key pool built from the mocked settings
   Object.values(store).forEach((m) => m.clear());
   vi.stubGlobal('navigator', { onLine: true });
 });
@@ -65,6 +67,20 @@ describe('askQuestion', () => {
     expect(offlineFetch).not.toHaveBeenCalled(); // offline: never touches the network
 
     vi.stubGlobal('navigator', { onLine: true });
+    vi.stubGlobal('fetch', okFetch());
+    await flushPending();
+    expect(store.pending.size).toBe(0);
+    expect(store.a.size).toBe(1);
+  });
+
+  it('when every slot is rate limited the question is queued, then answered after the quota resets', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 429 })));
+    const r = await askQuestion(input) as { queued: true; retryAt?: number };
+    expect(r.queued).toBe(true);
+    expect(r.retryAt).toBeGreaterThan(Date.now());
+    expect(store.pending.size).toBe(1);
+
+    update(s => { s.cooldowns = {}; }); // quota reset
     vi.stubGlobal('fetch', okFetch());
     await flushPending();
     expect(store.pending.size).toBe(0);

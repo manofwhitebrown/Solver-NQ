@@ -1,0 +1,46 @@
+import { describe, expect, it, vi } from 'vitest';
+vi.mock('@/lib/settings', () => ({ getSettings: () => ({ provider: 'gemini', model: 'gemini-2.0-flash', apiKey: 'AIzaOLD1234', baseUrl: '', proxyUrl: '' }) }));
+import { classify } from '../fallback/classify';
+import { defaultPick, rankModels } from '../fallback/rank';
+import { migrate } from '../fallback/store';
+
+describe('rankModels', () => {
+  const list = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3.8-flash-preview', 'gemini-3.8-flash-image', 'gemini-embedding-2', 'gemini-3.6-flash', 'gemini-2.5-flash-lite'];
+  it('drops non-text models and puts previews last', () => {
+    const r = rankModels(list);
+    expect(r).not.toContain('gemini-3.8-flash-image');
+    expect(r).not.toContain('gemini-embedding-2');
+    expect(r[r.length - 1]).toBe('gemini-3.8-flash-preview');
+    expect(r[0]).toBe('gemini-3.8-flash');
+  });
+  it('defaultPick keeps a short mix of flash and flash-lite', () => {
+    const p = defaultPick(list);
+    expect(p.slice(0, 2)).toEqual(['gemini-3.8-flash', 'gemini-3.6-flash']);
+    expect(p).toContain('gemini-3.1-flash-lite');
+  });
+});
+
+describe('classify', () => {
+  it('maps the documented cases', () => {
+    expect(classify(429, '').kind).toBe('quota');
+    expect(classify(503, '').kind).toBe('transient');
+    expect(classify(404, '').kind).toBe('unavailable');
+    expect(classify(400, 'API key not valid').kind).toBe('badkey');
+    expect(classify(403, '').kind).toBe('badkey');
+    expect(classify(400, 'something else').kind).toBe('badrequest');
+  });
+});
+
+describe('migrate', () => {
+  it('keeps the old key and model, then adds the suggested chain', () => {
+    const s = migrate({ provider: 'gemini', model: 'gemini-2.0-flash', apiKey: 'AIzaOLD1234' });
+    expect(s.keys).toHaveLength(1);
+    expect(s.chain[0].model).toBe('gemini-2.0-flash');
+    expect(s.chain.length).toBeGreaterThan(3);
+  });
+  it('gives a new user an empty key pool and a suggested chain', () => {
+    const s = migrate({ provider: 'anthropic', model: 'x', apiKey: '' });
+    expect(s.keys).toHaveLength(0);
+    expect(s.chain.every(c => c.provider === 'gemini')).toBe(true);
+  });
+});

@@ -1,16 +1,23 @@
 import { getSettings } from '@/lib/settings';
 import type { AiConfig } from './types';
 import { AiError } from './errors';
+import { importLegacy, loadState } from './fallback/store';
 
-/** Read the current AI config from Settings. Throws a friendly error if no way to call the AI. */
+export const usesProxy = () => !!getSettings().proxyUrl.trim();
+
+/** Proxy-mode config (the key lives on the server). Direct calls use the key pool in ./fallback. */
 export function getAiConfig(): AiConfig {
   const s = getSettings();
-  const cfg: AiConfig = {
+  return {
     provider: s.provider, model: s.model.trim(), apiKey: s.apiKey.trim() || undefined,
     baseUrl: s.baseUrl.trim() || undefined, proxyUrl: s.proxyUrl.trim() || undefined,
   };
-  // A local OpenAI-compatible server (Ollama etc.) may need no key, so a custom base URL is allowed.
-  const canCall = cfg.proxyUrl || cfg.apiKey || (cfg.provider === 'openai' && cfg.baseUrl);
-  if (!canCall) throw new AiError('no_key');
-  return cfg;
+}
+
+/** Throws a friendly no_key error when there is no way to call the AI. */
+export function assertCanCall(): void {
+  if (usesProxy()) return;
+  importLegacy();
+  const hasLocal = loadState().keys.some(k => k.provider !== 'openai' || k.key || k.baseUrl);
+  if (!hasLocal) throw new AiError('no_key');
 }

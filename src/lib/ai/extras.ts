@@ -33,7 +33,7 @@ export async function followUp(answerId: string, text: string): Promise<Step> {
 
 export async function generateCards(answerId: string): Promise<Array<{ front: string; back: string }>> {
   const { a, q } = await load(answerId);
-  const { text } = await runModel(CARDS_PROMPT, [{ role: 'user', content: solutionText(q, a) }]);
+  const { text } = await runModel(CARDS_PROMPT, [{ role: 'user', content: solutionText(q, a) }], { light: true });
   const j = parseJsonLoose(text);
   const cards = (Array.isArray(j) ? j : [])
     .map((c: Record<string, unknown> | null) => ({ front: String(c?.front ?? '').trim(), back: String(c?.back ?? '').trim() }))
@@ -47,7 +47,7 @@ export async function generateQuiz(questionIds: string[], count: number): Promis
   const entries = (await listLibrary({})).filter((e) => wanted.has(e.q.id) && e.a);
   if (!entries.length) throw new AiError('bad_request');
   const body = entries.map((e, i) => `#${i}\n${solutionText(e.q, e.a!)}`).join('\n\n---\n\n');
-  const { text } = await runModel(QUIZ_PROMPT, [{ role: 'user', content: `Make ${count} items.\n\n${body}` }]);
+  const { text } = await runModel(QUIZ_PROMPT, [{ role: 'user', content: `Make ${count} items.\n\n${body}` }], { light: true });
   const j = parseJsonLoose(text);
   const items: QuizItem[] = [];
   for (const r of Array.isArray(j) ? j : []) {
@@ -63,7 +63,7 @@ export async function generateQuiz(questionIds: string[], count: number): Promis
 
 export async function similarProblem(answerId: string): Promise<{ text: string }> {
   const { q } = await load(answerId);
-  const { text } = await runModel(SIMILAR_PROMPT, [{ role: 'user', content: q.text }]);
+  const { text } = await runModel(SIMILAR_PROMPT, [{ role: 'user', content: q.text }], { light: true });
   const j = parseJsonLoose(text) as { text?: unknown } | null;
   return { text: typeof j?.text === 'string' && j.text ? j.text : text.trim() };
 }

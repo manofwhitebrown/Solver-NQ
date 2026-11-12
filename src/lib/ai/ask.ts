@@ -1,6 +1,7 @@
 import type { Answer, Mode, PendingItem, Question, Subject } from '@/types';
 import { getAnswer, getCachedAnswer, putCachedAnswer, queuePending, saveAnswer, saveQuestion } from '@/lib/db';
-import { getAiConfig } from './config';
+import { assertCanCall } from './config';
+import { scheduleFlushAt } from './flushTimer';
 import { AiError } from './errors';
 import { questionHash } from './hash';
 import { newId } from './id';
@@ -35,7 +36,7 @@ export async function answerNow(
   }
 
   // Offline: the cache was our only chance. Don't wait on a network that isn't there.
-  if (opts.offline) { getAiConfig(); throw new AiError('offline'); }
+  if (opts.offline) { assertCanCall(); throw new AiError('offline'); }
 
   const { text: raw, model } = await runModel(buildSystemPrompt(subject, mode), [{ role: 'user', content: text }], { imageDataUrl, signal });
   const parsed = parseAnswer(raw);
@@ -52,13 +53,14 @@ export async function answerNow(
   return { answerId: a.id };
 }
 
-async function queue(input: AskInput): Promise<{ queued: true }> {
+async function queue(input: AskInput, retryAt?: number): Promise<{ queued: true; retryAt?: number }> {
   const item: PendingItem = { id: newId(), createdAt: Date.now(), ...input };
   await queuePending(item);
-  return { queued: true };
+  if (retryAt) scheduleFlushAt(retryAt);
+  return { queued: true, retryAt };
 }
 
-export async function askQuestion(input: AskInput, signal?: AbortSignal): Promise<{ answerId: string } | { queued: true }> {
+export async function askQuestion(input: AskInput, signal?: AbortSignal): Promise<{ answerId: string } | { queued: true; retryAt?: number }> {
   const text = input.text.trim();
   if (!text && !input.imageDataUrl) throw new AiError('bad_request');
   const clean = { ...input, text: text || IMAGE_ONLY_TEXT };
@@ -72,7 +74,7 @@ export async function askQuestion(input: AskInput, signal?: AbortSignal): Promis
   try {
     return await answerNow(clean, signal);
   } catch (e) {
-    if (e instanceof AiError && e.retryable) return queue(clean);
+    if (e instanceof AiError && e.retryable) return queue(clean, e.retryAt);
     throw e;
   }
 }

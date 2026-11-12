@@ -26,6 +26,7 @@ export function migrate(old: { provider?: string; model?: string; apiKey?: strin
   } else {
     s.chain = suggestedChain();
   }
+  if (apiKey) s.legacySeen = `${apiKey.length}:${apiKey.slice(-4)}`;
   return s;
 }
 
@@ -74,4 +75,24 @@ export function getPrimaryModel(): string | undefined {
 export function earliestRetry(now = Date.now()): number | undefined {
   const times = Object.values(loadState().cooldowns).filter(c => c.kind === 'cooldown' && c.until > now).map(c => c.until);
   return times.length ? Math.min(...times) : undefined;
+}
+
+const fingerprint = (k: string) => `${k.length}:${k.slice(-4)}`;
+
+/** The old Settings screen may still hold a key the pool has not seen: import it once. */
+export function importLegacy(): void {
+  let old: { provider?: string; model?: string; apiKey?: string; baseUrl?: string } = {};
+  try { old = getSettings(); } catch { return; }
+  const apiKey = (old.apiKey ?? '').trim();
+  const s = loadState();
+  if (!apiKey || s.legacySeen === fingerprint(apiKey) || s.keys.some(k => k.key === apiKey)) return;
+  const provider = (['gemini', 'openai', 'anthropic'].includes(old.provider ?? '') ? old.provider : 'gemini') as SlotProvider;
+  update(st => {
+    st.keys.push({ id: newId(), provider, label: 'My key', key: apiKey, baseUrl: old.baseUrl?.trim() || undefined });
+    st.legacySeen = fingerprint(apiKey);
+    if (!st.chain.some(c => c.provider === provider)) {
+      const model = (old.model ?? '').trim();
+      if (model) st.chain.unshift({ id: newId(), provider, model, keyId: '', enabled: true });
+    }
+  });
 }

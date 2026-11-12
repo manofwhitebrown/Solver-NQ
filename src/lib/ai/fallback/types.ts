@@ -24,6 +24,7 @@ export interface FallbackState {
   saveQuota: boolean;
   perMinute: number; // client-side throttle
   fetchedFor: string[]; // key ids whose model list was already fetched
+  legacySeen?: string; // fingerprint of the old Settings key that was already imported
 }
 
 export type FailKind = 'quota' | 'transient' | 'unavailable' | 'badkey' | 'safety' | 'badrequest';

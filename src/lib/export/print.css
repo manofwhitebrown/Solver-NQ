@@ -1,0 +1,9 @@
+/* window.print() fallback: white background, ink-friendly. Import from the export screen. */
+@media print {
+  @page { margin: 16mm; }
+  html, body { background: #fff !important; color: #000 !important; }
+  nav, header, footer, [data-no-print] { display: none !important; }
+  .print-item { break-inside: avoid; page-break-inside: avoid; }
+  .katex-display, .katex { break-inside: avoid; page-break-inside: avoid; }
+  a { color: #000; text-decoration: none; }
+}

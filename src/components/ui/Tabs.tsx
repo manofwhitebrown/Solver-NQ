@@ -31,7 +31,7 @@ export function Tabs<T extends string>({ value, onChange, items, label }: Props<
           aria-selected={it.value === value}
           onClick={() => onChange(it.value)}
           className={cn(
-            'min-h-[40px] flex-1 rounded-sm px-3 text-sm font-semibold transition',
+            'min-h-[44px] flex-1 rounded-sm px-3 text-sm font-semibold transition',
             it.value === value ? 'bg-surface text-ink shadow-soft' : 'text-muted hover:text-ink',
           )}
         >

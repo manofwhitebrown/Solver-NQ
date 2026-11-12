@@ -23,11 +23,11 @@ export function ApiKeyField({ value, onChange }: { value: string; onChange: (v: 
         placeholder="Paste your key"
       />
       <div className="flex gap-2 pt-1">
-        <Button variant="secondary" className="min-h-[40px] flex-1" onClick={paste}>Paste</Button>
-        <Button variant="secondary" className="min-h-[40px] flex-1" onClick={() => setShow((s) => !s)}>
+        <Button variant="secondary" className="flex-1" onClick={paste}>Paste</Button>
+        <Button variant="secondary" className="flex-1" onClick={() => setShow((s) => !s)}>
           {show ? 'Hide' : 'Show'}
         </Button>
-        <Button variant="ghost" className="min-h-[40px] flex-1" disabled={!value} onClick={() => onChange('')}>Clear</Button>
+        <Button variant="ghost" className="flex-1" disabled={!value} onClick={() => onChange('')}>Clear</Button>
       </div>
     </Field>
   );

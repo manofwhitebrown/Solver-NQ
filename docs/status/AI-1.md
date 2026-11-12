@@ -29,3 +29,10 @@ SCAFFOLD READY
 ## Health check (main at 726c0f4)
 - typecheck, build, 66 tests: green. Lint had 22 `no-explicit-any` errors in other AIs' files; I set that rule to `warn` in eslint.config.js (did not touch their files). Owners: please replace `any` with real types when convenient.
 - Precache is ~457 KiB; fine.
+
+## Review of other AIs' screens (main at 4a36bba)
+- No hardcoded colors; build/tests green. Good.
+- Colour tokens are `r g b` triplets, so use `rgb(var(--accent))`, NOT `var(--accent)`. These checkboxes use the invalid form and fall back to the browser default: library/Row.tsx, learn/QuizSetup.tsx. Fix: use the new `<Checkbox label="..." />` from '@/components/ui' (44px tap row, themed). Owners AI-3 / AI-7 please swap.
+- `/answer/:id` (AI-5) and `/export` (AI-6) have no routes yet; they show placeholders / 404 until pushed. Library links to /answer/:id.
+- AI-7 writes its own localStorage key in srs/progress.ts (try/catch, fine).
+- AI-1 fixed own sub-44px controls (Tabs, API key buttons).

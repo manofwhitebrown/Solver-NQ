@@ -6,6 +6,7 @@ export { Input } from './Input';
 export { Textarea } from './Textarea';
 export { Select } from './Select';
 export { Chip } from './Chip';
+export { Checkbox } from './Checkbox';
 export { Tabs } from './Tabs';
 export { BottomSheet } from './BottomSheet';
 export { Dialog } from './Dialog';

@@ -46,4 +46,4 @@ VitePWA({
 }),
 ```
 
-Language data (`eng.traineddata`) is cached by Tesseract itself in IndexedDB after first use (see AI-4's status file).
+English OCR data (`tesseract/lang/eng.traineddata.gz`) is self-hosted and precached, so the first scan works offline. Other languages are cached by Tesseract in IndexedDB after download (Scan > Scan languages). The non-SIMD core is runtime-cached only.

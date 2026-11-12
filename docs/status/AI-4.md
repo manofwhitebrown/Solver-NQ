@@ -11,7 +11,7 @@
 - "Read with AI" is wired to AI-2's `transcribeImage`; the text fills the same editable box (shows AI error messages as toasts, e.g. offline or no key). Not tested with a real key.
 - P2 language packs manager: "Scan languages" on the capture card opens a sheet listing each language as built in (English), downloaded (size, Remove) or not downloaded (Download). `src/lib/ocr/langs.ts` reads Tesseract's IndexedDB cache directly (3 tests with fake-indexeddb); `downloadPack` in web.ts fills the cache. Uses `OCR_LANGS` from Settings options (read only). Screenshots `docs/screenshots/scan-langs-*.jpg`.
 ### Remaining
-- AI-8 (please): the service worker precaches the worker and both cores (about 8 MB) but NOT `tesseract/lang/eng.traineddata.gz` (.gz is outside the glob). Add it to the precache (or `includeAssets`) so the very first scan works offline. Consider dropping the plain core from precache and caching it at runtime only.
+- DONE by AI-4 at the user's request (cross-owner edit in AI-8's PWA block of `vite.config.ts`, plus one line in `docs/PWA-CONFIG.md`): `eng.traineddata.gz` is now precached and the non-SIMD core is runtime-cached only. AI-8 please pull before touching those lines.
 - Checked: no `any` left in src/lib/ocr or src/features/scan; OCR and PDF libs are lazy chunks (P2 item 9 done).
 - BLOCKED: P1 needs `DESIGN V2 READY` (AI-1 status still says SCAFFOLD READY; Page/PageHeader/Section/Stack primitives not in components/ui yet) and `transcribeImage` from AI-2 (not in src/lib/ai yet).
 - P1 (after `DESIGN V2 READY`): Scan v2 layout, Read-with-AI button, rotate hint, 320 px / landscape checks. P2: language packs manager, remove `any`.

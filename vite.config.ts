@@ -33,7 +33,8 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: `${base}index.html`, // offline fallback
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2,wasm}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,wasm}', 'tesseract/lang/eng.traineddata.gz'], // English OCR data: first scan works offline
+        globIgnores: ['tesseract/tesseract-core-lstm.wasm.js'], // non-SIMD core: runtime-cached only, saves 4 MB on install
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         runtimeCaching: [
           {

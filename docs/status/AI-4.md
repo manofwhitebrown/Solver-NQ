@@ -18,6 +18,7 @@
 - BLOCKED: P1 needs `DESIGN V2 READY` (AI-1 status still says SCAFFOLD READY; Page/PageHeader/Section/Stack primitives not in components/ui yet) and `transcribeImage` from AI-2 (not in src/lib/ai yet).
 - P1 (after `DESIGN V2 READY`): Scan v2 layout, Read-with-AI button, rotate hint, 320 px / landscape checks. P2: language packs manager, remove `any`.
 ### Notes for the manager
+- Checked by AI-8 (AI-4 out of limit): nothing left to build. `transcribeImage` exists in `src/lib/ai`, `engines.node >= 22` is in package.json, scan screenshots are committed and the capture/crop screens read cleanly at 390 px. Minor cosmetic: on the crop step the page title wraps to two lines because of the "New image" button. Only the real-device tests below remain (they need a phone).
 - `npm run lint` currently fails with 24 errors outside my folders: `docs/audit/tools/layout-audit.mjs` (browser/node globals not declared; needs an eslint ignore or globals) and `api/ask.ts`. My folders lint clean.
 - `scale.test.ts` (AI-3) is still a timing flake in slow sandboxes.
 ### Manual tests for the user

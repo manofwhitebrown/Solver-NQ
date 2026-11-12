@@ -19,6 +19,8 @@
 
 - eslint.config.js: also ignore `public` (vendored minified Tesseract files gave 1127 lint errors, failing the web job). Ran the whole web job locally on latest main: secret-scan, typecheck, lint (0 errors), 350 tests, build, size check (entry 174 kB) all pass.
 
+- Also finished AI-7's remaining items (see docs/status/AI-7.md) and verified AI-4 is complete. `engines.node >= 22` is in package.json (AI-4 added it).
+
 ## In progress
 - Waiting for the first Android APK run with Node 22 to see if another failure appears.
 

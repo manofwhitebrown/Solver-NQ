@@ -78,7 +78,18 @@ function AnswerBody({ q, a, updateQuestion, addFollowUp }: {
   const [tagsOpen, setTagsOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const graphFn = findGraphable(q.text, a.finalAnswer);
+
+  /** Ask again with the cache skipped so the first-choice model gets another go. */
+  const retryBest = async () => {
+    setRetrying(true);
+    try {
+      const r = await ai.askQuestion({ text: q.text, subject: q.subject, mode: a.mode }, undefined, { skipCache: true });
+      if ('answerId' in r) navigate(`/answer/${r.answerId}`, { replace: true });
+      else toast('The best model is busy right now. Your question is saved and will be retried later.', 'success');
+    } catch (e) { toast(e instanceof Error ? e.message : 'Could not retry', 'error'); } finally { setRetrying(false); }
+  };
 
   const copy = async () => { toast((await copyText(answerToMarkdown(q, a))) ? 'Copied' : 'Could not copy', 'success'); };
   const share = async () => {
@@ -103,7 +114,7 @@ function AnswerBody({ q, a, updateQuestion, addFollowUp }: {
           <Toolbar {...actions} />
           <FinalAnswerCard text={a.finalAnswer} hidden={!revealed} onReveal={() => setRevealed(true)} />
           {revealed && <VerifyBadge verified={a.verified} />}
-          {revealed && <ModelLabel model={a.model} primary={primaryModel()} />}
+          {revealed && <ModelLabel model={a.model} primary={primaryModel()} onRetry={() => void retryBest()} busy={retrying} />}
         </Stack>
         <Steps steps={a.steps} initialMode={a.mode} onAllRevealed={(done) => done && setRevealed(true)} />
         <Stack gap={4}>

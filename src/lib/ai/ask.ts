@@ -18,13 +18,13 @@ const isOnline = () => typeof navigator === 'undefined' || navigator.onLine;
 
 /** Call the AI, parse, save question + answer, fill the cache. Throws AiError on failure. */
 export async function answerNow(
-  input: AskInput, signal?: AbortSignal, opts: { offline?: boolean } = {},
+  input: AskInput, signal?: AbortSignal, opts: { offline?: boolean; skipCache?: boolean } = {},
 ): Promise<{ answerId: string }> {
   const { text, subject, mode, imageDataUrl } = input;
   const hash = questionHash(text, subject, mode);
 
   // Same question again: instant, works offline. Images are never cached (text alone is not the key).
-  if (!imageDataUrl) {
+  if (!imageDataUrl && !opts.skipCache) {
     const cached = await getCachedAnswer(hash);
     if (cached) {
       if (!(await getAnswer(cached.id))) {
@@ -60,7 +60,7 @@ async function queue(input: AskInput, retryAt?: number): Promise<{ queued: true;
   return { queued: true, retryAt };
 }
 
-export async function askQuestion(input: AskInput, signal?: AbortSignal): Promise<{ answerId: string } | { queued: true; retryAt?: number }> {
+export async function askQuestion(input: AskInput, signal?: AbortSignal, opts: { skipCache?: boolean } = {}): Promise<{ answerId: string } | { queued: true; retryAt?: number }> {
   const text = input.text.trim();
   if (!text && !input.imageDataUrl) throw new AiError('bad_request');
   const clean = { ...input, text: text || IMAGE_ONLY_TEXT };
@@ -72,7 +72,7 @@ export async function askQuestion(input: AskInput, signal?: AbortSignal): Promis
     }
   }
   try {
-    return await answerNow(clean, signal);
+    return await answerNow(clean, signal, opts);
   } catch (e) {
     if (e instanceof AiError && e.retryable) return queue(clean, e.retryAt);
     throw e;

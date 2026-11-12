@@ -7,7 +7,8 @@
 - Errors: friendly messages for missing/bad key, rate limit, timeout, offline, CORS, bad model. Keys, headers and bodies are never logged. Cancel via AbortSignal.
 - Ask screen at `/`: text area, subject chips, Learn/Answer toggle, real `ScanButton` (AI-4) with prefill from /scan router state and a photo preview, image-only questions, Send, Ctrl/Cmd+Enter, loading state with Cancel, "queued" message, recent questions.
 - Integration test with the real db (fake-indexeddb) + fake network: ask -> save -> follow-up / cards / quiz / similar; cache hit offline; offline queue -> flush. It found and I fixed one bug: offline asks used to try the network before queueing; now they check the cache and queue immediately.
-- 23 Vitest tests (parser, hash, errors, engine with fake db/fetch: save, cache hit, offline queue + flush, bad key). Typecheck, build, tests green; my files lint-clean.
+- 24 Vitest tests (parser, hash, errors, engine with fake db/fetch: save, cache hit, offline queue + flush, bad key). Typecheck, build, tests green; my files lint-clean.
+- Ask prefill from `/?text=...&subject=...` (AI-5's "Solve it" link): capped at 4000 chars, subject validated, never auto-sends. Unit-tested.
 ## In progress
 - Nothing. Not yet tested with a real key (no key available to me); please test once in Settings.
 ## Needs from others

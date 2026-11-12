@@ -1,5 +1,5 @@
 import { useEffect, useState, type KeyboardEvent } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, Card, Chip, Tabs, Textarea } from '@/components/ui';
 import { MODES, SUBJECTS } from '@/features/settings/options';
 
@@ -7,6 +7,7 @@ import { IMAGE_ONLY_TEXT } from '@/lib/ai';
 import { useSettings } from '@/lib/settings';
 import type { Mode, Subject } from '@/types';
 import { ImagePreview } from './ImagePreview';
+import { readPrefill } from './prefill';
 import { RecentList } from './RecentList';
 import { ScanSlot } from './ScanSlot';
 import { Thinking } from './Thinking';
@@ -26,6 +27,7 @@ export function AskPage() {
   const { status, error, submit, cancel, reset } = useAsk();
   const location = useLocation();
   const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
 
   // /scan hands back { text, imageDataUrl } through router state. Take it once, then clear it.
   useEffect(() => {
@@ -35,6 +37,15 @@ export function AskPage() {
     setImage(typeof s.imageDataUrl === 'string' ? s.imageDataUrl : undefined);
     navigate('.', { replace: true, state: null });
   }, [location.state, navigate]);
+
+  // /?text=... (e.g. "Solve it" on a practice problem) fills the box once; the user still presses Send.
+  useEffect(() => {
+    const pre = readPrefill(params);
+    if (!pre) return;
+    setText(pre.text);
+    if (pre.subject) setSubject(pre.subject);
+    setParams({}, { replace: true });
+  }, [params, setParams]);
 
   const canSend = text.trim().length > 0 || !!image;
   const send = async () => {

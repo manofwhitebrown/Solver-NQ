@@ -5,6 +5,7 @@ import { transcribeImage } from '@/lib/ai';
 import { friendlyMessage, OcrError, onOcrProgress, recognize } from '@/lib/ocr';
 import { isNative } from '@/lib/ocr/platform';
 import { CropEditor } from './CropEditor';
+import { LangPacks } from './LangPacks';
 import { StepIndicator } from './StepIndicator';
 import { blobToDataUrl, cropBlob, loadBitmap, rotate90 } from './imageTools';
 import type { Rect } from './cropMath';
@@ -146,6 +147,7 @@ export function ScanPage() {
   const step = !source ? 1 : items.length ? 3 : 2;
   const touch = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
   const [hint, setHint] = useState(() => { try { return !localStorage.getItem('scanHintSeen'); } catch { return false; } });
+  const [langs, setLangs] = useState(false);
   const dismissHint = () => { setHint(false); try { localStorage.setItem('scanHintSeen', '1'); } catch { /* storage unavailable */ } };
 
   return (
@@ -166,6 +168,7 @@ export function ScanPage() {
                 1. Take a photo. 2. Drag the corners around the question. 3. Check the text and ask.
                 {!touch && ' You can also paste or drop an image here.'}
               </p>
+              <Button variant="ghost" size="sm" onClick={() => setLangs(true)}>Scan languages</Button>
               {loading && <Spinner />}
               <input ref={cam} type="file" accept="image/*" capture="environment" hidden onChange={pick} />
               <input ref={gal} type="file" accept="image/*,application/pdf" hidden onChange={pick} />
@@ -196,6 +199,7 @@ export function ScanPage() {
           <Button className="ml-auto min-w-0 flex-1 whitespace-nowrap !px-4 sm:flex-none" onClick={addCrop}>{items.length ? 'Read another' : 'Read text'}</Button>
         </ActionBar>
       )}
+      <LangPacks open={langs} onClose={() => setLangs(false)} />
     </div>
   );
 }

@@ -38,6 +38,20 @@ export async function recognizeWeb(image: Blob | string, lang = 'eng') {
   }
 }
 
+/** Download a language pack into the Tesseract cache (needs internet unless it is English). */
+export async function downloadPack(lang: string) {
+  try {
+    const { createWorker } = await import('tesseract.js');
+    const w = await createWorker(lang, 1, {
+      ...localTesseractPaths(import.meta.env.BASE_URL, document.baseURI, hasSimd(), lang),
+      cacheMethod: 'write',
+    });
+    await w.terminate();
+  } catch {
+    throw new OcrError(navigator.onLine ? 'ocr-failed' : 'offline-no-data');
+  }
+}
+
 export async function disposeWeb() {
   await worker?.terminate();
   worker = null;

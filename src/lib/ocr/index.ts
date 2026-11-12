@@ -3,7 +3,9 @@ import { recognizeNative } from './native';
 import { isNative } from './platform';
 import { recognizeWeb } from './web';
 
-export { onOcrProgress } from './web';
+export { downloadPack, onOcrProgress } from './web';
+export { BUNDLED_LANG, deleteCachedPack, formatBytes, listCachedPacks } from './langs';
+export type { LangPack } from './langs';
 export { isLowConfidence, LOW_CONFIDENCE, suggestsRotate } from './confidence';
 export { OcrError, friendlyMessage } from './errors';
 export { preprocess } from './preprocess';

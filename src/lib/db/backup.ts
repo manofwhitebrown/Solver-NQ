@@ -17,12 +17,13 @@ function base64ToBlob(data: string, type: string): Blob {
 }
 
 export async function exportBackup(): Promise<string> {
-  const [questions, answers, flashcards, imgRows] = await Promise.all([
+  const [questions, answers, flashcards, imgRows, notes, kv] = await Promise.all([
     db.questions.toArray(), db.answers.toArray(), db.flashcards.toArray(), db.images.toArray(),
+    db.notes.toArray(), db.kv.toArray(),
   ]);
   const images: BackupImage[] = [];
   for (const r of imgRows) images.push({ id: r.id, type: r.blob.type, data: await blobToBase64(r.blob) });
-  const file: BackupFile = { app: 'solver-nq', version: BACKUP_VERSION, exportedAt: Date.now(), questions, answers, flashcards, images };
+  const file: BackupFile = { app: 'solver-nq', version: BACKUP_VERSION, exportedAt: Date.now(), questions, answers, flashcards, images, notes, kv };
   return JSON.stringify(file);
 }
 
@@ -36,7 +37,7 @@ export async function importBackup(json: string): Promise<ImportResult> {
   let added = 0;
   let skipped = parsed.dropped;
   try {
-    await db.transaction('rw', [db.questions, db.answers, db.flashcards, db.images], async () => {
+    await db.transaction('rw', [db.questions, db.answers, db.flashcards, db.images, db.notes, db.kv], async () => {
       const addNew = async <T extends { id: string }>(table: { bulkGet(k: string[]): Promise<(T | undefined)[]>; bulkAdd(v: T[]): Promise<unknown> }, rows: T[]) => {
         const have = await table.bulkGet(rows.map(r => r.id));
         const fresh = rows.filter((_, i) => !have[i]);
@@ -51,6 +52,13 @@ export async function importBackup(json: string): Promise<ImportResult> {
       skipped += f.answers.length - answers.length;
       await addNew(db.answers, answers);
       await addNew(db.flashcards, f.flashcards);
+      await addNew(db.notes, f.notes);
+      // kv is keyed by `key`; existing keys win, like every other table.
+      const haveKv = await db.kv.bulkGet(f.kv.map(r => r.key));
+      const freshKv = f.kv.filter((_, i) => !haveKv[i]);
+      await db.kv.bulkAdd(freshKv);
+      added += freshKv.length;
+      skipped += f.kv.length - freshKv.length;
       await addNew(db.images, f.images.map(i => ({ id: i.id, blob: base64ToBlob(i.data, i.type), createdAt: Date.now() })));
     });
   } catch (e) {

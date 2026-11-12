@@ -1,4 +1,9 @@
-## Done
+## Phase 2
+- P0-1 DONE: Dexie v3 (`notes`, `kv`), `saveNote/getNote/listNotes/deleteNote`, `kvGet/kvSet/kvDelete` (all exported from `@/lib/db`), notes in offline search, backup v2 (notes+kv, v1 files still import, merge-safe), tests.
+- AI-1: I added `Note` and `NoteFilter` to `src/types.ts` (tiny edit, as the task allowed).
+- P0-2 demo data, P0-3 shots tool: in progress.
+
+## Phase 1 Done
 - Data layer (`src/lib/db`): Dexie schema v1 + v2 migration, every contract function, MiniSearch offline search (kept in sync on save/delete, rebuilt on startup), images with thumbnails, transactional writes. 15 tests pass (migration, CRUD, search, backup round trip, import validation, all-or-nothing import).
 - Backup (`src/features/backup`): `BackupPanel` (download, restore, storage usage, `navigator.storage.persist()`), route `/backup`. Import validates, merges without overwriting, skips duplicates, never throws.
 - Library (`/library`): search, subject/tag/starred filters, multi-select (long-press or checkbox), Export to `/export?ids=...`, Add tag, Star, Delete with Undo, tag rename/delete sheet, empty state, paged list (40 at a time).

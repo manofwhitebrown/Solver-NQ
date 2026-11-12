@@ -35,3 +35,11 @@ export interface PendingItem {
 export interface LibraryFilter { subject?: Subject; tag?: string; starred?: boolean }
 export interface LibraryEntry { q: Question; a?: Answer }
 export interface CardFilter { subject?: Subject; sourceAnswerId?: string }
+
+// Phase 2 (added by AI-3, tell AI-1): study notes.
+export interface Note {
+  id: string; title: string; source: 'paste' | 'file' | 'pdf' | 'image'; text: string;
+  summary?: string; cheatsheet?: string; keyTerms?: string[];
+  subject: Subject; tags: string[]; createdAt: number; updatedAt: number;
+}
+export interface NoteFilter { subject?: Subject; tag?: string }

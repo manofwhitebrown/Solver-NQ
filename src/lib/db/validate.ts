@@ -1,10 +1,11 @@
-import type { Answer, Flashcard, Question } from '@/types';
+import type { Answer, Flashcard, Note, Question } from '@/types';
 
-export const BACKUP_VERSION = 1;
+export const BACKUP_VERSION = 2; // v2 adds notes + kv; v1 files still import
 export interface BackupImage { id: string; type: string; data: string }
 export interface BackupFile {
   app: 'solver-nq'; version: number; exportedAt: number;
   questions: Question[]; answers: Answer[]; flashcards: Flashcard[]; images: BackupImage[];
+  notes: Note[]; kv: Array<{ key: string; value: unknown }>;
 }
 
 const SUBJECTS = ['math', 'physics', 'chemistry', 'biology', 'coding', 'languages', 'history', 'commerce', 'other'];
@@ -24,6 +25,13 @@ export const validAnswer = (a: unknown): a is Answer => isObj(a) && isStr(a.id) 
 export const validCard = (c: unknown): c is Flashcard => isObj(c) && isStr(c.id) && typeof c.front === 'string'
   && typeof c.back === 'string' && SUBJECTS.includes(c.subject as string)
   && [c.due, c.interval, c.ease, c.reps, c.lapses].every(isNum);
+
+export const validNote = (n: unknown): n is Note => isObj(n) && isStr(n.id) && typeof n.title === 'string'
+  && ['paste', 'file', 'pdf', 'image'].includes(n.source as string) && typeof n.text === 'string'
+  && SUBJECTS.includes(n.subject as string) && Array.isArray(n.tags) && n.tags.every(t => typeof t === 'string')
+  && isNum(n.createdAt) && isNum(n.updatedAt);
+
+export const validKv = (r: unknown): r is { key: string; value: unknown } => isObj(r) && isStr(r.key) && 'value' in r;
 
 export const validImage = (i: unknown): i is BackupImage => isObj(i) && isStr(i.id) && typeof i.type === 'string' && isStr(i.data);
 
@@ -45,6 +53,8 @@ export function parseBackup(json: string): ParseResult {
     answers: keep(list('answers'), validAnswer),
     flashcards: keep(list('flashcards'), validCard),
     images: keep(list('images'), validImage),
+    notes: keep(list('notes'), validNote),
+    kv: keep(list('kv'), validKv),
   };
   return { ok: true, file, dropped };
 }

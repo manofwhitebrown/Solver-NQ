@@ -1,5 +1,7 @@
 export * from './store';
 export * from './images';
+export * from './notes';
+export * from './kv';
 export { exportBackup, importBackup, type ImportResult } from './backup';
 export { parseBackup, BACKUP_VERSION } from './validate';
 export { db } from './db';

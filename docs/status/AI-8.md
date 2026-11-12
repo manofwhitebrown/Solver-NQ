@@ -42,3 +42,9 @@
 
 ## Manual tests for the user
 - After pushing, open the repo Actions tab: `Android APK` and `Web (GitHub Pages)` should both be green; download the APK artifact and install it.
+
+## Final sweep (12 Nov 2026, user asked to finish the last small items)
+- Checked all 8 status files, ran typecheck, lint, 358 tests and the build: all green. Latest Actions runs for e0fe27c (Android APK, Web Pages) both succeeded.
+- Done: `api/ask.ts` fully typed (no `any`); `ReviewPage` effect dependency fixed (`cram`); README now documents the proxy env vars (`AI_API_KEY`, `AI_PROVIDER`, `AI_BASE_URL`), which AI-2 asked for. `npm run lint` now reports 0 warnings.
+- Left as is, on purpose: 4 low-severity `npm audit` findings come from the pinned KaTeX chain (fix needs a breaking bump); `vendor-math` still loads at startup (lazy-loading verify touches AI-5's files and carries risk for little gain).
+- Still needs a person and a phone: everything under "Manual tests" in docs/DEVICE-TEST.md, a real Gemini key test, and the signed release secrets.

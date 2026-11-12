@@ -47,6 +47,14 @@ The app version is the `version` in `package.json`; the Android build reads it f
 
 Open **Settings** and paste your own key. It is stored only on your device (never in the repo, never sent to us). There are no daily limits from us; your provider's limits apply. An optional proxy under `api/` can be deployed if you prefer not to call the provider directly from the browser.
 
+Proxy (optional, Vercel): set these in the Vercel project's Environment Variables, then put `https://<your-app>.vercel.app/api/ask` in Settings -> Proxy URL.
+
+| Variable | Required | Meaning |
+|---|---|---|
+| `AI_API_KEY` | yes | your provider key (stays on the server) |
+| `AI_PROVIDER` | no | `anthropic` (default), `openai` or `gemini` |
+| `AI_BASE_URL` | no | override the provider base URL |
+
 ## Offline
 
 See [docs/OFFLINE.md](docs/OFFLINE.md) for the test steps.

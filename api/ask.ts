@@ -26,34 +26,42 @@ function limited(ip: string): boolean {
   return ++h.n > MAX_PER_WINDOW;
 }
 
+type Role = 'user' | 'assistant';
+interface Msg { role: Role; content: string }
+interface Body { provider?: string; model: string; system: string; messages: Msg[]; imageDataUrl?: string }
+interface Call { url: string; headers: Record<string, string>; body: unknown; pick: (j: Json) => string }
+interface Json { choices?: { message?: { content?: string } }[]; candidates?: { content?: { parts?: { text?: string }[] } }[]; content?: { type: string; text?: string }[] }
+interface Req { method?: string; headers: Record<string, string | string[] | undefined>; body?: unknown }
+interface Res { setHeader(k: string, v: string): void; status(n: number): Res; json(o: unknown): unknown; end(): unknown }
+
 const split = (u: string) => { const m = /^data:([^;,]+);base64,(.*)$/s.exec(u); return m ? { mime: m[1], data: m[2] } : null; };
 
-function buildCall(p: string, key: string, base: string | undefined, b: any) {
+function buildCall(p: string, key: string, base: string | undefined, b: Body): Call {
   const img = b.imageDataUrl ? split(b.imageDataUrl) : null;
-  const first = (i: number, m: any) => i === 0 && img && m.role === 'user';
+  const first = (i: number, m: Msg) => i === 0 && img && m.role === 'user';
   if (p === 'openai') {
-    const msgs = b.messages.map((m: any, i: number) => first(i, m)
+    const msgs = b.messages.map((m, i) => first(i, m)
       ? { role: m.role, content: [{ type: 'text', text: m.content }, { type: 'image_url', image_url: { url: b.imageDataUrl } }] } : m);
     return { url: `${base || 'https://api.openai.com/v1'}/chat/completions`, headers: { Authorization: `Bearer ${key}` },
       body: { model: b.model, messages: [{ role: 'system', content: b.system }, ...msgs] },
-      pick: (j: any) => j.choices?.[0]?.message?.content ?? '' };
+      pick: (j) => j.choices?.[0]?.message?.content ?? '' };
   }
   if (p === 'gemini') {
-    const contents = b.messages.map((m: any, i: number) => ({ role: m.role === 'assistant' ? 'model' : 'user',
+    const contents = b.messages.map((m, i) => ({ role: m.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: m.content }, ...(first(i, m) ? [{ inlineData: { mimeType: img!.mime, data: img!.data } }] : [])] }));
     return { url: `${base || 'https://generativelanguage.googleapis.com/v1beta'}/models/${encodeURIComponent(b.model)}:generateContent`,
       headers: { 'x-goog-api-key': key }, body: { systemInstruction: { parts: [{ text: b.system }] }, contents },
-      pick: (j: any) => (j.candidates?.[0]?.content?.parts ?? []).map((x: any) => x.text ?? '').join('') };
+      pick: (j) => (j.candidates?.[0]?.content?.parts ?? []).map((x) => x.text ?? '').join('') };
   }
-  const msgs = b.messages.map((m: any, i: number) => first(i, m)
+  const msgs = b.messages.map((m, i) => first(i, m)
     ? { role: m.role, content: [{ type: 'image', source: { type: 'base64', media_type: img!.mime, data: img!.data } }, { type: 'text', text: m.content }] } : m);
   return { url: `${base || 'https://api.anthropic.com'}/v1/messages`,
     headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01' },
     body: { model: b.model, max_tokens: 4096, system: b.system, messages: msgs },
-    pick: (j: any) => (j.content ?? []).filter((x: any) => x.type === 'text').map((x: any) => x.text).join('') };
+    pick: (j) => (j.content ?? []).filter((x) => x.type === 'text').map((x) => x.text ?? '').join('') };
 }
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: Req, res: Res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(204).end();
@@ -65,7 +73,7 @@ export default async function handler(req: any, res: any) {
   const ip = String(req.headers['x-forwarded-for'] ?? 'unknown').split(',')[0].trim();
   if (limited(ip)) return res.status(429).json({ error: 'Too many requests' });
 
-  const b = req.body;
+  const b = req.body as Body | undefined;
   if (!b || !Array.isArray(b.messages) || typeof b.system !== 'string' || !b.model) {
     return res.status(400).json({ error: 'Bad request' });
   }
@@ -74,7 +82,7 @@ export default async function handler(req: any, res: any) {
     const call = buildCall(provider, key, process.env.AI_BASE_URL, b);
     const r = await fetch(call.url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...call.headers }, body: JSON.stringify(call.body) });
     if (!r.ok) return res.status(r.status).json({ error: 'Upstream error' });
-    return res.status(200).json({ text: call.pick(await r.json()) });
+    return res.status(200).json({ text: call.pick((await r.json()) as Json) });
   } catch {
     return res.status(502).json({ error: 'Upstream unreachable' });
   }

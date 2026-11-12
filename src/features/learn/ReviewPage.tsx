@@ -25,7 +25,7 @@ export function ReviewPage() {
   useEffect(() => {
     if (loading || session) return;
     const s = startSession(cards, Date.now(), 50, cram ? CRAM_DAYS : 0); setSession(s); setTotal(s.queue.length);
-  }, [loading, cards, session]);
+  }, [loading, cards, session, cram]);
 
   const current = session?.queue[0];
   const intervals = useMemo(() => (current ? previewIntervals(current) : null), [current]);

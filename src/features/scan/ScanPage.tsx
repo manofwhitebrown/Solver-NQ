@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Spinner, toast } from '@/components/ui';
-import { friendlyMessage, OcrError, recognize } from '@/lib/ocr';
+import { friendlyMessage, OcrError, onOcrProgress, recognize } from '@/lib/ocr';
 import { isNative } from '@/lib/ocr/platform';
 import { CropEditor } from './CropEditor';
 import { blobToDataUrl, cropBlob, loadBitmap, rotate90 } from './imageTools';
@@ -80,7 +80,8 @@ export function ScanPage() {
       const c = await cropBlob(source, rect, enhance);
       setItems(xs => [...xs, { id, dataUrl: c.dataUrl, text: '', confidence: 0, busy: true }]);
       try {
-        const r = await recognize(c.ocrBlob);
+        const off = onOcrProgress(p => patch(id, { progress: p }));
+        const r = await recognize(c.ocrBlob).finally(off);
         patch(id, { text: r.text, confidence: r.confidence, busy: false });
         if (r.backup) toast('Using backup reader', 'info');
       } catch (e) {
@@ -94,11 +95,12 @@ export function ScanPage() {
   const rotateItem = async (id: string) => {
     const it = items.find(x => x.id === id);
     if (!it) return;
-    patch(id, { busy: true });
+    patch(id, { busy: true, progress: 0 });
     try {
+      const off = onOcrProgress(p => patch(id, { progress: p }));
       const turned = await rotate90(await (await fetch(it.dataUrl)).blob());
       const dataUrl = await blobToDataUrl(turned);
-      const r = await recognize(turned);
+      const r = await recognize(turned).finally(off);
       patch(id, { dataUrl, text: r.text, confidence: r.confidence, busy: false });
       if (r.backup) toast('Using backup reader', 'info');
     } catch (e) {

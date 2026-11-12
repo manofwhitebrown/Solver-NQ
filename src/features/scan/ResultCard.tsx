@@ -1,7 +1,7 @@
 import { Button, Textarea } from '@/components/ui';
 import { isLowConfidence, suggestsRotate } from '@/lib/ocr';
 
-export interface ScanItem { id: string; dataUrl: string; text: string; confidence: number; busy: boolean }
+export interface ScanItem { id: string; dataUrl: string; text: string; confidence: number; busy: boolean; progress?: number }
 interface Props {
   item: ScanItem; onText: (t: string) => void; onAsk: () => void; onImageOnly: () => void; onRemove: () => void; onRotate: () => void;
 }
@@ -11,7 +11,7 @@ export function ResultCard({ item, onText, onAsk, onImageOnly, onRemove, onRotat
     <div className="space-y-3 rounded-lg border border-line bg-surface p-4">
       <img src={item.dataUrl} alt="Cropped question" className="max-h-40 w-full rounded-md object-contain bg-raised" />
       {item.busy ? (
-        <p className="text-sm text-ink-soft" role="status">Reading the text…</p>
+        <p className="text-sm text-ink-soft" role="status">Reading… {item.progress ?? 0}%</p>
       ) : (
         <>
           {isLowConfidence(item.confidence) && (
@@ -32,6 +32,10 @@ export function ResultCard({ item, onText, onAsk, onImageOnly, onRemove, onRotat
       <p className="text-xs text-ink-soft">
         Handwriting and complex formulas work better with the image sent to the AI.
       </p>
+      <Button variant="secondary" disabled aria-describedby={`ai-${item.id}`}>
+        Read with AI (better for handwriting and formulas)
+      </Button>
+      <p id={`ai-${item.id}`} className="text-sm text-ink-soft">Not available yet: the AI reader is still being built.</p>
       <div className="flex flex-wrap gap-2">
         <Button onClick={onAsk} disabled={item.busy || !item.text.trim()}>Ask</Button>
         <Button variant="secondary" onClick={onImageOnly} disabled={item.busy}>Send image only</Button>

@@ -6,12 +6,21 @@ import { OcrError } from './errors';
 type Worker = import('tesseract.js').Worker;
 let worker: Worker | null = null;
 let workerLang = '';
+let progressCb: ((pct: number) => void) | null = null;
+/** Subscribe to 0-100 progress of web OCR. Returns an unsubscribe function. */
+export function onOcrProgress(cb: (pct: number) => void) {
+  progressCb = cb;
+  return () => { if (progressCb === cb) progressCb = null; };
+}
 
 async function getWorker(lang: string): Promise<Worker> {
   if (worker && workerLang === lang) return worker;
   if (worker) await worker.terminate();
   const { createWorker } = await import('tesseract.js');
-  worker = await createWorker(lang, 1, { cacheMethod: 'write' });
+  worker = await createWorker(lang, 1, {
+    cacheMethod: 'write',
+    logger: m => { if (m.status === 'recognizing text') progressCb?.(Math.round(m.progress * 100)); },
+  });
   workerLang = lang;
   return worker;
 }

@@ -5,7 +5,9 @@
 - Error flows with kind next steps: camera denied (how to enable in Settings), no camera, file over 25 MB, unsupported file type, PDF with 0 pages.
 ### Done (P1 item 7, early)
 - Rotate hint: confidence < 40 shows "Try rotating the photo" with a one-tap "Rotate and read again" (rotates the crop 90 degrees, re-runs OCR). Plain styling for now; restyle in the layout pass.
+- Progress: "Reading... N%" while Tesseract runs (`onOcrProgress`; ML Kit has no progress, shows 0%). "Read with AI" button shown disabled with the reason until AI-2 ships `transcribeImage` (not in `src/lib/ai` yet).
 ### Remaining
+- Still waiting for `DESIGN V2 READY` (not in docs/status/AI-1.md, no docs/DESIGN.md) before the layout pass. Wire the AI button once `transcribeImage` exists.
 - Checked: no `any` left in src/lib/ocr or src/features/scan; OCR and PDF libs are lazy chunks (P2 item 9 done).
 - BLOCKED: P1 needs `DESIGN V2 READY` (AI-1 status still says SCAFFOLD READY; Page/PageHeader/Section/Stack primitives not in components/ui yet) and `transcribeImage` from AI-2 (not in src/lib/ai yet).
 - P1 (after `DESIGN V2 READY`): Scan v2 layout, Read-with-AI button, rotate hint, 320 px / landscape checks. P2: language packs manager, remove `any`.

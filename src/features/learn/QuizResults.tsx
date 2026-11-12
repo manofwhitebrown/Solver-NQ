@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Button, Card } from '@/components/ui';
+import { Button, Card, PageHeader, Section, Stack } from '@/components/ui';
 import { score, weakTopics, wrongIds, type QuizResult } from '@/lib/srs';
 import type { Outcome, QuizSession } from './quizTypes';
 
@@ -15,21 +15,22 @@ export function QuizResults({ session, outcomes, onRetryWrong }: {
   const wrong = wrongIds(results);
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-4 p-5">
-      <h1 className="text-2xl font-semibold">Results</h1>
+    <>
+      <PageHeader title="Results" />
+      <Section><Stack gap={5}>
       <Card className="text-center">
-        <p className="text-4xl font-semibold">{s.percent}%</p>
-        <p className="text-muted">{s.correct} of {s.total} correct</p>
+        <p className="text-4xl font-bold text-ink">{s.percent}%</p>
+        <p className="mt-1 text-base text-ink-2">{s.correct} of {s.total} correct</p>
       </Card>
 
-      <h2 className="text-base font-semibold">Weak topics</h2>
-      {weak.length === 0 ? <p className="text-[15px] text-muted">Nothing weak here. Nice work.</p> : (
-        <ul className="flex flex-col gap-2">
+      <h2 className="text-xl font-semibold text-ink">Weak topics</h2>
+      {weak.length === 0 ? <p className="text-base text-ink-2">Nothing weak here. Nice work.</p> : (
+        <ul className="flex flex-col gap-4">
           {weak.map((t) => (
             <li key={t.topic}>
-              <Card className="py-3">
-                <div className="flex justify-between text-[15px]"><span className="font-medium capitalize">{t.topic}</span>
-                  <span className="text-muted">{t.correct}/{t.total}</span></div>
+              <Card className="min-h-[64px] py-4 lg:py-4">
+                <div className="flex justify-between text-base"><span className="font-semibold capitalize">{t.topic}</span>
+                  <span className="text-ink-2">{t.correct}/{t.total}</span></div>
                 <div className="mt-2 h-2 rounded-full bg-line" role="presentation">
                   <div className="h-2 rounded-full bg-accent" style={{ width: `${Math.round(t.accuracy * 100)}%` }} />
                 </div>
@@ -39,10 +40,11 @@ export function QuizResults({ session, outcomes, onRetryWrong }: {
         </ul>
       )}
 
-      <div className="flex flex-col gap-2 pt-2">
+      <div className="flex flex-col gap-3">
         {wrong.length > 0 && <Button block onClick={() => onRetryWrong(wrong)}>Retry the {wrong.length} wrong</Button>}
         <Link to="/learn"><Button block variant="secondary">Back to Learn</Button></Link>
       </div>
-    </div>
+      </Stack></Section>
+    </>
   );
 }

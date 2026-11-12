@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Card, EmptyState, Input, Select, Skeleton, toast } from '@/components/ui';
+import { Button, Card, EmptyState, Input, PageHeader, Select, Skeleton, Stack, Toolbar, toast } from '@/components/ui';
+import { mathToPlain } from '@/features/answer/plainText';
 import { deleteCard, putCard } from '@/lib/db';
 import { SUBJECTS } from '@/lib/srs';
 import type { Flashcard } from '@/types';
@@ -25,21 +26,22 @@ export function CardsPage() {
     await reload();
   };
 
-  if (loading) return <div className="p-5"><Skeleton className="h-48 w-full" /></div>;
+  if (loading) return <Skeleton className="h-48 w-full" />;
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-4 p-5 pb-8">
-      <h1 className="text-2xl font-semibold">Cards</h1>
-      <div className="grid grid-cols-2 gap-2">
+    <>
+      <PageHeader title="Cards" subtitle={`${cards.length} card${cards.length === 1 ? '' : 's'}`} back="/learn" />
+      <Stack gap={5}>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Input aria-label="Search cards" placeholder="Search" value={query} onChange={(e) => setQuery(e.target.value)} />
         <Select aria-label="Filter by deck" value={subject} onChange={(e) => setSubject(e.target.value)}
           options={[{ value: '', label: 'All decks' }, ...SUBJECTS.map((s) => ({ value: s, label: s[0].toUpperCase() + s.slice(1) }))]} />
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <Toolbar>
         <Button variant="secondary" onClick={() => fileRef.current?.click()}>Import</Button>
         <Button variant="secondary" disabled={!shown.length} onClick={() => act(() => exportDeck(shown, '\t'), 'Exported TSV')}>TSV</Button>
         <Button variant="secondary" disabled={!shown.length} onClick={() => act(() => exportDeck(shown, ','), 'Exported CSV')}>CSV</Button>
-      </div>
+      </Toolbar>
       <input ref={fileRef} type="file" accept=".csv,.tsv,.txt,text/plain,text/csv" className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0]; e.target.value = '';
@@ -51,15 +53,15 @@ export function CardsPage() {
 
       {cards.length === 0 ? (
         <EmptyState title="No cards yet" text="Import a deck, or make cards from a saved answer." action={<Link to="/learn"><Button variant="secondary">Back to Learn</Button></Link>} />
-      ) : shown.length === 0 ? <p className="py-6 text-center text-muted">No cards match.</p> : (
-        <ul className="flex flex-col gap-2">
+      ) : shown.length === 0 ? <p className="py-6 text-center text-base text-ink-2">No cards match.</p> : (
+        <ul className="flex flex-col gap-4">
           {shown.map((c) => (
             <li key={c.id}>
               <button type="button" onClick={() => setEditing(c)} className="w-full text-left">
-                <Card className="min-h-[44px] py-3 transition active:scale-[.99]">
-                  <p className="line-clamp-2 text-[15px] font-medium">{c.front}</p>
-                  <p className="mt-0.5 line-clamp-1 text-sm text-muted">{c.back}</p>
-                  <p className="mt-1 text-xs capitalize text-muted">{c.subject}</p>
+                <Card interactive className="min-h-[64px] py-4 lg:py-4">
+                  <p className="line-clamp-2 text-base font-semibold text-ink">{mathToPlain(c.front)}</p>
+                  <p className="mt-1 line-clamp-2 text-[15px] text-ink-2">{mathToPlain(c.back)}</p>
+                  <p className="mt-2 text-[13px] capitalize text-muted">{c.subject}</p>
                 </Card>
               </button>
             </li>
@@ -70,6 +72,7 @@ export function CardsPage() {
       <CardEditor card={editing} onClose={() => setEditing(null)}
         onSave={(c) => { setEditing(null); void act(() => putCard(c), 'Card saved'); }}
         onDelete={(c) => { setEditing(null); void act(() => deleteCard(c.id), 'Card deleted'); }} />
-    </div>
+      </Stack>
+    </>
   );
 }

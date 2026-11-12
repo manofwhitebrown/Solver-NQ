@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Button, Card, Checkbox, EmptyState, Skeleton, Textarea, toast } from '@/components/ui';
+import { ActionBar, Button, Card, Checkbox, EmptyState, PageHeader, Skeleton, Textarea, toast } from '@/components/ui';
 import { putCard } from '@/lib/db';
 import { makeCardsFromAnswer } from '@/lib/srs';
 import { cardsFromNote } from './NewNotesLoader';
@@ -30,7 +30,7 @@ export function NewCardsPage() {
     return <EmptyState title="Could not make cards" text="That answer or note was not found. Open it from your library or notes and try again."
       action={<Link to="/library"><Button variant="secondary">Go to library</Button></Link>} />;
   }
-  if (!cards) return <div className="p-5"><Skeleton className="h-48 w-full" /></div>;
+  if (!cards) return <Skeleton className="h-48 w-full" />;
   if (cards.length === 0) {
     return <EmptyState title="No new cards" text="Every card for this already exists in your decks."
       action={<Link to="/learn/cards"><Button variant="secondary">Manage cards</Button></Link>} />;
@@ -50,13 +50,12 @@ export function NewCardsPage() {
   };
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-4 p-5 pb-28">
-      <h1 className="text-2xl font-semibold">Preview cards</h1>
-      <p className="text-[15px] text-muted">Untick any you do not want, and edit the wording if you like.</p>
-      <ul className="flex flex-col gap-3">
+    <div className="pb-24">
+      <PageHeader title="Preview cards" subtitle="Untick any you do not want, and edit the wording if you like." back />
+      <ul className="flex flex-col gap-4">
         {cards.map((c) => (
           <li key={c.id}>
-            <Card className={`flex flex-col gap-2 ${picked.has(c.id) ? '' : 'opacity-50'}`}>
+            <Card className={`flex flex-col gap-3 ${picked.has(c.id) ? '' : 'opacity-50'}`}>
               <Checkbox label="Keep this card" checked={picked.has(c.id)} onChange={() => toggle(c.id)} />
               <Textarea aria-label="Front" value={c.front} onChange={(e) => edit(c.id, { front: e.target.value })} className="min-h-[72px]" />
               <Textarea aria-label="Back" value={c.back} onChange={(e) => edit(c.id, { back: e.target.value })} className="min-h-[72px]" />
@@ -64,12 +63,9 @@ export function NewCardsPage() {
           </li>
         ))}
       </ul>
-      <div className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-surface/95 p-4 backdrop-blur"
-        style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
-        <div className="mx-auto max-w-2xl">
-          <Button block loading={saving} disabled={!chosen.length} onClick={save}>Save {chosen.length} card{chosen.length === 1 ? '' : 's'}</Button>
-        </div>
-      </div>
+      <ActionBar>
+        <Button block loading={saving} disabled={!chosen.length} onClick={save}>Save {chosen.length} card{chosen.length === 1 ? '' : 's'}</Button>
+      </ActionBar>
     </div>
   );
 }

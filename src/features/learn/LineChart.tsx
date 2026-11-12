@@ -10,11 +10,11 @@ export function LineChart({ data, label }: { data: Array<{ label: string; value:
   });
   if (cur) segments.push(cur);
   return (
-    <svg viewBox={`0 0 ${W} ${H + 18}`} className="w-full" role="img" aria-label={label}>
+    <svg viewBox={`0 0 ${W} ${H + 22}`} className="w-full" role="img" aria-label={label}>
       {[0, 0.5, 1].map((g) => <line key={g} x1={pad} x2={W - pad} y1={y(g)} y2={y(g)} className="stroke-line" strokeDasharray={g === 0 ? undefined : '3 4'} />)}
       {segments.map((d, i) => <path key={i} d={d} fill="none" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="stroke-accent" />)}
       {data.map((d, i) => d.value !== null && <circle key={i} cx={pad + i * step} cy={y(d.value)} r={3} className="fill-accent" />)}
-      {data.map((d, i) => (i % 2 === 0) && <text key={i} x={pad + i * step} y={H + 13} textAnchor="middle" className="fill-muted" fontSize="9">{d.label}</text>)}
+      {data.map((d, i) => (i % 3 === 0) && <text key={i} x={pad + i * step} y={H + 17} textAnchor="middle" className="fill-muted" fontSize="12">{d.label}</text>)}
     </svg>
   );
 }

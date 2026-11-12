@@ -1,28 +1,29 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { Button, Card, EmptyState, Skeleton } from '@/components/ui';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { IconButton, Skeleton, Button } from '@/components/ui';
 import { putCard } from '@/lib/db';
 import { answerCurrent, previewIntervals, recordReview, startSession, summary, type Grade, type Session } from '@/lib/srs';
 import { CardText } from './CardText';
+import { GradeBar } from './GradeBar';
+import { ReviewDone } from './ReviewDone';
+import { useCoarsePointer } from './useCoarse';
 import { useLearnData } from './useLearnData';
 import { useSwipe } from './useSwipe';
-
-const GRADES: Array<{ g: Grade; label: string; key: string; cls: string }> = [
-  { g: 0, label: 'Again', key: '1', cls: 'bg-bad text-white' },
-  { g: 1, label: 'Hard', key: '2', cls: 'bg-raised text-ink border border-line' },
-  { g: 2, label: 'Good', key: '3', cls: 'bg-accent text-accent-ink' },
-  { g: 3, label: 'Easy', key: '4', cls: 'bg-surface text-ink border border-line' },
-];
-const fmt = (days: number) => (days === 0 ? '10m' : days === 1 ? '1d' : `${days}d`);
 
 export function ReviewPage() {
   const deck = useSearchParams()[0].get('subject');
   const { cards: allCards, progress, loading, updateProgress } = useLearnData();
   const cards = useMemo(() => (deck ? allCards.filter((c) => c.subject === deck) : allCards), [allCards, deck]);
   const [session, setSession] = useState<Session | null>(null);
+  const [total, setTotal] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const touch = useCoarsePointer();
+  const nav = useNavigate();
 
-  useEffect(() => { if (!loading && !session) setSession(startSession(cards)); }, [loading, cards, session]);
+  useEffect(() => {
+    if (loading || session) return;
+    const s = startSession(cards); setSession(s); setTotal(s.queue.length);
+  }, [loading, cards, session]);
 
   const current = session?.queue[0];
   const intervals = useMemo(() => (current ? previewIntervals(current) : null), [current]);
@@ -32,8 +33,8 @@ export function ReviewPage() {
     const { session: next, updated } = answerCurrent(session, g);
     void putCard(updated);
     updateProgress(recordReview(progress, g));
-    setSession(next);
-    setFlipped(false);
+    setSession(next); setFlipped(false);
+    setTotal((t) => Math.max(t, next.queue.length));
   };
 
   useEffect(() => {
@@ -53,54 +54,33 @@ export function ReviewPage() {
     grade(dir === 'left' ? 0 : dir === 'right' ? 2 : dir === 'up' ? 3 : 1);
   });
 
-  if (loading || !session) return <div className="p-5"><Skeleton className="h-64 w-full" /></div>;
+  if (loading || !session) return <Skeleton className="h-64 w-full" />;
+  if (!current) return <ReviewDone s={summary(session)} />;
 
-  if (!current) {
-    const s = summary(session);
-    return s.reviewed === 0 ? (
-      <EmptyState title="Nothing due" text="You are all caught up. Come back later." action={<Link to="/learn"><Button>Back to Learn</Button></Link>} />
-    ) : (
-      <div className="mx-auto flex max-w-md flex-col gap-4 p-5">
-        <h1 className="text-2xl font-semibold">Session complete</h1>
-        <Card className="grid grid-cols-2 gap-3 text-center">
-          <Stat label="Reviewed" value={s.reviewed} />
-          <Stat label="Accuracy" value={`${Math.round(s.accuracy * 100)}%`} />
-          <Stat label="Again" value={s.again} />
-          <Stat label="Easy" value={s.easy} />
-        </Card>
-        <Link to="/learn"><Button block>Done</Button></Link>
-      </div>
-    );
-  }
-
+  const left = session.queue.length;
+  const done = Math.max(0, total - left);
   return (
-    <div className="mx-auto flex max-w-xl flex-col gap-4 p-5" {...swipe}>
-      <p className="text-sm text-muted">{session.queue.length} left</p>
-      <div
-        onClick={(e) => { if (!(e.target as HTMLElement).closest('button, a')) setFlipped((f) => !f); }}
-        className="min-h-[16rem] cursor-pointer rounded-lg border border-line bg-surface p-6 text-left shadow-soft transition active:scale-[.99]"
-      >
-        <p className="mb-2 text-xs uppercase tracking-wide text-muted">{flipped ? 'Answer' : 'Question'}</p>
-        <CardText>{flipped ? current.back : current.front}</CardText>
+    <div className="flex min-h-[calc(100dvh-8rem)] flex-col gap-6" {...swipe}>
+      <div className="flex items-center gap-4">
+        <IconButton label="Close review" className="-ml-2" onClick={() => nav('/learn')}>
+          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </IconButton>
+        <div className="flex-1" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label="Review progress">
+          <div className="h-2 overflow-hidden rounded-full bg-raised"><div className="h-full rounded-full bg-accent transition-all" style={{ width: `${total ? (done / total) * 100 : 0}%` }} /></div>
+        </div>
+        <p className="min-w-[4.5rem] text-right text-sm font-semibold text-ink-2">{left} left</p>
       </div>
 
-      {flipped ? (
-        <div className="grid grid-cols-4 gap-2">
-          {GRADES.map(({ g, label, key, cls }) => (
-            <button key={g} type="button" onClick={() => grade(g)}
-              className={`flex min-h-[56px] flex-col items-center justify-center rounded-md text-sm font-semibold ${cls}`}>
-              {label}
-              <span className="text-[11px] font-normal opacity-80">{intervals ? fmt(intervals[g]) : ''} · {key}</span>
-            </button>
-          ))}
+      <div className="flex flex-1 items-center">
+        <div onClick={(e) => { if (!(e.target as HTMLElement).closest('button, a')) setFlipped((f) => !f); }}
+          className="elev-1 w-full cursor-pointer rounded-lg p-6 transition active:scale-[.995] lg:p-8">
+          <p className="mb-3 text-caption font-semibold uppercase tracking-wide text-muted">{flipped ? 'Answer' : 'Question'}</p>
+          <div className="text-[17px] leading-[1.7]"><CardText>{flipped ? current.back : current.front}</CardText></div>
         </div>
-      ) : (
-        <Button block onClick={() => setFlipped(true)}>Show answer (Space)</Button>
-      )}
+      </div>
+
+      {flipped ? <GradeBar intervals={intervals} onGrade={grade} showKeys={!touch} />
+        : <Button block onClick={() => setFlipped(true)}>{touch ? 'Show answer' : 'Show answer (Space)'}</Button>}
     </div>
   );
-}
-
-function Stat({ label, value }: { label: string; value: string | number }) {
-  return <div><p className="text-2xl font-semibold">{value}</p><p className="text-sm text-muted">{label}</p></div>;
 }

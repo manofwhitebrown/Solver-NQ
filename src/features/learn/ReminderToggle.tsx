@@ -18,7 +18,7 @@ export function ReminderToggle() {
   };
 
   return (
-    <Card className="flex items-center justify-between gap-4 py-3">
+    <Card className="flex items-center justify-between gap-4 py-4 lg:py-4">
       <Checkbox label="Daily reminder" className="flex-1" checked={prefs.enabled}
         onChange={(e) => void apply({ ...prefs, enabled: e.target.checked })} />
       <Input type="time" aria-label="Reminder time" className="w-32" disabled={!prefs.enabled}

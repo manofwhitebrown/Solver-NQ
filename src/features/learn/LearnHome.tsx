@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Button, Card, EmptyState, Select, Skeleton } from '@/components/ui';
+import { Button, Card, Cluster, EmptyState, PageHeader, Section, Select, Skeleton, Stack } from '@/components/ui';
+import { TodayCard } from '@/features/plan';
 import { currentStreak, goalProgress } from '@/lib/srs';
 import type { Subject } from '@/types';
 import { ProgressRing } from './ProgressRing';
@@ -8,7 +9,7 @@ import { useLearnData } from './useLearnData';
 
 export function LearnHome() {
   const { cards, progress, loading, updateProgress } = useLearnData();
-  if (loading) return <div className="p-5"><Skeleton className="h-40 w-full" /></div>;
+  if (loading) return <Skeleton className="h-40 w-full" />;
 
   const now = Date.now();
   const due = cards.filter((c) => c.due <= now);
@@ -22,60 +23,62 @@ export function LearnHome() {
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-4 p-5 pb-8">
-      <h1 className="text-2xl font-semibold">Learn</h1>
+    <>
+      <PageHeader title="Learn" subtitle="Short daily reviews make it stick" />
 
-      <Card className="flex items-center gap-5">
-        <ProgressRing ratio={goal.ratio} label={`${goal.done}/${goal.goal}`} sub="today" />
-        <div className="flex flex-col gap-1">
-          <p className="text-lg font-semibold">{due.length} due today</p>
-          <p className="text-[15px] text-muted">{streak > 0 ? `${streak}-day streak` : 'Start a streak today'}</p>
-        </div>
-      </Card>
+      <Section>
+        <Stack>
+          <Card className="flex items-center gap-6">
+            <ProgressRing ratio={goal.ratio} label={`${goal.done}/${goal.goal}`} sub="today" size={128} />
+            <Stack gap={2}>
+              <p className="text-xl font-semibold text-ink">{due.length} due today</p>
+              <p className="text-base text-ink-2">{streak > 0 ? `${streak}-day streak` : 'Start a streak today'}</p>
+            </Stack>
+          </Card>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Link to="/learn/review" aria-disabled={!due.length}><Button block disabled={!due.length}>Start review</Button></Link>
+            <Link to="/learn/quiz"><Button block variant="secondary">Start quiz</Button></Link>
+          </div>
+          <TodayCard />
+        </Stack>
+      </Section>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Link to="/learn/review" aria-disabled={!due.length}>
-          <Button block disabled={!due.length}>Start review</Button>
-        </Link>
-        <Link to="/learn/quiz"><Button block variant="secondary">Start quiz</Button></Link>
-      </div>
+      <Section title="Decks">
+        {cards.length === 0 ? (
+          <EmptyState title="No cards yet" text="Open a saved answer or a note and make flashcards from it, or import a deck."
+            action={<Link to="/library"><Button variant="secondary">Go to library</Button></Link>} />
+        ) : (
+          <ul className="flex flex-col gap-4">
+            {[...decks.entries()].map(([subject, d]) => (
+              <li key={subject}>
+                <Link to={`/learn/review?subject=${subject}`} aria-label={`Review ${subject} deck`}>
+                  <Card interactive className="flex min-h-[64px] items-center justify-between gap-4 py-4 lg:py-4">
+                    <span className="text-lg font-semibold capitalize text-ink">{subject}</span>
+                    <span className="text-[15px] text-ink-2">{d.due} due · {d.total} cards</span>
+                  </Card>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Section>
 
-      <Card className="flex items-center justify-between gap-4 py-3">
-        <label htmlFor="goal" className="text-[15px] font-medium">Daily goal (reviews)</label>
-        <Select id="goal" className="w-24" value={String(progress.goal)}
-          onChange={(e) => updateProgress({ ...progress, goal: Number(e.target.value) })}
-          options={[...new Set([10, 20, 30, 50, 100, progress.goal])].sort((a, b) => a - b).map((n) => ({ value: String(n), label: String(n) }))} />
-      </Card>
-
-      <ReminderToggle />
-
-      <div className="flex gap-5 text-[15px] font-medium text-accent">
-        <Link to="/learn/stats" className="underline-offset-2 hover:underline">View stats</Link>
-        <Link to="/learn/cards" className="underline-offset-2 hover:underline">Manage cards</Link>
-        <Link to="/notes" className="underline-offset-2 hover:underline">Notes</Link>
-      </div>
-
-      <h2 className="pt-2 text-base font-semibold">Decks</h2>
-      {cards.length === 0 ? (
-        <EmptyState
-          title="No cards yet"
-          text="Open a saved answer and make flashcards from it, or import a deck."
-          action={<Link to="/library"><Button variant="secondary">Go to library</Button></Link>}
-        />
-      ) : (
-        <ul className="flex flex-col gap-2">
-          {[...decks.entries()].map(([subject, d]) => (
-            <li key={subject}>
-              <Link to={`/learn/review?subject=${subject}`} aria-label={`Review ${subject} deck`}>
-                <Card className="flex min-h-[44px] items-center justify-between py-3 transition active:scale-[.99]">
-                  <span className="font-medium capitalize">{subject}</span>
-                  <span className="text-sm text-muted">{d.due} due · {d.total} cards</span>
-                </Card>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+      <Section title="More">
+        <Stack>
+          <Cluster gap={3}>
+            <Link to="/learn/stats"><Button variant="secondary">View stats</Button></Link>
+            <Link to="/learn/cards"><Button variant="secondary">Manage cards</Button></Link>
+            <Link to="/notes"><Button variant="secondary">Notes</Button></Link>
+          </Cluster>
+          <Card className="flex items-center justify-between gap-4">
+            <label htmlFor="goal" className="text-base font-semibold text-ink">Daily goal (reviews)</label>
+            <Select id="goal" className="w-28" value={String(progress.goal)}
+              onChange={(e) => updateProgress({ ...progress, goal: Number(e.target.value) })}
+              options={[...new Set([10, 20, 30, 50, 100, progress.goal])].sort((a, b) => a - b).map((n) => ({ value: String(n), label: String(n) }))} />
+          </Card>
+          <ReminderToggle />
+        </Stack>
+      </Section>
+    </>
   );
 }

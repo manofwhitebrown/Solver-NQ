@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, Checkbox, Field, Input, Select } from '@/components/ui';
+import { Button, Card, Checkbox, Field, Input, PageHeader, Section, Select, Stack } from '@/components/ui';
 import type { QuizConfig } from './quizTypes';
 
 const SUBJECTS = ['', 'math', 'physics', 'chemistry', 'biology', 'coding', 'languages', 'history', 'commerce', 'other'];
@@ -7,9 +7,10 @@ const SUBJECTS = ['', 'math', 'physics', 'chemistry', 'biology', 'coding', 'lang
 export function QuizSetup({ onStart, loading, error }: { onStart: (c: QuizConfig) => void; loading: boolean; error?: string }) {
   const [cfg, setCfg] = useState<QuizConfig>({ subject: '', tag: '', count: 10, timed: false });
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-4 p-5">
-      <h1 className="text-2xl font-semibold">Quiz</h1>
-      <Card className="flex flex-col gap-4">
+    <>
+      <PageHeader title="Quiz" subtitle="Test yourself on your saved questions" back="/learn" />
+      <Section><Stack gap={5}>
+      <Card className="flex flex-col gap-5">
         <Field label="Subject" htmlFor="qz-subject">
           <Select id="qz-subject" value={cfg.subject} onChange={(e) => setCfg({ ...cfg, subject: e.target.value })}
             options={SUBJECTS.map((s) => ({ value: s, label: s ? s[0].toUpperCase() + s.slice(1) : 'All subjects' }))} />
@@ -21,11 +22,12 @@ export function QuizSetup({ onStart, loading, error }: { onStart: (c: QuizConfig
           <Select id="qz-count" value={String(cfg.count)} onChange={(e) => setCfg({ ...cfg, count: Number(e.target.value) })}
             options={[5, 10, 15, 20].map((n) => ({ value: String(n), label: String(n) }))} />
         </Field>
-        <Checkbox label="Timed exam mode (1 minute per question)" checked={cfg.timed}
-          onChange={(e) => setCfg({ ...cfg, timed: e.target.checked })} />
+        <div className="flex min-h-[44px] items-center"><Checkbox label="Timed exam mode (1 minute per question)" checked={cfg.timed}
+          onChange={(e) => setCfg({ ...cfg, timed: e.target.checked })} /></div>
       </Card>
-      {error && <p role="alert" className="text-[15px] text-bad">{error}</p>}
+      {error && <p role="alert" className="text-base text-bad">{error}</p>}
       <Button block loading={loading} onClick={() => onStart(cfg)}>Start quiz</Button>
-    </div>
+      </Stack></Section>
+    </>
   );
 }

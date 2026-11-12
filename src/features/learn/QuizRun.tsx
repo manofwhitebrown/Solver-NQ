@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Card } from '@/components/ui';
+import { Button, Card, Stack } from '@/components/ui';
 import { isCorrectChoice, remainingSeconds } from '@/lib/srs';
 import { CardText } from './CardText';
 import type { Outcome, QuizSession } from './quizTypes';
@@ -39,33 +39,37 @@ export function QuizRun({ session, onFinish }: { session: QuizSession; onFinish:
   };
 
   return (
-    <div className="mx-auto flex max-w-xl flex-col gap-4 p-5">
-      <div className="flex items-center justify-between text-sm text-muted">
+    <Stack gap={5}>
+      <div className="flex items-center justify-between text-sm font-semibold text-ink-2">
         <span>Question {i + 1} of {items.length}</span>
         {left !== null && <span className={left <= 30 ? 'font-semibold text-bad' : ''} aria-live="off">{mmss(left)}</span>}
       </div>
-      <Card><CardText>{item.prompt}</CardText></Card>
+      <Card><div className="text-[17px] leading-[1.7]"><CardText>{item.prompt}</CardText></div></Card>
 
       {item.options ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           {item.options.map((o) => {
-            const state = chosen === null ? '' : isCorrectChoice(o, item.answer) ? 'border-good bg-good/10' : o === chosen ? 'border-bad bg-bad/10' : 'opacity-60';
+            const right = chosen !== null && isCorrectChoice(o, item.answer);
+            const wrong = chosen !== null && !right && o === chosen;
+            const state = right ? 'border-good bg-good/10 border-2' : wrong ? 'border-bad bg-bad/10 border-2' : chosen !== null ? 'opacity-60' : '';
             return (
               <button key={o} type="button" disabled={chosen !== null} onClick={() => setChosen(o)}
-                className={`min-h-[44px] rounded-md border border-line bg-surface px-4 py-3 text-left text-[15px] transition ${state}`}>
-                <CardText>{o}</CardText>
+                className={`flex min-h-[56px] w-full items-center justify-between gap-3 rounded-md border border-line-strong bg-surface px-4 py-3 text-left text-base transition ${state}`}>
+                <span className="min-w-0"><CardText>{o}</CardText></span>
+                {right && <span className="shrink-0 text-sm font-bold text-good" aria-label="Correct">✓ Correct</span>}
+                {wrong && <span className="shrink-0 text-sm font-bold text-bad" aria-label="Wrong">✗ Wrong</span>}
               </button>
             );
           })}
         </div>
       ) : revealed ? (
-        <Card className="border-accent"><p className="mb-1 text-xs uppercase tracking-wide text-muted">Answer</p>
+        <Card className="border-accent"><p className="mb-2 text-caption font-semibold uppercase tracking-wide text-muted">Answer</p>
           <CardText>{item.answer}</CardText></Card>
       ) : (
         <Button block onClick={() => setRevealed(true)}>Show answer</Button>
       )}
 
-      {answered && item.explanation && <div className="text-[15px] text-muted"><CardText>{item.explanation}</CardText></div>}
+      {answered && item.explanation && <div className="text-[15px] text-ink-2"><CardText>{item.explanation}</CardText></div>}
 
       {item.options && chosen !== null && (
         <Button block onClick={() => record(isCorrectChoice(chosen, item.answer))}>
@@ -78,6 +82,6 @@ export function QuizRun({ session, onFinish }: { session: QuizSession; onFinish:
           <Button onClick={() => record(true)}>Got it</Button>
         </div>
       )}
-    </div>
+    </Stack>
   );
 }

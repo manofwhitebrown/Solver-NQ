@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Button, Card, EmptyState, Skeleton } from '@/components/ui';
+import { Button, Card, EmptyState, Select, Skeleton } from '@/components/ui';
 import { currentStreak, goalProgress } from '@/lib/srs';
 import type { Subject } from '@/types';
 import { ProgressRing } from './ProgressRing';
@@ -7,7 +7,7 @@ import { ReminderToggle } from './ReminderToggle';
 import { useLearnData } from './useLearnData';
 
 export function LearnHome() {
-  const { cards, progress, loading } = useLearnData();
+  const { cards, progress, loading, updateProgress } = useLearnData();
   if (loading) return <div className="p-5"><Skeleton className="h-40 w-full" /></div>;
 
   const now = Date.now();
@@ -40,6 +40,13 @@ export function LearnHome() {
         <Link to="/learn/quiz"><Button block variant="secondary">Start quiz</Button></Link>
       </div>
 
+      <Card className="flex items-center justify-between gap-4 py-3">
+        <label htmlFor="goal" className="text-[15px] font-medium">Daily goal (reviews)</label>
+        <Select id="goal" className="w-24" value={String(progress.goal)}
+          onChange={(e) => updateProgress({ ...progress, goal: Number(e.target.value) })}
+          options={[...new Set([10, 20, 30, 50, 100, progress.goal])].sort((a, b) => a - b).map((n) => ({ value: String(n), label: String(n) }))} />
+      </Card>
+
       <ReminderToggle />
 
       <div className="flex gap-5 text-[15px] font-medium text-accent">
@@ -58,10 +65,12 @@ export function LearnHome() {
         <ul className="flex flex-col gap-2">
           {[...decks.entries()].map(([subject, d]) => (
             <li key={subject}>
-              <Card className="flex min-h-[44px] items-center justify-between py-3">
-                <span className="font-medium capitalize">{subject}</span>
-                <span className="text-sm text-muted">{d.due} due · {d.total} cards</span>
-              </Card>
+              <Link to={`/learn/review?subject=${subject}`} aria-label={`Review ${subject} deck`}>
+                <Card className="flex min-h-[44px] items-center justify-between py-3 transition active:scale-[.99]">
+                  <span className="font-medium capitalize">{subject}</span>
+                  <span className="text-sm text-muted">{d.due} due · {d.total} cards</span>
+                </Card>
+              </Link>
             </li>
           ))}
         </ul>

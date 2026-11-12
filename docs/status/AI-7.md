@@ -11,6 +11,7 @@
 - Review fixes: swapped my 3 raw checkboxes for the shared <Checkbox> (AI-1's note); review cards and quiz questions/answers now render Markdown + KaTeX via AI-5's Markdown, lazy-loaded (KaTeX stays in its own chunk); removed `any` in my test.
 - Quiz safety: AI-made quiz items are sanitized (sanitizeQuizItems). Multiple choice whose options do not contain the answer, or have fewer than 2 options, becomes a self-graded short-answer item, so no question is impossible to get right.
 - End-to-end flow test (src/features/learn/flow.test.ts, real db via fake-indexeddb, AI offline): make cards -> no duplicates on repeat -> review with Good gives intervals 1, 3, 8 days -> quiz from saved questions -> weak topics + retry list. Passes.
+- Small extras: tap a deck on /learn to review only that deck (/learn/review?subject=...); daily goal selector (10/20/30/50/100) on /learn.
 ## In progress
 - COMPLETE: every item in the task file is built and pushed. Waiting for the manager's audit.
 ## Needs from others

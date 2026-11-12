@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button, Card, EmptyState, Skeleton } from '@/components/ui';
 import { putCard } from '@/lib/db';
 import { answerCurrent, previewIntervals, recordReview, startSession, summary, type Grade, type Session } from '@/lib/srs';
@@ -16,7 +16,9 @@ const GRADES: Array<{ g: Grade; label: string; key: string; cls: string }> = [
 const fmt = (days: number) => (days === 0 ? '10m' : days === 1 ? '1d' : `${days}d`);
 
 export function ReviewPage() {
-  const { cards, progress, loading, updateProgress } = useLearnData();
+  const deck = useSearchParams()[0].get('subject');
+  const { cards: allCards, progress, loading, updateProgress } = useLearnData();
+  const cards = useMemo(() => (deck ? allCards.filter((c) => c.subject === deck) : allCards), [allCards, deck]);
   const [session, setSession] = useState<Session | null>(null);
   const [flipped, setFlipped] = useState(false);
 

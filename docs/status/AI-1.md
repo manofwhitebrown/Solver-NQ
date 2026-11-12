@@ -39,3 +39,7 @@ SCAFFOLD READY
 - Lint error (not mine): src/lib/tts.ts:31 `no-useless-escape` on `\[` (AI-5: drop the backslash). `npm run lint` is red until then.
 - routes.ts now treats feature paths with or without a leading slash the same (AI-6 uses '/export'); tests updated. Placeholders only appear for paths nobody has claimed.
 - Still open: /answer/:id route (AI-5) not pushed yet; lint error in tts.ts (AI-5).
+
+## Check (main at 0798d23)
+- typecheck, lint (0 errors), 144 tests, build: all green. `/answer/:id` is live (lazy-loaded), tts lint error fixed.
+- Remaining invalid accent colour (falls back to browser default): export/Check.tsx (AI-6) and learn/QuizSetup.tsx (AI-7). Use `<Checkbox>` from '@/components/ui' or `accent-[rgb(var(--accent))]`.

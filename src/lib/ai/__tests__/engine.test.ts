@@ -58,9 +58,11 @@ describe('askQuestion', () => {
 
   it('queues when offline, then flushes when back online', async () => {
     vi.stubGlobal('navigator', { onLine: false });
-    vi.stubGlobal('fetch', vi.fn());
+    const offlineFetch = vi.fn();
+    vi.stubGlobal('fetch', offlineFetch);
     expect(await askQuestion(input)).toEqual({ queued: true });
     expect(store.pending.size).toBe(1);
+    expect(offlineFetch).not.toHaveBeenCalled(); // offline: never touches the network
 
     vi.stubGlobal('navigator', { onLine: true });
     vi.stubGlobal('fetch', okFetch());

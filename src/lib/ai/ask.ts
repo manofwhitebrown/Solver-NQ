@@ -1,5 +1,6 @@
 import type { Answer, Mode, PendingItem, Question, Subject } from '@/types';
 import { getAnswer, getCachedAnswer, putCachedAnswer, queuePending, saveAnswer, saveQuestion } from '@/lib/db';
+import { getAiConfig } from './config';
 import { AiError } from './errors';
 import { questionHash } from './hash';
 import { newId } from './id';
@@ -15,7 +16,9 @@ export const IMAGE_ONLY_TEXT = 'Answer the question shown in the image.';
 const isOnline = () => typeof navigator === 'undefined' || navigator.onLine;
 
 /** Call the AI, parse, save question + answer, fill the cache. Throws AiError on failure. */
-export async function answerNow(input: AskInput, signal?: AbortSignal): Promise<{ answerId: string }> {
+export async function answerNow(
+  input: AskInput, signal?: AbortSignal, opts: { offline?: boolean } = {},
+): Promise<{ answerId: string }> {
   const { text, subject, mode, imageDataUrl } = input;
   const hash = questionHash(text, subject, mode);
 
@@ -30,6 +33,9 @@ export async function answerNow(input: AskInput, signal?: AbortSignal): Promise<
       return { answerId: cached.id };
     }
   }
+
+  // Offline: the cache was our only chance. Don't wait on a network that isn't there.
+  if (opts.offline) { getAiConfig(); throw new AiError('offline'); }
 
   const { text: raw, model } = await runModel(buildSystemPrompt(subject, mode), [{ role: 'user', content: text }], { imageDataUrl, signal });
   const parsed = parseAnswer(raw);
@@ -58,7 +64,7 @@ export async function askQuestion(input: AskInput, signal?: AbortSignal): Promis
   const clean = { ...input, text: text || IMAGE_ONLY_TEXT };
   if (!isOnline()) {
     // Cached answers still work offline; anything else waits in the queue.
-    try { return await answerNow(clean, signal); } catch (e) {
+    try { return await answerNow(clean, signal, { offline: true }); } catch (e) {
       if (e instanceof AiError && e.code === 'no_key') throw e;
       return queue(clean);
     }

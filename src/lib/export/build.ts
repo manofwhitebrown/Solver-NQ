@@ -1,7 +1,7 @@
 import { listLibrary, listCards } from '@/lib/db';
 import type { ExportItem } from './markdown';
 import { itemsToMarkdown } from './markdown';
-import { markdownToPlain } from './plaintext';
+import { markdownToPlain, plainTitle } from './plaintext';
 import { makeFilename } from './filename';
 import { filterItems } from './pack';
 import { loadImage } from './image';
@@ -25,8 +25,10 @@ export async function loadItems(ids: string[]): Promise<ExportItem[]> {
   return ids.map((id) => byId.get(id)).filter((it): it is ExportItem => !!it);
 }
 
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 export const titleFor = (items: ExportItem[]): string =>
-  items.length === 1 ? items[0].q.text.split('\n')[0] : `${items[0]?.q.subject ?? 'Answers'} study set`;
+  items.length === 1 ? plainTitle(items[0].q.text, 80) : `${cap(items[0]?.q.subject ?? 'Answers')} study set`;
 
 /** Builds the file in memory. Saving/sharing is a separate step (saveFile). */
 export async function buildExport(req: BuildRequest): Promise<BuildResult> {
@@ -40,7 +42,7 @@ export async function buildExport(req: BuildRequest): Promise<BuildResult> {
   }
   if (!items.length) throw new Error(req.format === 'pack' ? 'No answers match this filter' : 'Nothing to export');
 
-  const title = req.format === 'pack' ? 'Study pack' : titleFor(items);
+  const title = req.format === 'pack' ? (req.filter?.subject ? 'Study pack' : 'All subjects') : titleFor(items);
   const subject = req.format === 'pack' ? (req.filter?.subject ?? 'Study pack') : items[0].q.subject;
   let blob: Blob;
   let ext: string = req.format;

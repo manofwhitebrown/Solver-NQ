@@ -1,5 +1,6 @@
 import type { ExportItem } from './markdown';
 import type { StudyPackFilter } from './options';
+import { plainTitle } from './plaintext';
 
 export function filterItems(items: ExportItem[], f: StudyPackFilter): ExportItem[] {
   return items.filter(({ q }) =>
@@ -12,5 +13,5 @@ export function filterItems(items: ExportItem[], f: StudyPackFilter): ExportItem
 
 /** Table of contents entries; page numbers are filled in by the PDF writer. */
 export function buildToc(items: ExportItem[]): Array<{ n: number; title: string; subject: string }> {
-  return items.map(({ q }, i) => ({ n: i + 1, title: q.text.split('\n')[0].slice(0, 70), subject: q.subject }));
+  return items.map(({ q }, i) => ({ n: i + 1, title: plainTitle(q.text), subject: q.subject }));
 }

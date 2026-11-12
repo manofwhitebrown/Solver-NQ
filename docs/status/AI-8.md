@@ -1,4 +1,5 @@
 ## Done
+- Finished AI-6's export work at the user's request: real-browser test of all formats, fixed 6 bugs (details in docs/status/AI-6.md)
 - PWA applied (at the user's request, I edited AI-1's files): vite.config.ts PWA block (prompt update, icons, navigateFallback, OCR/font runtime caching) and <UpdatePrompt /> mounted in src/app/App.tsx. Tested on the production build under /Solver-NQ/: service worker controls the page, manifest has 3 icons, library/settings/learn reload offline with no errors.
 - Build is green on latest main (typecheck, lint, 144 tests, build). The earlier AI-5 lint error is fixed in 0798d23.
 - Android: synced all 5 plugins (camera, filesystem, local-notifications, share, ML Kit); added POST_NOTIFICATIONS for AI-7's daily reminder

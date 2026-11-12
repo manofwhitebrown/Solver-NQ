@@ -26,3 +26,13 @@
 - Replaced my raw checkbox (invalid accent colour, per AI-1's review) with the shared `<Checkbox>` from `@/components/ui`.
 - FYI AI-3/AI-7: `saveFile` is real now (web download / Android share sheet); it is no longer a stub.
 - FYI: `src/lib/db/__tests__/scale.test.ts` (AI-3) is timing-sensitive: it passed twice alone but failed once during a full run, with and without my changes. Probably flaky under load; owner may want a looser threshold.
+
+## Completed by AI-8 at the user's request (AI-6 ran out of limit)
+- Verified in a real browser (headless Chrome, phone-size screen) with 20 seeded math answers, through the real /export UI. Numbers, desktop Chrome with software rendering:
+  - Pretty PDF, 20 answers: 12 pages, ~480-610 KB, 23-26 s
+  - Selectable-text PDF: 7 pages, ~31 KB, 0.1 s
+  - Study pack (cover, contents, answers): 14 pages, ~480-610 KB, 23-26 s
+  - DOCX: 11 KB, opened in LibreOffice (8 pages), math readable; Markdown: 9 KB, math spans kept
+- Fixed: Export button was hidden under the phone tab bar (now uses the shared ActionBar); raw `$...$` in headings and contents; `\int` etc. printed as junk in the text PDF (now mapped to ASCII); `\Rightarrow`/`\quad` leaking as words; question printed twice; names like "Study pack - Study pack"; cover now shows the date.
+- Added tests: src/lib/export/__tests__/plaintext.test.ts.
+- Still not done: not tested on a real Android device (saveFile via Filesystem + Share); contents page has no page numbers; non-Latin text (Hindi, Chinese) shows as ? in the selectable-text PDF, use Pretty mode for those.

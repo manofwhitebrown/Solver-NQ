@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Button, Chip, EmptyState, Spinner, toast } from '@/components/ui';
+import { ActionBar, Button, Chip, EmptyState, Spinner, toast } from '@/components/ui';
 import { listLibrary } from '@/lib/db';
 import {
   buildExport, defaultOptions, loadItems,
@@ -60,7 +60,7 @@ export default function ExportPage() {
   const isPdf = format === 'pdf';
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5 px-4 pb-32 pt-5">
+    <div className="mx-auto max-w-3xl space-y-5 px-4 pb-40 pt-5">
       <div data-no-print className="space-y-4">
         <div>
           <h1 className="text-2xl font-semibold">{isPack ? 'Study pack' : 'Export'}</h1>
@@ -101,14 +101,13 @@ export default function ExportPage() {
         {result && <ResultCard result={result} onShareError={(m) => toast(m, 'error')} />}
       </div>
 
-      <div data-no-print className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 px-4 pt-3 backdrop-blur"
-        style={{ paddingBottom: 'calc(0.75rem + var(--sab))' }}>
-        <div className="mx-auto flex max-w-3xl gap-2">
+      <div data-no-print>
+        <ActionBar>
           <Button block loading={busy} disabled={!items?.length} onClick={run}>
             {isPack ? 'Build study pack' : `Export ${FORMATS.find((f) => f.value === format)?.label}`}
           </Button>
           <Button variant="secondary" className="hidden lg:inline-flex" disabled={!items?.length} onClick={() => window.print()}>Print</Button>
-        </div>
+        </ActionBar>
       </div>
 
       <OptionsSheet open={sheet} onClose={() => setSheet(false)} isPack={isPack} isPdf={isPdf} isDocx={format === 'docx'}

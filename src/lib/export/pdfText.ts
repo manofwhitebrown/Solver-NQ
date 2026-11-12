@@ -1,6 +1,6 @@
 import type { ExportItem } from './markdown';
 import type { ResolvedOptions } from './options';
-import { markdownToPlain } from './plaintext';
+import { markdownToPlain, pdfSafe, plainTitle } from './plaintext';
 import { dateStamp } from './filename';
 
 type Progress = (done: number, total: number) => void;
@@ -21,18 +21,19 @@ export async function buildTextPdf(
   const write = (text: string, size: number, bold = false) => {
     doc.setFont('helvetica', bold ? 'bold' : 'normal');
     doc.setFontSize(size);
-    const lines: string[] = doc.splitTextToSize(text, W - M * 2);
+    const lines: string[] = doc.splitTextToSize(pdfSafe(text), W - M * 2);
     for (const line of lines) { ensure(lh); doc.text(line, M, y); y += size * 1.45; }
   };
 
   doc.setTextColor(0);
-  write(title, opts.fontSize + 9, true);
+  write(plainTitle(title, 80), opts.fontSize + 9, true);
   y += lh;
   items.forEach(({ q, a, image }, i) => {
     ensure(lh * 4);
-    write(`${i + 1}. ${q.text.split('\n')[0].slice(0, 90)}`, opts.fontSize + 3, true);
+    write(`${i + 1}. ${plainTitle(q.text, 90)}`, opts.fontSize + 3, true);
     if (opts.includeDate) write(`${q.subject} · ${dateStamp(q.createdAt)}`, opts.fontSize - 1);
-    write(markdownToPlain(q.text), opts.fontSize);
+    const rest = q.text.split('\n').slice(1).join('\n').trim();
+    if (rest) write(markdownToPlain(rest), opts.fontSize); // heading already shows line 1
     if (image) {
       const w = Math.min(W - M * 2, 300);
       const h = Math.min((image.height / image.width) * w, 240);

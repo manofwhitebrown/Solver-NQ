@@ -2,7 +2,8 @@ import type { Flashcard } from '@/types';
 import type { ExportItem } from './markdown';
 import type { ResolvedOptions, StudyPackFilter } from './options';
 import { buildToc } from './pack';
-import { markdownToPlain } from './plaintext';
+import { markdownToPlain, pdfSafe } from './plaintext';
+import { dateStamp } from './filename';
 
 /**
  * Study pack: cover page, table of contents, answers, optional flashcards.
@@ -23,6 +24,7 @@ export async function buildPackPdf(
   doc.setFont('helvetica', 'normal').setFontSize(14);
   doc.text(filter.subject ? filter.subject : 'All subjects', W / 2, H / 3 + 32, { align: 'center' });
   doc.text(`${items.length} answers`, W / 2, H / 3 + 54, { align: 'center' });
+  doc.setFontSize(11).setTextColor(110).text(dateStamp(Date.now()), W / 2, H / 3 + 80, { align: 'center' }).setTextColor(0);
 
   doc.addPage();
   doc.setFont('helvetica', 'bold').setFontSize(20).text('Contents', M, M + 10);
@@ -30,7 +32,7 @@ export async function buildPackPdf(
   let y = M + 44;
   for (const t of buildToc(items)) {
     if (y > H - M) { doc.addPage(); y = M; }
-    doc.text(`${t.n}. ${t.title}`, M, y);
+    doc.text(pdfSafe(`${t.n}. ${t.title}`), M, y);
     y += 20;
   }
 
@@ -46,7 +48,7 @@ export async function buildPackPdf(
     doc.setFont('helvetica', 'normal').setFontSize(11);
     y = M + 44;
     for (const c of cards) {
-      const lines: string[] = doc.splitTextToSize(`Q: ${markdownToPlain(c.front)}\nA: ${markdownToPlain(c.back)}`, W - M * 2);
+      const lines: string[] = doc.splitTextToSize(pdfSafe(`Q: ${markdownToPlain(c.front)}\nA: ${markdownToPlain(c.back)}`), W - M * 2);
       if (y + lines.length * 15 > H - M) { doc.addPage(); y = M; }
       doc.text(lines, M, y);
       y += lines.length * 15 + 12;

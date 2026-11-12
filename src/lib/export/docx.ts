@@ -1,6 +1,6 @@
 import type { ExportItem } from './markdown';
 import type { ResolvedOptions } from './options';
-import { markdownToPlain } from './plaintext';
+import { markdownToPlain, plainTitle } from './plaintext';
 import { dateStamp } from './filename';
 
 /** DOCX with math as readable text. `docx` is lazy-loaded. */
@@ -11,10 +11,10 @@ export async function buildDocx(items: ExportItem[], opts: ResolvedOptions, titl
     new Paragraph({ spacing: { after: 120 }, children: [new TextRun({ text, bold, size })] });
 
   const children: InstanceType<typeof Paragraph>[] = [
-    new Paragraph({ text: title, heading: HeadingLevel.TITLE }),
+    new Paragraph({ text: plainTitle(title, 80), heading: HeadingLevel.TITLE }),
   ];
   for (const { q, a, image } of items) {
-    children.push(new Paragraph({ text: q.text.split('\n')[0].slice(0, 80), heading: HeadingLevel.HEADING_1 }));
+    children.push(new Paragraph({ text: plainTitle(q.text, 80), heading: HeadingLevel.HEADING_1 }));
     if (opts.includeDate) children.push(para(`${q.subject} · ${dateStamp(q.createdAt)}`));
     children.push(para('Question', true), ...markdownToPlain(q.text).split('\n').map((l) => para(l)));
     if (image) {

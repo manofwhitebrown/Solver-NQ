@@ -11,7 +11,8 @@ async function blocksFor(item: ExportItem, opts: ResolvedOptions): Promise<strin
   const { q, a, image } = item;
   const out: string[] = [];
   const meta = opts.includeDate ? `<div class="meta">${q.subject} · ${dateStamp(q.createdAt)}</div>` : '';
-  out.push(`<h2>${await mdToHtml(q.text.split('\n')[0])}</h2>${meta}<p>${await mdToHtml(q.text)}</p>` +
+  const rest = q.text.split('\n').slice(1).join('\n').trim(); // heading already shows line 1
+  out.push(`<h2>${await mdToHtml(q.text.split('\n')[0])}</h2>${meta}${rest ? `<p>${await mdToHtml(rest)}</p>` : ''}` +
     (image ? `<img src="${image.dataUrl}" style="max-width:70%;max-height:280px;margin:.4em 0">` : ''));
   if (!a) return out;
   out.push(`<h3>Final answer</h3><p>${await mdToHtml(a.finalAnswer)}</p>`);

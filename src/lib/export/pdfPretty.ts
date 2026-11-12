@@ -7,10 +7,11 @@ type Progress = (done: number, total: number) => void;
 const SCALE = 2; // raster resolution multiplier
 
 async function blocksFor(item: ExportItem, opts: ResolvedOptions): Promise<string[]> {
-  const { q, a } = item;
+  const { q, a, image } = item;
   const out: string[] = [];
   const meta = opts.includeDate ? `<div class="meta">${q.subject} · ${dateStamp(q.createdAt)}</div>` : '';
-  out.push(`<h2>${await mdToHtml(q.text.split('\n')[0])}</h2>${meta}<p>${await mdToHtml(q.text)}</p>`);
+  out.push(`<h2>${await mdToHtml(q.text.split('\n')[0])}</h2>${meta}<p>${await mdToHtml(q.text)}</p>` +
+    (image ? `<img src="${image.dataUrl}" style="max-width:70%;max-height:280px;margin:.4em 0">` : ''));
   if (!a) return out;
   out.push(`<h3>Final answer</h3><p>${await mdToHtml(a.finalAnswer)}</p>`);
   if (opts.stepsMode === 'full') {

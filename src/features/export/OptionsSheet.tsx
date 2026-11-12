@@ -5,7 +5,7 @@ import { Check } from './Check';
 import { SUBJECT_OPTIONS } from './subjects';
 
 interface Props {
-  open: boolean; onClose: () => void; isPack: boolean; isPdf: boolean;
+  open: boolean; onClose: () => void; isPack: boolean; isPdf: boolean; isDocx: boolean;
   opts: ResolvedOptions; setOpts: (o: ResolvedOptions) => void;
   filter: StudyPackFilter; setFilter: (f: StudyPackFilter) => void;
 }
@@ -13,7 +13,7 @@ interface Props {
 const toMs = (v: string, end = false) =>
   v ? new Date(`${v}T${end ? '23:59:59' : '00:00:00'}`).getTime() : undefined;
 
-export function OptionsSheet({ open, onClose, isPack, isPdf, opts, setOpts, filter, setFilter }: Props) {
+export function OptionsSheet({ open, onClose, isPack, isPdf, isDocx, opts, setOpts, filter, setFilter }: Props) {
   const set = <K extends keyof ResolvedOptions>(k: K, v: ResolvedOptions[K]) => setOpts({ ...opts, [k]: v });
   return (
     <BottomSheet open={open} onClose={onClose} title="Export options">
@@ -70,6 +70,9 @@ export function OptionsSheet({ open, onClose, isPack, isPdf, opts, setOpts, filt
           </>
         )}
 
+ {(isPdf || isPack || isDocx) && (
+          <Check label="Include original question image" checked={opts.includeImage} onChange={(v) => set('includeImage', v)} />
+        )}
         <Check label="Include date" checked={opts.includeDate} onChange={(v) => set('includeDate', v)} />
         <Button block onClick={onClose}>Done</Button>
       </div>

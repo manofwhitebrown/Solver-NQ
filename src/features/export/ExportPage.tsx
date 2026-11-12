@@ -111,7 +111,7 @@ export default function ExportPage() {
         </div>
       </div>
 
-      <OptionsSheet open={sheet} onClose={() => setSheet(false)} isPack={isPack} isPdf={isPdf}
+      <OptionsSheet open={sheet} onClose={() => setSheet(false)} isPack={isPack} isPdf={isPdf} isDocx={format === 'docx'}
         opts={opts} setOpts={setOpts} filter={filter} setFilter={setFilter} />
     </div>
   );

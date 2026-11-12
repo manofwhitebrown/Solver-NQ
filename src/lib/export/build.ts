@@ -4,6 +4,7 @@ import { itemsToMarkdown } from './markdown';
 import { markdownToPlain } from './plaintext';
 import { makeFilename } from './filename';
 import { filterItems } from './pack';
+import { loadImage } from './image';
 import { resolveOptions, type ExportConfig, type StudyPackFilter } from './options';
 
 export type ExportFormat = 'pdf' | 'md' | 'docx' | 'txt' | 'json' | 'pack';
@@ -34,6 +35,9 @@ export async function buildExport(req: BuildRequest): Promise<BuildResult> {
   const items = req.format === 'pack'
     ? filterItems(await listLibrary({}), req.filter ?? {})
     : await loadItems(req.ids ?? []);
+  if (opts.includeImage && ['pdf', 'pack', 'docx'].includes(req.format)) {
+    for (const it of items) if (it.q.imageBlobId) it.image = await loadImage(it.q.imageBlobId);
+  }
   if (!items.length) throw new Error(req.format === 'pack' ? 'No answers match this filter' : 'Nothing to export');
 
   const title = req.format === 'pack' ? 'Study pack' : titleFor(items);

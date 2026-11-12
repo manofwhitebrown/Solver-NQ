@@ -11,13 +11,12 @@
 
 ## In progress / not done
 - Pretty PDF: needs a real browser check (math rendering, page breaks, time and size for a 20-answer pack). A single block taller than a page is currently scaled down to fit, not split.
-- "Include original question image" is NOT implemented (not offered in the UI). Needs the image from AI-3's `src/lib/db/images.ts`; will add once I confirm its API.
+- "Include original question image" now works for PDF (both styles), study pack and DOCX (downscaled JPEG, white background). Not in Markdown/TXT/JSON. Only verified with a generated JPEG in Node tests, not with real saved scans in a browser.
 - Markdown "round-trips" is only checked as: math delimiters and structure are preserved. There is no importer, so no true round-trip test.
 - DOCX is checked structurally (valid zip with word/document.xml). Not opened in Word.
 - Android: `saveFile` untested on a device. `npx cap sync` is needed so the filesystem/share plugins are in the APK.
 
 ## Needs from others
-- AI-3: the library's selection bar should link to `/export?ids=<id1>,<id2>` (ids are question ids) and a "Study pack" entry to `/export` with no ids.
 - AI-8: run `npx cap sync android` in the APK workflow so @capacitor/filesystem and @capacitor/share are included.
 - AI-5: `src/lib/tts.ts:31` has a lint error (no-useless-escape).
 

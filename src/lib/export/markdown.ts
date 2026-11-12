@@ -2,7 +2,9 @@ import type { Question, Answer } from '@/types';
 import type { ResolvedOptions } from './options';
 import { dateStamp } from './filename';
 
-export interface ExportItem { q: Question; a?: Answer }
+import type { LoadedImage } from './image';
+
+export interface ExportItem { q: Question; a?: Answer; image?: LoadedImage }
 
 /** One answer as Markdown. Math stays as $...$ / $$...$$ so it round-trips. */
 export function itemToMarkdown(item: ExportItem, opts: ResolvedOptions, level = 2): string {

@@ -28,11 +28,18 @@ export async function buildTextPdf(
   doc.setTextColor(0);
   write(title, opts.fontSize + 9, true);
   y += lh;
-  items.forEach(({ q, a }, i) => {
+  items.forEach(({ q, a, image }, i) => {
     ensure(lh * 4);
     write(`${i + 1}. ${q.text.split('\n')[0].slice(0, 90)}`, opts.fontSize + 3, true);
     if (opts.includeDate) write(`${q.subject} · ${dateStamp(q.createdAt)}`, opts.fontSize - 1);
     write(markdownToPlain(q.text), opts.fontSize);
+    if (image) {
+      const w = Math.min(W - M * 2, 300);
+      const h = Math.min((image.height / image.width) * w, 240);
+      ensure(h + lh);
+      doc.addImage(image.dataUrl, 'JPEG', M, y, (image.width / image.height) * h > w ? w : (image.width / image.height) * h, h);
+      y += h + lh;
+    }
     if (a) {
       write('Final answer', opts.fontSize, true);
       write(markdownToPlain(a.finalAnswer), opts.fontSize);

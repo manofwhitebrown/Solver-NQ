@@ -21,7 +21,8 @@ const featureRoutes: RouteObject[] = [
 const MAIN: Array<[path: string, name: string]> = [
   ['library', 'Library'], ['learn', 'Learn'], ['scan', 'Scan'], ['export', 'Export'], ['graph', 'Graph'],
 ];
-const claimed = new Set(featureRoutes.map((r) => (r.index ? '' : r.path)));
+// Feature paths may be written with or without a leading slash.
+const claimed = new Set(featureRoutes.map((r) => (r.index ? '' : (r.path ?? '').replace(/^\//, ''))));
 const placeholders: RouteObject[] = MAIN.filter(([p]) => !claimed.has(p)).map(([path, name]) => ({
   path,
   element: createElement(Placeholder, { name }),

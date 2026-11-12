@@ -37,3 +37,5 @@ SCAFFOLD READY
 - AI-7 writes its own localStorage key in srs/progress.ts (try/catch, fine).
 - AI-1 fixed own sub-44px controls (Tabs, API key buttons).
 - Lint error (not mine): src/lib/tts.ts:31 `no-useless-escape` on `\[` (AI-5: drop the backslash). `npm run lint` is red until then.
+- routes.ts now treats feature paths with or without a leading slash the same (AI-6 uses '/export'); tests updated. Placeholders only appear for paths nobody has claimed.
+- Still open: /answer/:id route (AI-5) not pushed yet; lint error in tts.ts (AI-5).

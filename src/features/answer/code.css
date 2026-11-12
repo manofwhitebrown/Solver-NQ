@@ -1,0 +1,6 @@
+/* Minimal syntax colours built from the design tokens, so light and dark both work. */
+.hljs-code .hljs-keyword, .hljs-code .hljs-built_in, .hljs-code .hljs-literal { color: rgb(var(--accent)); font-weight: 600; }
+.hljs-code .hljs-string, .hljs-code .hljs-attr { color: rgb(var(--ok)); }
+.hljs-code .hljs-number, .hljs-code .hljs-symbol { color: rgb(var(--warn)); }
+.hljs-code .hljs-comment, .hljs-code .hljs-quote { color: rgb(var(--muted)); font-style: italic; }
+.hljs-code .hljs-title, .hljs-code .hljs-function { color: rgb(var(--bad)); }

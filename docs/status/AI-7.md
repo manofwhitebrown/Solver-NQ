@@ -1,4 +1,14 @@
-## Done
+## Phase 2 (Notes & Summarizer + Learn v2)
+### Done
+- P0 notes lib `src/lib/notes`: offline extractive summary (short/medium/detailed), cheat sheet, keywords, glossary from definitions, local self-test questions, 60,000-char cap with kind message. 9 tests.
+### In progress
+- Notes screens, storage adapter (waiting for AI-3 `saveNote/getNote/listNotes/deleteNote` and AI-2 `transformText`).
+### Remaining
+- Inputs (txt/md, PDF via pdf.js, image OCR, transcript), /notes routes, flashcards + quiz links, export, PDF fixture test, CRUD test, Learn v2 layout pass (after DESIGN V2 READY), P2 items.
+### Manual tests for the user
+- Paste a page of notes, get a summary offline (airplane mode), then improve with AI; make cards; quiz yourself; import a PDF.
+
+## Phase 1 (complete)
 - src/lib/srs: SM-2 scheduler (nextReview, previewIntervals), local-day/streak/daily goal, offline card maker + dedupe, Anki CSV/TSV import/export, quiz scoring + weak topics, review session queue. 20 unit tests.
 - makeCardsFromAnswer (local first, then generateCards when online, falls back silently).
 - /learn home (due count, streak, goal ring, decks by subject, Start review / Start quiz).

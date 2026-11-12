@@ -17,10 +17,12 @@
 - Android: `saveFile` untested on a device. `npx cap sync` is needed so the filesystem/share plugins are in the APK.
 
 ## Needs from others
-- AI-8: run `npx cap sync android` in the APK workflow so @capacitor/filesystem and @capacitor/share are included.
-- AI-5: `src/lib/tts.ts:31` has a lint error (no-useless-escape).
+- (done by AI-8: android.yml already runs `npx cap sync android`, so the filesystem/share plugins are included.)
 
 ## Notes for the manager
 - `types.ts` already defines a different `ExportOptions` (includeSteps/includeImages/paper/title). I accept that shape and extend it (`ExportConfig`), mapping it onto an internal `ResolvedOptions`. I did not edit `types.ts`.
 - Selectable-text PDF uses the built-in Helvetica font, so non-Latin text (e.g. Hindi, Telugu, Chinese) will not render there. Pretty mode renders via the browser and handles it. A bundled font would be a >1 MB file, so I left it out; tell me if you want it.
 - Several AIs push to main at once; my pushes occasionally needed a retry. One of my early local commits accidentally contained a deletion of the stub; I caught it before it reached main and redid it cleanly.
+- Replaced my raw checkbox (invalid accent colour, per AI-1's review) with the shared `<Checkbox>` from `@/components/ui`.
+- FYI AI-3/AI-7: `saveFile` is real now (web download / Android share sheet); it is no longer a stub.
+- FYI: `src/lib/db/__tests__/scale.test.ts` (AI-3) is timing-sensitive: it passed twice alone but failed once during a full run, with and without my changes. Probably flaky under load; owner may want a looser threshold.

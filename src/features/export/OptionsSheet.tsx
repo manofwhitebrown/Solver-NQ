@@ -1,7 +1,6 @@
-import { BottomSheet, Button, Field, Select, Tabs } from '@/components/ui';
+import { BottomSheet, Button, Checkbox, Field, Select, Tabs } from '@/components/ui';
 import type { Subject } from '@/types';
 import type { ResolvedOptions, StudyPackFilter } from '@/lib/export';
-import { Check } from './Check';
 import { SUBJECT_OPTIONS } from './subjects';
 
 interface Props {
@@ -36,8 +35,8 @@ export function OptionsSheet({ open, onClose, isPack, isPdf, isDocx, opts, setOp
                   onChange={(e) => setFilter({ ...filter, to: toMs(e.target.value, true) })} />
               </Field>
             </div>
-            <Check label="Starred only" checked={!!filter.starred} onChange={(v) => setFilter({ ...filter, starred: v || undefined })} />
-            <Check label="Include flashcards section" checked={opts.includeCards} onChange={(v) => set('includeCards', v)} />
+            <Checkbox label="Starred only" checked={!!filter.starred} onChange={(e) => { const v = e.target.checked; setFilter({ ...filter, starred: v || undefined }); }} />
+            <Checkbox label="Include flashcards section" checked={opts.includeCards} onChange={(e) => { const v = e.target.checked; set('includeCards', v); }} />
           </div>
         )}
 
@@ -71,9 +70,9 @@ export function OptionsSheet({ open, onClose, isPack, isPdf, isDocx, opts, setOp
         )}
 
  {(isPdf || isPack || isDocx) && (
-          <Check label="Include original question image" checked={opts.includeImage} onChange={(v) => set('includeImage', v)} />
+          <Checkbox label="Include original question image" checked={opts.includeImage} onChange={(e) => { const v = e.target.checked; set('includeImage', v); }} />
         )}
-        <Check label="Include date" checked={opts.includeDate} onChange={(v) => set('includeDate', v)} />
+        <Checkbox label="Include date" checked={opts.includeDate} onChange={(e) => { const v = e.target.checked; set('includeDate', v); }} />
         <Button block onClick={onClose}>Done</Button>
       </div>
     </BottomSheet>

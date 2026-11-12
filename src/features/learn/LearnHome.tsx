@@ -3,6 +3,7 @@ import { Button, Card, EmptyState, Skeleton } from '@/components/ui';
 import { currentStreak, goalProgress } from '@/lib/srs';
 import type { Subject } from '@/types';
 import { ProgressRing } from './ProgressRing';
+import { ReminderToggle } from './ReminderToggle';
 import { useLearnData } from './useLearnData';
 
 export function LearnHome() {
@@ -38,6 +39,8 @@ export function LearnHome() {
         </Link>
         <Link to="/learn/quiz"><Button block variant="secondary">Start quiz</Button></Link>
       </div>
+
+      <ReminderToggle />
 
       <div className="flex gap-5 text-[15px] font-medium text-accent">
         <Link to="/learn/stats" className="underline-offset-2 hover:underline">View stats</Link>

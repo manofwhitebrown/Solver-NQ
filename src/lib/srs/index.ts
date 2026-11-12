@@ -13,6 +13,7 @@ export * from './session';
 export * from './quizBuild';
 export * from './stats';
 export * from './importCards';
+export * from './reminder';
 
 /**
  * Build (not save) cards for a saved answer. Local first; if online, try to

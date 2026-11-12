@@ -8,10 +8,10 @@
 - Progress: "Reading... N%" while Tesseract runs (`onOcrProgress`; ML Kit has no progress, shows 0%). "Read with AI" button shown disabled with the reason until AI-2 ships `transcribeImage` (not in `src/lib/ai` yet).
 - P2: self-hosted Tesseract in `public/tesseract/` (worker, plain + SIMD LSTM cores, `lang/eng.traineddata.gz`, 11 MB). `src/lib/ocr/assets.ts` builds the URLs from the app base and picks the SIMD core by feature test; English is local, other languages still download from the CDN once. 2 tests. No `any` left in my folders.
 - P1 layout pass (Design v2): `/scan` uses PageHeader, a 3-step indicator (Capture, Crop, Check text), a touch-first capture card (Take a photo as the single primary action, 3-step hint, no "drop it here" on touch), a one-time dismissible crop hint, `ActionBar` (Rotate, Enhance, Read text) above the tab bar, crop handles with a 48 px hit area and a 20 px visual dot, ResultCard on Card/Stack with roomy spacing. Checked in headless Chromium at 390x844, 320x568, 640x360 landscape and 1280x800, light and dark: no horizontal overflow, action bar fits at 320. In landscape (360 px high) the steps and hint hide so the crop area and bar fit; the crop scrolls inside its box. Screenshots: `docs/screenshots/scan-*.jpg` (capture and crop steps; result cards not shot because OCR needs a network or the local Tesseract files).
+- "Read with AI" is wired to AI-2's `transcribeImage`; the text fills the same editable box (shows AI error messages as toasts, e.g. offline or no key). Not tested with a real key.
 ### Remaining
 - AI-8 (please): the service worker precaches the worker and both cores (about 8 MB) but NOT `tesseract/lang/eng.traineddata.gz` (.gz is outside the glob). Add it to the precache (or `includeAssets`) so the very first scan works offline. Consider dropping the plain core from precache and caching it at runtime only.
 - P2 language packs manager UI (list, sizes, download/delete, offline status), after the layout pass.
-- Wire the "Read with AI" button once AI-2 ships `transcribeImage` (not in `src/lib/ai` yet; button shows disabled with the reason).
 - Checked: no `any` left in src/lib/ocr or src/features/scan; OCR and PDF libs are lazy chunks (P2 item 9 done).
 - BLOCKED: P1 needs `DESIGN V2 READY` (AI-1 status still says SCAFFOLD READY; Page/PageHeader/Section/Stack primitives not in components/ui yet) and `transcribeImage` from AI-2 (not in src/lib/ai yet).
 - P1 (after `DESIGN V2 READY`): Scan v2 layout, Read-with-AI button, rotate hint, 320 px / landscape checks. P2: language packs manager, remove `any`.
@@ -19,6 +19,7 @@
 - `npm run lint` currently fails with 24 errors outside my folders: `docs/audit/tools/layout-audit.mjs` (browser/node globals not declared; needs an eslint ignore or globals) and `api/ask.ts`. My folders lint clean.
 - `scale.test.ts` (AI-3) is still a timing flake in slow sandboxes.
 ### Manual tests for the user
+0. With an AI key or free Gemini set: scan handwriting, tap "Read with AI"; the box should fill with the transcription (formulas as $...$). Offline it should show the offline message.
 0. Rotate hint: photograph text held sideways, read it; when the hint appears tap Rotate and read again.
 1. Android, camera: Scan > Take a photo > photograph printed text > crop > Read text. Text should appear within a few seconds.
 2. Offline: turn on airplane mode, repeat step 1. Native ML Kit should still read it (first run may need the model download once online).

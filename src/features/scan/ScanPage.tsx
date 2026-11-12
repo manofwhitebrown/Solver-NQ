@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ActionBar, Button, Card, PageHeader, Spinner, Stack, toast } from '@/components/ui';
+import { transcribeImage } from '@/lib/ai';
 import { friendlyMessage, OcrError, onOcrProgress, recognize } from '@/lib/ocr';
 import { isNative } from '@/lib/ocr/platform';
 import { CropEditor } from './CropEditor';
@@ -110,6 +111,20 @@ export function ScanPage() {
     }
   };
 
+  // Vision AI reads handwriting and formulas better; the result fills the same editable box.
+  const readWithAi = async (id: string) => {
+    const it = items.find(x => x.id === id);
+    if (!it) return;
+    patch(id, { busy: true, progress: undefined });
+    try {
+      const text = await transcribeImage(it.dataUrl);
+      patch(id, { text, confidence: 100, busy: false });
+    } catch (e) {
+      patch(id, { busy: false });
+      toast(e instanceof Error ? e.message : 'The AI reader could not read this image.', 'error');
+    }
+  };
+
   // Ask for one crop; the rest stay queued and are restored when the user comes back to /scan.
   const send = (id: string, text: string, dataUrl: string) => {
     saveQueue(items.filter(x => x.id !== id));
@@ -171,7 +186,7 @@ export function ScanPage() {
         {items.map(it => (
           <ResultCard key={it.id} item={it} onText={t => patch(it.id, { text: t })}
             onAsk={() => send(it.id, it.text.trim(), it.dataUrl)} onImageOnly={() => send(it.id, '', it.dataUrl)}
-            onRemove={() => removeItem(it.id)} onRotate={() => void rotateItem(it.id)} />
+            onRemove={() => removeItem(it.id)} onRotate={() => void rotateItem(it.id)} onReadAi={() => void readWithAi(it.id)} />
         ))}
       </Stack>
       {source && !pdf && (

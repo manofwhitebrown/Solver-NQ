@@ -1,12 +1,13 @@
 ## Done
-- Cloned repo; main has no scaffold yet (no AI-1 SCAFFOLD READY).
-- Prepared pure SRS logic locally (not pushed, waiting for scaffold): SM-2 scheduler, local-day/streak/goal, offline card maker + dedupe, Anki-style CSV/TSV import/export. 14 Vitest tests pass in a scratch project.
+- src/lib/srs: SM-2 scheduler (nextReview, previewIntervals), local-day/streak/daily goal, offline card maker + dedupe, Anki CSV/TSV import/export, quiz scoring + weak topics, review session queue. 20 unit tests.
+- makeCardsFromAnswer (local first, then generateCards when online, falls back silently).
+- /learn home (due count, streak, goal ring, decks by subject, Start review / Start quiz).
+- /learn/review: flip card, 4 grade buttons with next-interval preview, keyboard (Space, 1-4), swipe on phone (left Again, right Good, up Easy, down Hard), session summary.
 ## In progress
-- Waiting for SCAFFOLD READY, then I push src/lib/srs/** and start src/features/learn/** (/learn, /learn/review, /learn/quiz, stats, card manager).
+- /learn/quiz (generateQuiz + local fallback, MC and self-graded short answer, timed mode, results with weak topics, retry wrong).
 ## Needs from others
-- AI-1: post SCAFFOLD READY (package.json with vitest, Vite, types.ts stubs, routes).
-- AI-1: please include `vitest` as a dev dependency and a `test` script in package.json.
+- AI-1/AI-5: a shared Markdown+KaTeX renderer component would let cards show math. Card text is plain text for now.
+- AI-2: generateQuiz is a stub; I will build the local fallback so quiz works offline regardless.
 ## Notes for the manager
-- Design: interval is in days; Again relearns in 10 minutes; ease floor 1.3; streak survives until the end of the next local day.
-- `makeCardsFromAnswer` returns unsaved cards (UI previews, then calls putCard).
-- QuizItem type is referenced by generateQuiz but not defined in the contracts; I will import it from src/lib/ai once it exists.
+- Still to do after quiz: stats charts (SVG), card manager + CSV UI, card-preview UI after makeCardsFromAnswer, optional daily reminder (no-op on web).
+- Interval is in days; Again relearns in 10 minutes; ease floor 1.3; streak survives until end of the next local day.

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import type { Answer, Question } from '@/types';
-import { buildLocalQuiz, isCorrectChoice } from './quizBuild';
+import type { QuizItem } from '@/types';
+import { buildLocalQuiz, isCorrectChoice, sanitizeQuizItems } from './quizBuild';
 
 const mk = (i: number, ans = `ans${i}`) => ({
   q: { id: `q${i}`, text: `Q${i}`, subject: 'math', tags: [], starred: false, createdAt: 0 } as Question,
@@ -30,4 +31,19 @@ describe('buildLocalQuiz', () => {
     expect(buildLocalQuiz(e, 10, rng)).toHaveLength(2);
   });
   it('compares choices ignoring case and spacing', () => expect(isCorrectChoice(' X  = 2', 'x = 2')).toBe(true));
+});
+
+describe('sanitizeQuizItems', () => {
+  const item = (o: Partial<QuizItem>): QuizItem => ({ id: 'i', questionId: 'q', prompt: 'P', answer: 'A', ...o });
+  it('keeps valid multiple choice', () => {
+    const out = sanitizeQuizItems([item({ options: ['A', 'B', 'C', 'D'] })]);
+    expect(out[0].options).toEqual(['A', 'B', 'C', 'D']);
+  });
+  it('turns impossible or tiny option lists into short answer', () => {
+    const out = sanitizeQuizItems([item({ options: ['B', 'C', 'D', 'E'] }), item({ options: ['A'] }), item({ options: ['A', 'a'] })]);
+    expect(out.map((x) => x.options)).toEqual([undefined, undefined, undefined]);
+  });
+  it('drops items without a prompt or answer', () => {
+    expect(sanitizeQuizItems([item({ prompt: ' ' }), item({ answer: '' }), item({})])).toHaveLength(1);
+  });
 });

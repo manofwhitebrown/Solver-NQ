@@ -1,7 +1,7 @@
 import type { Subject } from '@/types';
 import { listLibrary } from '@/lib/db';
 import { generateQuiz } from '@/lib/ai';
-import { buildLocalQuiz } from '@/lib/srs';
+import { buildLocalQuiz, sanitizeQuizItems } from '@/lib/srs';
 import type { QuizConfig, QuizSession } from './quizTypes';
 
 /** Build a quiz from saved questions. Uses the AI when online; any failure falls back to the local builder. */
@@ -18,7 +18,8 @@ export async function loadQuiz(cfg: QuizConfig): Promise<QuizSession | { error: 
   if (typeof navigator === 'undefined' || navigator.onLine) {
     try {
       const ai = await generateQuiz(withAnswers.slice(0, count).map((e) => e.q.id), count);
-      if (ai.length) items = ai;
+      const safe = sanitizeQuizItems(ai);
+      if (safe.length) items = safe;
     } catch { /* offline, no key, or not implemented: keep local quiz */ }
   }
   const questions = Object.fromEntries(entries.map((e) => [e.q.id, e.q]));

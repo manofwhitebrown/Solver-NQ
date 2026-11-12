@@ -33,3 +33,17 @@ export function buildLocalQuiz(entries: LibraryEntry[], count: number, rng: () =
 }
 
 export const isCorrectChoice = (chosen: string, answer: string) => norm(chosen) === norm(answer);
+
+/**
+ * Make AI-made items safe to show. A multiple-choice item whose options are too few, or do not
+ * contain the answer, would be impossible to get right, so it becomes a self-graded short-answer item.
+ */
+export function sanitizeQuizItems(items: QuizItem[]): QuizItem[] {
+  return items
+    .filter((it) => it.prompt.trim() && it.answer.trim())
+    .map((it) => {
+      const opts = it.options?.map((o) => o.trim()).filter(Boolean);
+      const ok = opts && opts.length >= 2 && new Set(opts.map(norm)).size === opts.length && opts.some((o) => isCorrectChoice(o, it.answer));
+      return ok ? { ...it, options: opts } : { ...it, options: undefined };
+    });
+}

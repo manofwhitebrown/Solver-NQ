@@ -5,6 +5,7 @@ import { friendlyMessage, recognize } from '@/lib/ocr';
 import { CropEditor } from './CropEditor';
 import { cropBlob, loadBitmap, rotate90 } from './imageTools';
 import type { Rect } from './cropMath';
+import { PdfPicker } from './PdfPicker';
 import { ResultCard, type ScanItem } from './ResultCard';
 import type { ScanResult } from './result';
 
@@ -17,12 +18,15 @@ export function ScanPage() {
   const [rect, setRect] = useState<Rect>(FULL);
   const [enhance, setEnhance] = useState(true);
   const [items, setItems] = useState<ScanItem[]>([]);
+  const [pdf, setPdf] = useState<Blob | null>(null);
   const [loading, setLoading] = useState(false);
   const [dragging, setDragging] = useState(false);
   const cam = useRef<HTMLInputElement>(null);
   const gal = useRef<HTMLInputElement>(null);
 
+  const cancelPdf = useCallback(() => setPdf(null), []);
   const open = useCallback(async (blob: Blob) => {
+    if (blob.type === 'application/pdf') { setPdf(blob); return; }
     setLoading(true);
     try {
       (await loadBitmap(blob)).close(); // validates size and that it decodes
@@ -78,24 +82,26 @@ export function ScanPage() {
 
   const onDrop = (e: React.DragEvent) => {
     e.preventDefault(); setDragging(false);
-    const f = [...e.dataTransfer.files].find(x => x.type.startsWith('image/'));
-    if (f) void open(f); else toast('Please drop an image file.', 'error');
+    const f = [...e.dataTransfer.files].find(x => x.type.startsWith('image/') || x.type === 'application/pdf');
+    if (f) void open(f); else toast('Please drop an image or PDF file.', 'error');
   };
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 p-4"
       onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={onDrop}>
       <h1 className="text-xl font-semibold">Scan a question</h1>
-      {!source ? (
+      {pdf ? (
+        <PdfPicker file={pdf} onCancel={cancelPdf} onPage={img => { setPdf(null); void open(img); }} />
+      ) : !source ? (
         <Card className={`space-y-4 p-6 text-center ${dragging ? 'ring-2 ring-accent' : ''}`}>
           <p className="text-ink-soft">Take a photo, choose an image, paste one, or drop it here.</p>
           <div className="flex flex-wrap justify-center gap-2">
             <Button onClick={() => cam.current?.click()}>Take a photo</Button>
-            <Button variant="secondary" onClick={() => gal.current?.click()}>Choose image</Button>
+            <Button variant="secondary" onClick={() => gal.current?.click()}>Choose image or PDF</Button>
           </div>
           {loading && <Spinner />}
           <input ref={cam} type="file" accept="image/*" capture="environment" hidden onChange={pick} />
-          <input ref={gal} type="file" accept="image/*" hidden onChange={pick} />
+          <input ref={gal} type="file" accept="image/*,application/pdf" hidden onChange={pick} />
         </Card>
       ) : (
         <div className="space-y-3">

@@ -39,6 +39,8 @@ export function LearnHome() {
         <Link to="/learn/quiz"><Button block variant="secondary">Start quiz</Button></Link>
       </div>
 
+      <Link to="/learn/stats" className="text-[15px] font-medium text-accent underline-offset-2 hover:underline">View stats</Link>
+
       <h2 className="pt-2 text-base font-semibold">Decks</h2>
       {cards.length === 0 ? (
         <EmptyState

@@ -4,8 +4,9 @@
 - /learn home (due count, streak, goal ring, decks by subject, Start review / Start quiz).
 - /learn/review: flip card, 4 grade buttons with next-interval preview, keyboard (Space, 1-4), swipe on phone (left Again, right Good, up Easy, down Hard), session summary.
 - /learn/quiz: setup (subject/tag/count/timed), multiple choice + self-graded short answer, timed exam mode, results with score + weak topics, retry the wrong ones. Uses generateQuiz when online, falls back to a local builder (buildLocalQuiz) on any failure.
+- /learn/stats: streak, accuracy, 30-day retention, reviews per day (SVG bars), daily accuracy (SVG line), new/learning/mature card counts. Linked from /learn.
 ## In progress
-- Stats charts (SVG), card manager + CSV UI, card preview after make-cards, optional daily reminder.
+- Card manager + CSV import/export UI, card preview after make-cards, optional daily reminder.
 ## Needs from others
 - AI-1/AI-5: a shared Markdown+KaTeX renderer component would let cards show math. Card text is plain text for now.
 - AI-2: generateQuiz is a stub; I will build the local fallback so quiz works offline regardless.

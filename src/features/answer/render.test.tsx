@@ -15,7 +15,7 @@ const noop = () => undefined;
 
 describe('Markdown', () => {
   it('renders LaTeX with KaTeX (no network needed)', () => {
-    const html = renderToString(h(Markdown, null, 'Inline $x^2$ and block:\n\n$$\\frac{a}{b}$$'));
+    const html = renderToString(h(Markdown, null, 'Inline $x^2$ and block:\n\n$$\\frac{a}{b}$$\n\nand $$\n\\frac{c}{d}\n$$'));
     expect(html).toContain('class="katex"');
     expect(html).toContain('katex-display');
     expect(html).not.toMatch(/https?:\/\/(?!www\.w3\.org)/); // nothing fetched from a CDN

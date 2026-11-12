@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Share } from '@capacitor/share';
 import type { Answer, Question } from '@/types';
-import { BottomSheet, Button, Card, EmptyState, Skeleton, Spinner, toast } from '@/components/ui';
+import { Button, Card, EmptyState, PageHeader, Skeleton, Spinner, Stack, toast } from '@/components/ui';
 import { tts } from '@/lib/tts';
 import * as ai from '@/lib/ai';
 import { ActionChips } from './ActionChips';
@@ -10,9 +10,12 @@ import { answerToMarkdown } from './answerText';
 import { copyText } from './clipboard';
 import { FinalAnswerCard } from './FinalAnswerCard';
 import { FollowUpChat } from './FollowUpChat';
+import { FollowUpSheet } from './FollowUpSheet';
+import { MoreSheet } from './MoreSheet';
+import { PhoneBar } from './PhoneBar';
+import { QuestionCard } from './QuestionCard';
 import { findGraphable } from './graphFind';
 import { Icon } from './icons';
-import { Markdown } from './Markdown';
 import { ModelLabel } from './ModelLabel';
 import { Steps } from './Steps';
 import { TagsSheet } from './TagsSheet';
@@ -51,15 +54,18 @@ const primaryModel = (): string | undefined =>
   (ai as unknown as { getPrimaryModel?: () => string }).getPrimaryModel?.();
 
 const Shell = ({ children }: { children: React.ReactNode }) => (
-  <div className="mx-auto w-full max-w-5xl px-4 py-4 pb-8">{children}</div>
+  <>
+    <PageHeader title="Answer" back />
+    {children}
+  </>
 );
 
 function LoadingSkeleton() {
   return (
-    <div className="space-y-4" aria-busy="true" aria-label="Loading answer">
-      <Skeleton className="h-20 w-full" /><Skeleton className="h-28 w-full" />
-      <Skeleton className="h-6 w-24" /><Skeleton className="h-32 w-full" /><Skeleton className="h-32 w-full" />
-    </div>
+    <Stack gap={4} aria-busy="true" aria-label="Loading answer">
+      <Skeleton className="h-28 w-full" /><Skeleton className="h-32 w-full" />
+      <Skeleton className="h-40 w-full" /><Skeleton className="h-40 w-full" />
+    </Stack>
   );
 }
 
@@ -70,6 +76,7 @@ function AnswerBody({ q, a, updateQuestion, addFollowUp }: {
   const navigate = useNavigate();
   const [revealed, setRevealed] = useState(a.mode === 'answer' || a.steps.filter((s) => !s.id.startsWith('fu-')).length === 0);
   const [tagsOpen, setTagsOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const graphFn = findGraphable(q.text, a.finalAnswer);
 
@@ -81,35 +88,40 @@ function AnswerBody({ q, a, updateQuestion, addFollowUp }: {
       else await copy();
     } catch { /* user closed the share sheet */ }
   };
+  const actions = {
+    q, a, graphFn,
+    onStar: () => void updateQuestion({ starred: !q.starred }), onTags: () => setTagsOpen(true),
+    onCards: () => navigate(`/learn/cards/new?answer=${a.id}`), onExport: () => navigate(`/export?ids=${q.id}`),
+    onShare: () => void share(), onCopy: () => void copy(),
+  };
 
   return (
-    <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6">
-      <div className="min-w-0 space-y-4">
-        <Card className="p-4">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">{q.subject}</p>
-          <Markdown>{q.text}</Markdown>
-        </Card>
-        <Toolbar q={q} a={a} graphFn={graphFn}
-          onStar={() => void updateQuestion({ starred: !q.starred })} onTags={() => setTagsOpen(true)}
-          onCards={() => navigate(`/learn/cards/new?answer=${a.id}`)} onExport={() => navigate(`/export?ids=${q.id}`)}
-          onShare={() => void share()} onCopy={() => void copy()} />
-        <FinalAnswerCard text={a.finalAnswer} hidden={!revealed} onReveal={() => setRevealed(true)} />
-        {revealed && <VerifyBadge verified={a.verified} />}
-        {revealed && <ModelLabel model={a.model} primary={primaryModel()} />}
+    <div className="pb-20 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-8 lg:pb-0">
+      <Stack gap={8} className="min-w-0">
+        <Stack gap={4}>
+          <QuestionCard subject={q.subject} text={q.text} />
+          <Toolbar {...actions} />
+          <FinalAnswerCard text={a.finalAnswer} hidden={!revealed} onReveal={() => setRevealed(true)} />
+          {revealed && <VerifyBadge verified={a.verified} />}
+          {revealed && <ModelLabel model={a.model} primary={primaryModel()} />}
+        </Stack>
         <Steps steps={a.steps} initialMode={a.mode} onAllRevealed={(done) => done && setRevealed(true)} />
-        <ActionChips answerId={a.id} onStep={addFollowUp} />
-        <Button variant="secondary" block className="lg:hidden" onClick={() => setChatOpen(true)}>
-          <Icon name="chat" />Ask a follow-up
-        </Button>
-        {q.tags.length > 0 && <p className="text-sm text-muted">Tags: {q.tags.join(', ')}</p>}
-      </div>
-      <aside className="sticky top-4 hidden h-[calc(100dvh-2rem)] rounded-lg border border-line bg-surface p-4 lg:block" aria-label="Follow-up chat">
-        <h2 className="mb-3 text-lg font-semibold">Follow-up</h2>
-        <div className="h-[calc(100%-2.5rem)]"><FollowUpChat answerId={a.id} onStep={addFollowUp} /></div>
-      </aside>
-      <BottomSheet open={chatOpen} onClose={() => setChatOpen(false)} title="Follow-up">
-        <div className="h-[55dvh]"><FollowUpChat answerId={a.id} onStep={addFollowUp} /></div>
-      </BottomSheet>
+        <Stack gap={4}>
+          <ActionChips answerId={a.id} onStep={addFollowUp} />
+          <Button variant="secondary" block className="lg:hidden" onClick={() => setChatOpen(true)}>
+            <Icon name="chat" className="mr-2 h-5 w-5" />Ask a follow-up
+          </Button>
+          {q.tags.length > 0 && <p className="text-base text-ink-2">Tags: {q.tags.join(', ')}</p>}
+        </Stack>
+      </Stack>
+      <Card className="sticky top-6 hidden h-[calc(100dvh-3rem)] lg:block" aria-label="Follow-up chat">
+        <h2 className="mb-4 text-lg font-semibold">Follow-up</h2>
+        <div className="h-[calc(100%-2.75rem)]"><FollowUpChat answerId={a.id} onStep={addFollowUp} /></div>
+      </Card>
+      <PhoneBar q={q} onStar={actions.onStar} onCards={actions.onCards} onExport={actions.onExport} onMore={() => setMoreOpen(true)} />
+      <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} a={a} graphFn={graphFn}
+        onTags={actions.onTags} onShare={actions.onShare} onCopy={actions.onCopy} />
+      <FollowUpSheet open={chatOpen} onClose={() => setChatOpen(false)} answerId={a.id} onStep={addFollowUp} />
       <TagsSheet open={tagsOpen} tags={q.tags} onClose={() => setTagsOpen(false)} onChange={(tags) => void updateQuestion({ tags })} />
     </div>
   );

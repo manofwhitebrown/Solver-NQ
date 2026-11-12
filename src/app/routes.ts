@@ -37,7 +37,7 @@ if (!featureRoutes.some((r) => r.index || r.path === '')) {
 }
 
 // Every screen is wrapped in <Page> here, so gutters come from one place.
-const WIDE = new Set(['library', '/library', 'graph', 'learn', 'learn/cards', 'learn/stats', 'export', '/export', 'backup', '/backup', 'design']);
+const WIDE = new Set(['library', '/library', 'graph', 'learn', 'learn/cards', 'learn/stats', 'export', '/export', 'backup', '/backup', 'design', 'answer/:id']);
 function withPage(list: RouteObject[]): RouteObject[] {
   return list.map((r) => {
     if (r.children || !r.element) return r;

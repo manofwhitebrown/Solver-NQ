@@ -34,16 +34,16 @@ export function ActionChips({ answerId, onStep }: { answerId: string; onStep: (s
   );
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-3">
         {chip('simpler', 'Explain simpler', () => void askFollowUp('simpler'))}
         {chip('method', 'Another method', () => void askFollowUp('method'))}
         {chip('similar', 'Similar practice problem', () => void askSimilar())}
       </div>
       {practice && (
-        <Card className="space-y-3 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted">Practice problem</p>
-          <p>{practice}</p>
+        <Card className="space-y-3">
+          <p className="text-sm font-semibold text-muted">Practice problem</p>
+          <p className="text-read">{practice}</p>
           <div className="flex flex-wrap gap-2">
             <Link to={`/?text=${encodeURIComponent(practice)}`} className="inline-flex min-h-[44px] items-center rounded-md bg-accent px-5 text-[15px] font-semibold text-accent-ink">Solve it</Link>
             <Button variant="secondary" onClick={() => void copyText(practice).then((ok) => toast(ok ? 'Copied' : 'Could not copy', ok ? 'success' : 'error'))}>Copy</Button>

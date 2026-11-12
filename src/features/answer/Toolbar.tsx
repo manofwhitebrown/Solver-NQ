@@ -1,52 +1,36 @@
-import { useSyncExternalStore } from 'react';
 import { Link } from 'react-router-dom';
-import type { Answer, Question } from '@/types';
-import { Chip, IconButton, toast } from '@/components/ui';
-import { tts } from '@/lib/tts';
+import { Button, Cluster } from '@/components/ui';
 import { Icon } from './icons';
-import { answerToSpeech } from './answerText';
+import { useReadAloud, type AnswerActions } from './actions';
 
-const SPEEDS = [1, 1.25, 1.5, 0.75];
-
-interface Props {
-  q: Question; a: Answer; graphFn: string | null;
-  onStar: () => void; onTags: () => void; onCards: () => void; onExport: () => void; onShare: () => void; onCopy: () => void;
-}
-
-export function Toolbar({ q, a, graphFn, onStar, onTags, onCards, onExport, onShare, onCopy }: Props) {
-  const status = useSyncExternalStore(tts.subscribe, tts.getStatus);
-  const speak = () => {
-    if (!tts.isSupported()) { toast('Read aloud is not available on this device', 'error'); return; }
-    if (status === 'idle') tts.speak(answerToSpeech(a));
-    else if (status === 'speaking') tts.pause();
-    else tts.resume();
-  };
-  const cycleSpeed = () => tts.setRate(SPEEDS[(SPEEDS.indexOf(tts.getRate()) + 1) % SPEEDS.length]);
-
+/** Laptop: every action as a labelled button. (Phones use PhoneBar + MoreSheet.) */
+export function Toolbar({ q, a, graphFn, onStar, onTags, onCards, onExport, onShare, onCopy }: AnswerActions) {
+  const ra = useReadAloud(a);
   return (
-    <div className="-mx-4 flex items-center gap-1 overflow-x-auto px-4 pb-1" role="toolbar" aria-label="Answer actions">
-      <IconButton label={q.starred ? 'Remove star' : 'Save to starred'} aria-pressed={q.starred} onClick={onStar}
-        className={q.starred ? 'text-warn' : ''}><Icon name="star" filled={q.starred} /></IconButton>
-      <IconButton label="Tags" onClick={onTags}><Icon name="tag" /></IconButton>
-      <IconButton label="Make flashcards" onClick={onCards}><Icon name="cards" /></IconButton>
-      <IconButton label="Export" onClick={onExport}><Icon name="export" /></IconButton>
-      <IconButton label={status === 'speaking' ? 'Pause reading' : status === 'paused' ? 'Resume reading' : 'Read aloud'} onClick={speak}
-        className={status !== 'idle' ? 'text-accent' : ''}><Icon name="speaker" /></IconButton>
-      {status !== 'idle' && (
+    <Cluster gap={2} className="hidden lg:flex" role="toolbar" aria-label="Answer actions">
+      <Button variant="secondary" aria-pressed={q.starred} onClick={onStar} className={q.starred ? 'text-warn' : ''}>
+        <Icon name="star" filled={q.starred} className="mr-2 h-5 w-5" />{q.starred ? 'Starred' : 'Star'}
+      </Button>
+      <Button variant="secondary" onClick={onCards}><Icon name="cards" className="mr-2 h-5 w-5" />Cards</Button>
+      <Button variant="secondary" onClick={onExport}><Icon name="export" className="mr-2 h-5 w-5" />Export</Button>
+      <Button variant="secondary" onClick={onTags}><Icon name="tag" className="mr-2 h-5 w-5" />Tags</Button>
+      <Button variant="secondary" onClick={ra.toggle} aria-label={ra.label} className={ra.status !== 'idle' ? 'text-accent' : ''}>
+        <Icon name={ra.status === 'speaking' ? 'pause' : 'speaker'} className="mr-2 h-5 w-5" />{ra.status === 'idle' ? 'Read aloud' : ra.status === 'speaking' ? 'Pause' : 'Resume'}
+      </Button>
+      {ra.status !== 'idle' && (
         <>
-          <IconButton label="Stop reading" onClick={() => tts.stop()}><Icon name="stop" /></IconButton>
-          <Chip onClick={cycleSpeed} className="min-h-[44px] shrink-0" aria-label="Change reading speed">{tts.getRate()}x</Chip>
+          <Button variant="secondary" onClick={ra.stop}><Icon name="stop" className="mr-2 h-5 w-5" />Stop</Button>
+          <Button variant="secondary" onClick={ra.cycleSpeed} aria-label="Change reading speed">{ra.rate}x</Button>
         </>
       )}
-      <IconButton label="Share" onClick={onShare}><Icon name="share" /></IconButton>
-      <IconButton label="Copy" onClick={() => { onCopy(); }}><Icon name="copy" /></IconButton>
+      <Button variant="secondary" onClick={onShare}><Icon name="share" className="mr-2 h-5 w-5" />Share</Button>
+      <Button variant="secondary" onClick={onCopy}><Icon name="copy" className="mr-2 h-5 w-5" />Copy</Button>
       {graphFn && (
-        <Link to={`/graph?f=${encodeURIComponent(graphFn)}`} aria-label="Graph this" title="Graph this"
-          className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm font-medium text-accent hover:bg-raised">
+        <Link to={`/graph?f=${encodeURIComponent(graphFn)}`}
+          className="inline-flex min-h-[44px] items-center gap-2 rounded-md px-4 text-[15px] font-semibold text-accent hover:bg-raised">
           <Icon name="graph" />Graph this
         </Link>
       )}
-    </div>
+    </Cluster>
   );
 }
-

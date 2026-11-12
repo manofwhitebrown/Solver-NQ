@@ -9,7 +9,7 @@ permissions:
   id-token: write
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false  # let runs finish; many pushes would otherwise cancel the APK upload
 jobs:
   build:
     runs-on: ubuntu-latest

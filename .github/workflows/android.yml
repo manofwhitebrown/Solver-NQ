@@ -8,7 +8,7 @@ permissions:
   contents: write
 concurrency:
   group: android-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false  # let runs finish; many pushes would otherwise cancel the APK upload
 jobs:
   apk:
     runs-on: ubuntu-latest

@@ -23,6 +23,8 @@
 
 - **APK failure, most likely cause #2:** Dependabot had merged `gradle-wrapper 8.14.3 -> 9.9.0` (android/) and `actions/upload-artifact 4 -> 7`. Capacitor 8 / AGP 8.13 are built for Gradle 8.x. Reverted the wrapper files to 8.14.3 (jar, gradlew, gradlew.bat, properties), pinned upload-artifact back to v4, and set Dependabot to ignore major bumps for gradle and github-actions too. Could not run Gradle here (services.gradle.org and dl.google.com are blocked in my sandbox), so this is unconfirmed until the Actions run.
 
+- **APK build is now green on Gradle** (user's log: BUILD SUCCESSFUL in 2m35s after the wrapper revert). The run then showed "The operation was canceled": `cancel-in-progress: true` let the next push cancel it before the artifact upload. Set `cancel-in-progress: false` in android.yml and web.yml (queued runs keep only the newest).
+
 ## In progress
 - Waiting for the first Android APK run with Node 22 to see if another failure appears.
 

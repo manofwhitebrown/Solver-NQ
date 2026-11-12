@@ -25,8 +25,8 @@ export function Steps({ steps, initialMode, onAllRevealed }: {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Steps</h2>
         <div className="flex gap-2">
-          <Chip selected={mode === 'learn'} onClick={() => switchMode('learn')}>Learn</Chip>
-          <Chip selected={mode === 'answer'} onClick={() => switchMode('answer')}>Answer</Chip>
+          <Chip selected={mode === 'learn'} className="min-h-[44px]" onClick={() => switchMode('learn')}>Learn</Chip>
+          <Chip selected={mode === 'answer'} className="min-h-[44px]" onClick={() => switchMode('answer')}>Answer</Chip>
         </div>
       </div>
       {visible.map((s, i) => <StepCard key={s.id} n={i + 1} step={s} />)}

@@ -12,7 +12,7 @@ export function TagsSheet({ open, tags, onClose, onChange }: {
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2">
           {tags.length === 0 && <p className="text-sm text-muted">No tags yet.</p>}
-          {tags.map((t) => <Chip key={t} onClick={() => onChange(tags.filter((x) => x !== t))} aria-label={`Remove tag ${t}`}>{t} ×</Chip>)}
+          {tags.map((t) => <Chip key={t} className="min-h-[44px]" onClick={() => onChange(tags.filter((x) => x !== t))} aria-label={`Remove tag ${t}`}>{t} ×</Chip>)}
         </div>
         <div className="flex gap-2">
           <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Add a tag" aria-label="New tag"

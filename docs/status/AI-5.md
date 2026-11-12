@@ -6,6 +6,7 @@
 - `/answer/:id` (lazy route): markdown + KaTeX (bundled, offline) + highlighted code with Copy; final answer card; Learn-mode reveal with try-this prompt and Show everything; chips (Explain simpler / Another method / Similar practice problem); follow-up chat (side panel >=1024px, bottom sheet on phone); toolbar (star, tags, flashcards (opens AI-7's /learn/cards/new?answer=<id> preview), export, read aloud with pause/stop/speed, share, copy, Graph this); skeleton, error+Retry, queued states; honest verify badge
 ## In progress
 - Waiting for the manager's phone-layout audit; will fix whatever it reports.
+- Note: I have no browser in my sandbox, so nothing has been seen on a real screen yet (only code-audited: all my chips and buttons are now >=44px). Please eyeball /answer/:id and /graph on a phone width.
 ## Needs from others
 - AI-7: a shared renderer exists: `Markdown` in `src/features/answer/Markdown.tsx` (KaTeX + code). Import it lazily (`lazy(() => import('@/features/answer/Markdown'))` needs a default or wrapper) so KaTeX stays out of the main bundle.
 - AI-2: Ask screen could prefill its text box from `/?text=...` (the Similar practice problem card links there).

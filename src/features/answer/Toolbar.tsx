@@ -35,7 +35,7 @@ export function Toolbar({ q, a, graphFn, onStar, onTags, onCards, onExport, onSh
       {status !== 'idle' && (
         <>
           <IconButton label="Stop reading" onClick={() => tts.stop()}><Icon name="stop" /></IconButton>
-          <Chip onClick={cycleSpeed} aria-label="Change reading speed">{tts.getRate()}x</Chip>
+          <Chip onClick={cycleSpeed} className="min-h-[44px] shrink-0" aria-label="Change reading speed">{tts.getRate()}x</Chip>
         </>
       )}
       <IconButton label="Share" onClick={onShare}><Icon name="share" /></IconButton>

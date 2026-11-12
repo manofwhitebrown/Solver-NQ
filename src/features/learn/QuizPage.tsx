@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { loadNoteQuiz } from './loadNoteQuiz';
 import { loadQuiz } from './loadQuiz';
 import { QuizResults } from './QuizResults';
 import { QuizRun } from './QuizRun';
@@ -11,6 +13,18 @@ export function QuizPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
   const [run, setRun] = useState(0); // bump to remount QuizRun on retry
+  const noteId = useSearchParams()[0].get('note');
+
+  useEffect(() => {
+    if (!noteId) return;
+    let live = true;
+    setLoading(true);
+    loadNoteQuiz(noteId)
+      .then((r) => { if (!live) return; if ('error' in r) setError(r.error); else { setSession(r); setOutcomes(null); setRun((n) => n + 1); } })
+      .catch(() => { if (live) setError('Could not load the note. Please try again.'); })
+      .finally(() => { if (live) setLoading(false); });
+    return () => { live = false; };
+  }, [noteId]);
 
   const start = async (cfg: QuizConfig) => {
     setLoading(true); setError(undefined);

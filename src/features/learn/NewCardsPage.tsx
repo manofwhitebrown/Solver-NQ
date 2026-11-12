@@ -3,11 +3,14 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, Card, Checkbox, EmptyState, Skeleton, Textarea, toast } from '@/components/ui';
 import { putCard } from '@/lib/db';
 import { makeCardsFromAnswer } from '@/lib/srs';
+import { cardsFromNote } from './NewNotesLoader';
 import type { Flashcard } from '@/types';
 
 /** Preview cards made from a saved answer. Nothing is saved until the user confirms. */
 export function NewCardsPage() {
-  const answerId = useSearchParams()[0].get('answer');
+  const params = useSearchParams()[0];
+  const answerId = params.get('answer');
+  const noteId = params.get('note');
   const navigate = useNavigate();
   const [cards, setCards] = useState<Flashcard[] | null>(null);
   const [picked, setPicked] = useState<Set<string>>(new Set());
@@ -15,21 +18,21 @@ export function NewCardsPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!answerId) { setFailed(true); return; }
+    if (!answerId && !noteId) { setFailed(true); return; }
     let live = true;
-    makeCardsFromAnswer(answerId)
+    (noteId ? cardsFromNote(noteId) : makeCardsFromAnswer(answerId!))
       .then((c) => { if (live) { setCards(c); setPicked(new Set(c.map((x) => x.id))); } })
       .catch(() => { if (live) setFailed(true); });
     return () => { live = false; };
-  }, [answerId]);
+  }, [answerId, noteId]);
 
   if (failed) {
-    return <EmptyState title="Could not make cards" text="That answer was not found. Open a saved answer and try again."
+    return <EmptyState title="Could not make cards" text="That answer or note was not found. Open it from your library or notes and try again."
       action={<Link to="/library"><Button variant="secondary">Go to library</Button></Link>} />;
   }
   if (!cards) return <div className="p-5"><Skeleton className="h-48 w-full" /></div>;
   if (cards.length === 0) {
-    return <EmptyState title="No new cards" text="Every card for this answer already exists in your decks."
+    return <EmptyState title="No new cards" text="Every card for this already exists in your decks."
       action={<Link to="/learn/cards"><Button variant="secondary">Manage cards</Button></Link>} />;
   }
 

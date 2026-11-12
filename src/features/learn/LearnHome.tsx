@@ -52,6 +52,7 @@ export function LearnHome() {
       <div className="flex gap-5 text-[15px] font-medium text-accent">
         <Link to="/learn/stats" className="underline-offset-2 hover:underline">View stats</Link>
         <Link to="/learn/cards" className="underline-offset-2 hover:underline">Manage cards</Link>
+        <Link to="/notes" className="underline-offset-2 hover:underline">Notes</Link>
       </div>
 
       <h2 className="pt-2 text-base font-semibold">Decks</h2>

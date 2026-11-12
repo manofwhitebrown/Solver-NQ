@@ -1,12 +1,21 @@
 ## Phase 2 (Notes & Summarizer + Learn v2)
 ### Done
-- P0 notes lib `src/lib/notes`: offline extractive summary (short/medium/detailed), cheat sheet, keywords, glossary from definitions, local self-test questions, 60,000-char cap with kind message. 9 tests.
+- P0 notes lib `src/lib/notes`: offline extractive summary (short/medium/detailed), cheat sheet, keywords, glossary, local self-test questions, 60,000-char cap, PDF text via pdf.js (lazy; scanned pages -> OCR), transcript cleaner, cards/quiz from a note, Markdown/TXT export, AI adapter (`transform`, uses AI-2's `transformText` when it exists). 21 tests (incl. PDF fixture, note CRUD with fake-indexeddb).
+- P0 screens `src/features/notes`: `/notes` (search, tags), `/notes/new` (paste / file / PDF / photo / transcript, edit before processing, counts, cap notice with "Use the first part"), `/notes/:id` (Summary short/medium/detailed, Cheat sheet, Terms, Test me, Text; "Quick summary (offline)" + "Improve with AI"; flashcards, quiz, save .md/.txt, print/PDF, delete, tags).
+- Links: `/learn/cards/new?note=<id>` (preview, dedupe) and `/learn/quiz?note=<id>` (offline quiz from key terms); "Notes" link on /learn.
 ### In progress
-- Notes screens, storage adapter (waiting for AI-3 `saveNote/getNote/listNotes/deleteNote` and AI-2 `transformText`).
+- Learn v2 layout pass (P1).
 ### Remaining
-- Inputs (txt/md, PDF via pdf.js, image OCR, transcript), /notes routes, flashcards + quiz links, export, PDF fixture test, CRUD test, Learn v2 layout pass (after DESIGN V2 READY), P2 items.
+- P1: layout pass on /learn/*, audit items (review close button + progress bar, stats empty state, mathToPlain in card lists), TodayCard on /learn, reminder-after-reboot check. P2: deck colours/emoji, cram mode, `any` cleanup.
+### Needs from others
+- AI-2: `transformText(kind, text, opts, signal)` is looked up at run time; until it exists "Improve with AI" says AI is unavailable and the offline result stays. Tell me its return shape if it is not a plain Markdown string.
+- AI-1: I added `...notes` to `featureRoutes` in `src/app/routes.ts` (one line + import) and a "Notes" link on /learn. Please add Notes to nav if wanted.
+### Notes for the manager
+- AI quiz for a note is not used: `generateQuiz` works on saved library questions, so note quizzes are local only. AI "Test me" questions are shown as text (not stored; Note has no field for them).
+- Offline vs AI: a note with no stored `summary` shows the live offline summary; AI results are stored in `summary`/`cheatsheet`/`keyTerms`.
 ### Manual tests for the user
-- Paste a page of notes, get a summary offline (airplane mode), then improve with AI; make cards; quiz yourself; import a PDF.
+- Paste a page of notes, get a summary offline (airplane mode), then improve with AI; make cards; quiz yourself; import a PDF (also try a scanned one and a photo).
+- Print or PDF on a note: the tab bar and buttons should be hidden in the print preview.
 
 ## Phase 1 (complete)
 - src/lib/srs: SM-2 scheduler (nextReview, previewIntervals), local-day/streak/daily goal, offline card maker + dedupe, Anki CSV/TSV import/export, quiz scoring + weak topics, review session queue. 20 unit tests.

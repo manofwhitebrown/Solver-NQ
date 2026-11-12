@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Input, toast } from '@/components/ui';
+import { Card, Checkbox, Input, toast } from '@/components/ui';
 import { formatTime, loadReminderPrefs, parseTime, reminderService, saveReminderPrefs, type ReminderPrefs } from '@/lib/srs';
 
 /** Daily reminder switch. Only shown in the Android app; web has no scheduled notifications. */
@@ -19,11 +19,8 @@ export function ReminderToggle() {
 
   return (
     <Card className="flex items-center justify-between gap-4 py-3">
-      <label htmlFor="rm-on" className="flex min-h-[44px] flex-1 items-center gap-3 text-[15px] font-medium">
-        <input id="rm-on" type="checkbox" className="h-5 w-5" checked={prefs.enabled}
-          onChange={(e) => void apply({ ...prefs, enabled: e.target.checked })} />
-        Daily reminder
-      </label>
+      <Checkbox label="Daily reminder" className="flex-1" checked={prefs.enabled}
+        onChange={(e) => void apply({ ...prefs, enabled: e.target.checked })} />
       <Input type="time" aria-label="Reminder time" className="w-32" disabled={!prefs.enabled}
         value={formatTime(prefs.hour, prefs.minute)}
         onChange={(e) => { const t = parseTime(e.target.value); if (t) void apply({ ...prefs, ...t }); }} />

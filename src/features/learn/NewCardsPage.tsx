@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Button, Card, EmptyState, Skeleton, Textarea, toast } from '@/components/ui';
+import { Button, Card, Checkbox, EmptyState, Skeleton, Textarea, toast } from '@/components/ui';
 import { putCard } from '@/lib/db';
 import { makeCardsFromAnswer } from '@/lib/srs';
 import type { Flashcard } from '@/types';
@@ -54,10 +54,7 @@ export function NewCardsPage() {
         {cards.map((c) => (
           <li key={c.id}>
             <Card className={`flex flex-col gap-2 ${picked.has(c.id) ? '' : 'opacity-50'}`}>
-              <label className="flex min-h-[44px] items-center gap-3 text-sm font-medium">
-                <input type="checkbox" className="h-5 w-5" checked={picked.has(c.id)} onChange={() => toggle(c.id)} />
-                Keep this card
-              </label>
+              <Checkbox label="Keep this card" checked={picked.has(c.id)} onChange={() => toggle(c.id)} />
               <Textarea aria-label="Front" value={c.front} onChange={(e) => edit(c.id, { front: e.target.value })} className="min-h-[72px]" />
               <Textarea aria-label="Back" value={c.back} onChange={(e) => edit(c.id, { back: e.target.value })} className="min-h-[72px]" />
             </Card>

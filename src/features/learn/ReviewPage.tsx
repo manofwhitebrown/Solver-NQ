@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button, Card, EmptyState, Skeleton } from '@/components/ui';
 import { putCard } from '@/lib/db';
 import { answerCurrent, previewIntervals, recordReview, startSession, summary, type Grade, type Session } from '@/lib/srs';
+import { CardText } from './CardText';
 import { useLearnData } from './useLearnData';
 import { useSwipe } from './useSwipe';
 
@@ -73,14 +74,13 @@ export function ReviewPage() {
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-4 p-5" {...swipe}>
       <p className="text-sm text-muted">{session.queue.length} left</p>
-      <button
-        type="button" onClick={() => setFlipped((f) => !f)}
-        className="min-h-[16rem] rounded-lg border border-line bg-surface p-6 text-left shadow-soft transition active:scale-[.99]"
-        aria-label={flipped ? 'Show front' : 'Show answer'}
+      <div
+        onClick={(e) => { if (!(e.target as HTMLElement).closest('button, a')) setFlipped((f) => !f); }}
+        className="min-h-[16rem] cursor-pointer rounded-lg border border-line bg-surface p-6 text-left shadow-soft transition active:scale-[.99]"
       >
         <p className="mb-2 text-xs uppercase tracking-wide text-muted">{flipped ? 'Answer' : 'Question'}</p>
-        <p className="whitespace-pre-wrap text-lg leading-relaxed">{flipped ? current.back : current.front}</p>
-      </button>
+        <CardText>{flipped ? current.back : current.front}</CardText>
+      </div>
 
       {flipped ? (
         <div className="grid grid-cols-4 gap-2">

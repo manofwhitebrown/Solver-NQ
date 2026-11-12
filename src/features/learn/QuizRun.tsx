@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Card } from '@/components/ui';
 import { isCorrectChoice, remainingSeconds } from '@/lib/srs';
+import { CardText } from './CardText';
 import type { Outcome, QuizSession } from './quizTypes';
 
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
@@ -43,7 +44,7 @@ export function QuizRun({ session, onFinish }: { session: QuizSession; onFinish:
         <span>Question {i + 1} of {items.length}</span>
         {left !== null && <span className={left <= 30 ? 'font-semibold text-bad' : ''} aria-live="off">{mmss(left)}</span>}
       </div>
-      <Card><p className="whitespace-pre-wrap text-lg leading-relaxed">{item.prompt}</p></Card>
+      <Card><CardText>{item.prompt}</CardText></Card>
 
       {item.options ? (
         <div className="flex flex-col gap-2">
@@ -52,19 +53,19 @@ export function QuizRun({ session, onFinish }: { session: QuizSession; onFinish:
             return (
               <button key={o} type="button" disabled={chosen !== null} onClick={() => setChosen(o)}
                 className={`min-h-[44px] rounded-md border border-line bg-surface px-4 py-3 text-left text-[15px] transition ${state}`}>
-                {o}
+                <CardText>{o}</CardText>
               </button>
             );
           })}
         </div>
       ) : revealed ? (
         <Card className="border-accent"><p className="mb-1 text-xs uppercase tracking-wide text-muted">Answer</p>
-          <p className="whitespace-pre-wrap">{item.answer}</p></Card>
+          <CardText>{item.answer}</CardText></Card>
       ) : (
         <Button block onClick={() => setRevealed(true)}>Show answer</Button>
       )}
 
-      {answered && item.explanation && <p className="text-[15px] text-muted">{item.explanation}</p>}
+      {answered && item.explanation && <div className="text-[15px] text-muted"><CardText>{item.explanation}</CardText></div>}
 
       {item.options && chosen !== null && (
         <Button block onClick={() => record(isCorrectChoice(chosen, item.answer))}>

@@ -26,7 +26,7 @@ export function buildLocalCards(q: Question | undefined, a: Answer, maxStepCards
   if (a.finalAnswer.trim()) drafts.push({ front: qText, back: a.finalAnswer.trim() });
   a.steps.slice(0, maxStepCards).forEach((s, i) => {
     if (!s.body.trim()) return;
-    drafts.push({ front: `${qText}\nStep ${i + 1}: ${s.title || 'what is the next step?'}`, back: s.body.trim() });
+    drafts.push({ front: `${qText}\n\nStep ${i + 1}: ${s.title || 'what is the next step?'}`, back: s.body.trim() });
   });
   const text = [a.summary ?? '', ...a.steps.map((s) => s.body)].join('\n');
   drafts.push(...definitionsFrom(text).slice(0, 4));

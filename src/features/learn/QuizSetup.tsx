@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, Field, Input, Select } from '@/components/ui';
+import { Button, Card, Checkbox, Field, Input, Select } from '@/components/ui';
 import type { QuizConfig } from './quizTypes';
 
 const SUBJECTS = ['', 'math', 'physics', 'chemistry', 'biology', 'coding', 'languages', 'history', 'commerce', 'other'];
@@ -21,11 +21,8 @@ export function QuizSetup({ onStart, loading, error }: { onStart: (c: QuizConfig
           <Select id="qz-count" value={String(cfg.count)} onChange={(e) => setCfg({ ...cfg, count: Number(e.target.value) })}
             options={[5, 10, 15, 20].map((n) => ({ value: String(n), label: String(n) }))} />
         </Field>
-        <label className="flex min-h-[44px] items-center gap-3 text-[15px]">
-          <input type="checkbox" className="h-5 w-5 accent-[var(--accent,currentColor)]" checked={cfg.timed}
-            onChange={(e) => setCfg({ ...cfg, timed: e.target.checked })} />
-          Timed exam mode (1 minute per question)
-        </label>
+        <Checkbox label="Timed exam mode (1 minute per question)" checked={cfg.timed}
+          onChange={(e) => setCfg({ ...cfg, timed: e.target.checked })} />
       </Card>
       {error && <p role="alert" className="text-[15px] text-bad">{error}</p>}
       <Button block loading={loading} onClick={() => onStart(cfg)}>Start quiz</Button>

@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { score, weakTopics, wrongIds, remainingSeconds } from './quizScore';
 import { startSession, answerCurrent, summary } from './session';
 import { newCardFields } from './scheduler';
-import type { Flashcard } from '../../types';
+import type { Flashcard, Subject } from '../../types';
 
-const r = (id: string, subject: any, tags: string[], correct: boolean) => ({ questionId: id, subject, tags, correct });
+const r = (id: string, subject: Subject, tags: string[], correct: boolean) => ({ questionId: id, subject, tags, correct });
 
 describe('quiz scoring', () => {
   const res = [r('1', 'math', ['algebra'], true), r('2', 'math', ['algebra'], false), r('3', 'physics', [], false)];

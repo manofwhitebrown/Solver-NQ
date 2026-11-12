@@ -1,3 +1,4 @@
+import { TextToSpeech } from '@capacitor-community/text-to-speech';
 // Read-aloud: speaks answers with the browser voice, or the Capacitor TTS plugin on Android.
 // Pause is done by stopping and resuming from the current sentence (works the same on both).
 
@@ -62,9 +63,11 @@ export function chunkText(text: string, max = 220): string[] {
 interface Engine { speak(text: string, rate: number): Promise<void>; stop(): void }
 type NativePlugin = { speak(o: { text: string; rate: number; lang: string }): Promise<void>; stop(): Promise<void> };
 
+// The plugin's JS must be imported for Capacitor to register it; Capacitor.Plugins is empty otherwise.
+// Importing it is cheap (it only registers a proxy), and it is used only on native platforms.
 function nativePlugin(): NativePlugin | undefined {
-  const cap = (globalThis as { Capacitor?: { isNativePlatform?: () => boolean; Plugins?: Record<string, NativePlugin> } }).Capacitor;
-  return cap?.isNativePlatform?.() ? cap.Plugins?.TextToSpeech : undefined;
+  const cap = (globalThis as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
+  return cap?.isNativePlatform?.() ? TextToSpeech : undefined;
 }
 
 function pickEngine(): Engine | null {

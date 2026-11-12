@@ -1,0 +1,61 @@
+/* Design tokens. Colors are "r g b" triplets so Tailwind can add alpha. */
+:root {
+  --bg: 247 246 243;
+  --surface: 255 255 255;
+  --raised: 241 239 234;
+  --line: 226 223 216;
+  --ink: 28 31 40;
+  --muted: 108 112 124;
+  --accent: 44 74 140;
+  --accent-ink: 255 255 255;
+  --ok: 38 130 92;
+  --warn: 176 118 20;
+  --bad: 190 60 60;
+  --shadow: 28 31 40;
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: 18 20 26;
+  --surface: 27 30 38;
+  --raised: 36 40 50;
+  --line: 52 57 70;
+  --ink: 235 236 240;
+  --muted: 150 155 168;
+  --accent: 130 164 235;
+  --accent-ink: 14 18 30;
+  --ok: 90 190 146;
+  --warn: 224 170 80;
+  --bad: 236 120 120;
+  --shadow: 0 0 0;
+  color-scheme: dark;
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: rgb(var(--bg));
+  color: rgb(var(--ink));
+  font-family: 'Figtree Variable', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 200ms, color 200ms;
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

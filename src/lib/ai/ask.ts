@@ -1,0 +1,70 @@
+import type { Answer, Mode, PendingItem, Question, Subject } from '@/types';
+import { getAnswer, getCachedAnswer, putCachedAnswer, queuePending, saveAnswer, saveQuestion } from '@/lib/db';
+import { AiError } from './errors';
+import { questionHash } from './hash';
+import { newId } from './id';
+import { setHistory, buildHistory } from './history';
+import { parseAnswer } from './parse';
+import { buildSystemPrompt } from './prompts';
+import { runModel } from './run';
+
+export interface AskInput { text: string; subject: Subject; mode: Mode; imageDataUrl?: string }
+
+const isOnline = () => typeof navigator === 'undefined' || navigator.onLine;
+
+/** Call the AI, parse, save question + answer, fill the cache. Throws AiError on failure. */
+export async function answerNow(input: AskInput, signal?: AbortSignal): Promise<{ answerId: string }> {
+  const { text, subject, mode, imageDataUrl } = input;
+  const hash = questionHash(text, subject, mode);
+
+  // Same question again: instant, works offline. Images are never cached (text alone is not the key).
+  if (!imageDataUrl) {
+    const cached = await getCachedAnswer(hash);
+    if (cached) {
+      if (!(await getAnswer(cached.id))) {
+        await saveQuestion({ id: cached.questionId, text, subject, tags: [], starred: false, createdAt: Date.now() });
+        await saveAnswer(cached);
+      }
+      return { answerId: cached.id };
+    }
+  }
+
+  const { text: raw, model } = await runModel(buildSystemPrompt(subject, mode), [{ role: 'user', content: text }], { imageDataUrl, signal });
+  const parsed = parseAnswer(raw);
+  const now = Date.now();
+  const q: Question = { id: newId(), text, subject, tags: [], starred: false, createdAt: now };
+  const a: Answer = {
+    id: newId(), questionId: q.id, mode, finalAnswer: parsed.finalAnswer, summary: parsed.summary,
+    steps: parsed.steps.map((s) => ({ id: newId(), ...s })), verified: 'unchecked', model, createdAt: now,
+  };
+  await saveQuestion(q);
+  await saveAnswer(a);
+  if (!imageDataUrl) await putCachedAnswer(hash, a);
+  setHistory(a.id, [...buildHistory(q, a)]);
+  return { answerId: a.id };
+}
+
+async function queue(input: AskInput): Promise<{ queued: true }> {
+  const item: PendingItem = { id: newId(), createdAt: Date.now(), ...input };
+  await queuePending(item);
+  return { queued: true };
+}
+
+export async function askQuestion(input: AskInput, signal?: AbortSignal): Promise<{ answerId: string } | { queued: true }> {
+  const text = input.text.trim();
+  if (!text && !input.imageDataUrl) throw new AiError('bad_request');
+  const clean = { ...input, text };
+  if (!isOnline()) {
+    // Cached answers still work offline; anything else waits in the queue.
+    try { return await answerNow(clean, signal); } catch (e) {
+      if (e instanceof AiError && e.code === 'no_key') throw e;
+      return queue(clean);
+    }
+  }
+  try {
+    return await answerNow(clean, signal);
+  } catch (e) {
+    if (e instanceof AiError && e.retryable) return queue(clean);
+    throw e;
+  }
+}

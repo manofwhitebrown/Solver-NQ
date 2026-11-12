@@ -1,0 +1,73 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const store = vi.hoisted(() => ({
+  q: new Map<string, any>(), a: new Map<string, any>(), cache: new Map<string, any>(), pending: new Map<string, any>(),
+}));
+
+vi.mock('@/lib/db', () => ({
+  saveQuestion: async (q: any) => { store.q.set(q.id, q); },
+  saveAnswer: async (a: any) => { store.a.set(a.id, a); },
+  getAnswer: async (id: string) => store.a.get(id),
+  getQuestion: async (id: string) => store.q.get(id),
+  getCachedAnswer: async (h: string) => store.cache.get(h),
+  putCachedAnswer: async (h: string, a: any) => { store.cache.set(h, a); },
+  queuePending: async (i: any) => { store.pending.set(i.id, i); },
+  listPending: async () => [...store.pending.values()],
+  removePending: async (id: string) => { store.pending.delete(id); },
+  listLibrary: async () => [],
+}));
+vi.mock('@/lib/settings', () => ({
+  getSettings: () => ({ provider: 'anthropic', model: 'test-model', apiKey: 'k', baseUrl: '', proxyUrl: '' }),
+}));
+vi.mock('@/components/ui', () => ({ toast: vi.fn() }));
+
+import { askQuestion, flushPending } from '..';
+
+const reply = JSON.stringify({ finalAnswer: 'x=2', steps: [{ title: 'Solve', body: '$x=2$' }], summary: 's' });
+const okFetch = () => vi.fn(async () => new Response(JSON.stringify({ content: [{ type: 'text', text: reply }] }), { status: 200 }));
+const input = { text: 'Solve x+1=3', subject: 'math', mode: 'learn' } as const;
+
+beforeEach(() => {
+  Object.values(store).forEach((m) => m.clear());
+  vi.stubGlobal('navigator', { onLine: true });
+});
+
+describe('askQuestion', () => {
+  it('saves a parsed answer and returns its id', async () => {
+    vi.stubGlobal('fetch', okFetch());
+    const r = await askQuestion(input);
+    expect('answerId' in r).toBe(true);
+    const a = store.a.get((r as any).answerId);
+    expect(a.finalAnswer).toBe('x=2');
+    expect(a.steps[0].id).toBeTruthy();
+    expect(a.model).toBe('test-model');
+    expect(store.cache.size).toBe(1);
+  });
+
+  it('answers the same question from cache without calling the network', async () => {
+    const f = okFetch();
+    vi.stubGlobal('fetch', f);
+    const first = await askQuestion(input) as any;
+    const again = await askQuestion({ ...input, text: '  solve   X+1=3 ' }) as any;
+    expect(again.answerId).toBe(first.answerId);
+    expect(f).toHaveBeenCalledTimes(1);
+  });
+
+  it('queues when offline, then flushes when back online', async () => {
+    vi.stubGlobal('navigator', { onLine: false });
+    vi.stubGlobal('fetch', vi.fn());
+    expect(await askQuestion(input)).toEqual({ queued: true });
+    expect(store.pending.size).toBe(1);
+
+    vi.stubGlobal('navigator', { onLine: true });
+    vi.stubGlobal('fetch', okFetch());
+    await flushPending();
+    expect(store.pending.size).toBe(0);
+    expect(store.a.size).toBe(1);
+  });
+
+  it('shows a friendly message for a rejected key', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 401 })));
+    await expect(askQuestion(input)).rejects.toThrow(/key was rejected/i);
+  });
+});

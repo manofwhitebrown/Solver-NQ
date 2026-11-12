@@ -7,7 +7,7 @@ interface Doc { id: string; text: string; answer: string; tags: string; subject:
 const make = () => new MiniSearch<Doc>({
   fields: ['text', 'answer', 'tags'],
   storeFields: ['id'],
-  searchOptions: { prefix: true, fuzzy: 0.15, boost: { text: 2, tags: 1.5 } },
+  searchOptions: { prefix: true, fuzzy: 0.15, combineWith: 'AND', boost: { text: 2, tags: 1.5 } },
 });
 
 let index: MiniSearch<Doc> | null = null;
@@ -48,10 +48,12 @@ export async function unindex(questionId: string): Promise<void> {
   if (m.has(questionId)) m.discard(questionId);
 }
 
+const MAX_RESULTS = 200; // best matches only; keeps the list fast when a word is everywhere
+
 export async function searchIds(text: string): Promise<string[]> {
   const t = text.trim();
   if (!t) return [];
-  return (await ensureIndex()).search(t).map(r => r.id as string);
+  return (await ensureIndex()).search(t).slice(0, MAX_RESULTS).map(r => r.id as string);
 }
 
 /** Drop the in-memory index (used after restore / tests); next search rebuilds it. */

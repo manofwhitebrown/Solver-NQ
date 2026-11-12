@@ -9,6 +9,8 @@
 - Text-mode PDF, 20 synthetic answers (4 steps each), Node, no browser: ~150-210 ms, 78 KB, 10 pages.
 - NOT measured yet: pretty-mode PDF time/size, anything on Android. No browser is available in my environment, so the pretty PDF (KaTeX + rasterising) and the screen have only been typechecked and built, never rendered.
 
+- Seen in a real browser via `npm run shots`: `/plan` (phone/laptop, light/dark) fine, no findings at 320-430 px; `/export` empty state fine. Plan screenshots committed.
+
 ## In progress / not done
 - Pretty PDF: needs a real browser check (math rendering, page breaks, time and size for a 20-answer pack). A block taller than a page is now cut at blank rows between lines (one slice per page); that path is only unit-tested on the pure row-picking logic, not rendered.
 - "Include original question image" now works for PDF (both styles), study pack and DOCX (downscaled JPEG, white background). Not in Markdown/TXT/JSON. Only verified with a generated JPEG in Node tests, not with real saved scans in a browser.
@@ -53,7 +55,7 @@
 - Tip for others: the app uses HashRouter, so screenshot URLs are `/#/plan`; reload after setting `solver-nq:settings` `{onboarded:true}`. A headless browser works here via npm `@sparticuz/chromium` + `puppeteer-core`.
 
 ## In progress / Remaining
-- P1 polish: reminder (optional, skipped), visual check at 320/390/1280 px (no browser here), `TodayCard` mount on `/learn` by AI-7.
+- Optional daily plan reminder (skipped on purpose; no-op on web anyway). `TodayCard` mount on `/learn` by AI-7.
 - Open the generated PDF and check page breaks, A4 vs Letter (Manual tests).
 
 ## Needs from others

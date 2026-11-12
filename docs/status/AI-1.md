@@ -41,3 +41,6 @@ DESIGN V2 READY
 - Open `/#/design` on a phone and a laptop, switch light/dark, and check cards, inputs and disabled buttons are clearly separated.
 - Clear site data, reload: onboarding should appear; skip and finish both land on Ask.
 - Open an answer and Learn review: no tab bar, no content under the bottom bar.
+
+## Update (cross-owner fix for AI-3)
+- `scripts/shots.mjs` set a wrong onboarded key (`solver-nq:onboarded`), so every screenshot showed the welcome screen. It now writes `onboarded: true` into the `solver-nq:settings` JSON and reloads. Re-run `npm run shots` to refresh older images in `docs/screenshots/` taken before this fix.

@@ -7,7 +7,7 @@ import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
 import { auditFn } from './shots-audit.mjs';
-import { EXTRA_DEVICES, ONBOARDED_KEY, SHOT_DEVICES, THEMES, routesFor } from './shots-config.mjs';
+import { EXTRA_DEVICES, SHOT_DEVICES, THEMES, routesFor } from './shots-config.mjs';
 import { writeA11y, writeLayout } from './shots-report.mjs';
 
 const PORT = 4173, BASE = `http://localhost:${PORT}/`;
@@ -42,7 +42,11 @@ async function newPage(dev, theme, { onboarded = true, seed = true } = {}) {
     await page.waitForFunction(() => window.__solverDemo, { timeout: 15000 });
     ids = await page.evaluate(() => window.__solverDemo.seedDemoData());
   }
-  if (onboarded) await page.evaluate((k) => { try { localStorage.setItem(k, '1'); } catch { /* ignore */ } }, ONBOARDED_KEY);
+  if (onboarded) {
+    // The real flag is `onboarded` inside the settings JSON; reload so the settings store picks it up.
+    await page.evaluate((k) => { try { const s = JSON.parse(localStorage.getItem(k) || '{}'); localStorage.setItem(k, JSON.stringify({ ...s, onboarded: true })); } catch { /* ignore */ } }, 'solver-nq:settings');
+    await page.reload({ waitUntil: 'networkidle2' });
+  }
   return { page, ctx, ids };
 }
 

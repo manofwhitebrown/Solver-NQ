@@ -3,6 +3,8 @@
 [![Web (GitHub Pages)](https://github.com/manofwhitebrown/Solver-NQ/actions/workflows/web.yml/badge.svg)](https://github.com/manofwhitebrown/Solver-NQ/actions/workflows/web.yml)
 [![Android APK](https://github.com/manofwhitebrown/Solver-NQ/actions/workflows/android.yml/badge.svg)](https://github.com/manofwhitebrown/Solver-NQ/actions/workflows/android.yml)
 
+*Built by Mohammed Abdul Nayeem.*
+
 A study app: scan or type a question, get a step-by-step answer, save it in a library, export to PDF / Markdown / DOCX, and practise with flashcards and quizzes. It runs as an **Android app** and as a **web app**, and works offline for everything already saved.
 
 - **Learn mode** reveals the steps one at a time. **Answer mode** shows the full solution.

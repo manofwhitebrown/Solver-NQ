@@ -81,6 +81,7 @@ export function SettingsPage() {
 
       <Section title="About">
         <p className="text-base text-muted">Solver-NQ keeps everything on this device. Your key is sent only to your AI provider.</p>
+        <p className="mt-3 text-base font-semibold text-ink">Built by Mohammed Abdul Nayeem</p>
       </Section>
 
       <Dialog

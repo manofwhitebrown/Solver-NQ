@@ -11,12 +11,16 @@ DESIGN V2 READY
 - Gallery at `/#/design`, `docs/DESIGN.md`
 - Entry chunk after AI-8's chunking: 141 kB raw
 
+- P1: onboarding at `/#/welcome` (3 steps, skippable, reopen from Settings > AI; key step is a stub until AI-2's `<AddKeyForm />`), `onboarded` setting, default provider `gemini` (model name still from `SUGGESTED_MODELS`), Settings v2 (Appearance, AI, Defaults, Data, About)
+- P1: tab bar hides when the keyboard is open, 48 px compact bar in short viewports, 180 ms page transition (reduced motion honoured), textarea `resize-none` on touch
+
 ## In progress
-- P1 items
+- (none)
 
 ## Remaining
 - P0: screenshot check of the gallery (no browser here)
-- P1: tab bar rail for short viewports + keyboard hide, page transition, logo mark, Settings v2, onboarding, Gemini default, lazy routes
+- P1: logo mark, `/scan` crop-step tab bar flag, 64 rem width for the answer follow-up panel (AI-5), swap stub for AI-2's `<AddKeyForm />` and `<AiSettingsPanel />`
+- P1: lazy routes NOT done: feature index files import pages eagerly and `ask` wakes the offline queue at start; entry chunk is already 141 kB (target 600 kB), so low value. Revisit only if the budget grows.
 - P2: icon set, 404 restyle, focus polish, `any` cleanup
 
 ## Needs from others
@@ -29,4 +33,5 @@ DESIGN V2 READY
 
 ## Manual tests for the user
 - Open `/#/design` on a phone and a laptop, switch light/dark, and check cards, inputs and disabled buttons are clearly separated.
+- Clear site data, reload: onboarding should appear; skip and finish both land on Ask.
 - Open an answer and Learn review: no tab bar, no content under the bottom bar.

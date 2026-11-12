@@ -41,6 +41,9 @@
 :root[data-theme='dark'] .elev-2 { background: rgb(var(--raised)); }
 :root[data-theme='dark'] .elev-3, :root[data-theme='dark'] .elev-4 { background: rgb(var(--overlay)); }
 
+/* Phone landscape: compact 48 px tab bar. */
+@media (max-height: 499px) { :root { --tabbar-h: 3rem; } }
+
 @media (pointer: coarse) { textarea { resize: none; } }
 
 html, body, #root { height: 100%; }

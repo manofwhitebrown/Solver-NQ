@@ -11,7 +11,7 @@ export function Page({ wide, className, style, ...rest }: Props) {
   return (
     <div
       className={cn(
-        'mx-auto w-full pt-6 lg:pt-10',
+        'mx-auto w-full pt-6 lg:pt-10 [@media(max-height:499px)]:pt-3',
         'pl-[max(1.25rem,var(--sal))] pr-[max(1.25rem,var(--sar))]',
         'md:pl-[max(1.75rem,var(--sal))] md:pr-[max(1.75rem,var(--sar))]',
         'lg:pl-[max(2.5rem,var(--sal))] lg:pr-[max(2.5rem,var(--sar))]',

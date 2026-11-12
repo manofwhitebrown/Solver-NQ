@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useSettings } from '@/lib/settings';
 import { Toaster, cn } from '@/components/ui';
@@ -38,10 +39,24 @@ function Links({ side }: { side: boolean }) {
   );
 }
 
+/** True while the on-screen keyboard is open (visual viewport much shorter than the layout viewport). */
+function useKeyboardOpen(): boolean {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const check = () => setOpen(window.innerHeight - vv.height > 150);
+    vv.addEventListener('resize', check);
+    return () => vv.removeEventListener('resize', check);
+  }, []);
+  return open;
+}
+
 export function Layout() {
+  const keyboard = useKeyboardOpen();
   const { pathname } = useLocation();
   const { onboarded } = useSettings();
-  const hideTabs = FOCUSED.some((r) => r.test(pathname));
+  const hideTabs = keyboard || FOCUSED.some((r) => r.test(pathname));
   if (!onboarded && !pathname.startsWith('/welcome') && !pathname.startsWith('/design')) return <Navigate to="/welcome" replace />;
   return (
     <div className="min-h-full lg:flex" style={hideTabs ? ({ '--tabbar-h': '0rem' } as React.CSSProperties) : undefined}>
@@ -52,7 +67,7 @@ export function Layout() {
 
       <div className="min-w-0 flex-1">
         <OnlineBanner />
-        <main id="main"><Outlet /></main>
+        <main id="main" key={pathname} className="animate-[page-in_180ms_ease-out]"><Outlet /></main>
       </div>
 
       {!hideTabs && (

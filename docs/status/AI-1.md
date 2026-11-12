@@ -17,12 +17,13 @@ DESIGN V2 READY
 - P1: sidebar logo mark (`src/app/Logo.tsx`)
 - P2: lucide icon set (`@/components/ui/icons`, 1.75 stroke), 404 restyle, `useHideTabBar(true)` hook in `src/app/tabbar.ts`; no `any` left in my files
 
+- Seen in real headless Chromium (`@sparticuz/chromium` + `puppeteer-core`, run from /tmp): gallery at 390/1280, light/dark, onboarding step 1, Settings. Screenshots `design-*`, `settings-390-light`, `welcome-390-light` in `docs/screenshots/`. Looked fine; no sideways scroll.
+
 ## In progress
 - (none)
 
 ## Remaining
 - (done) Settings AI card now hosts `<AiSettingsPanel />`; old provider/model/key fields sit under "Other providers (advanced)"
-- P0: screenshot check of the gallery (no browser here)
 - P1: `/scan` crop-step tab bar flag, 64 rem width for the answer follow-up panel (AI-5), swap stub for AI-2's `<AddKeyForm />` and `<AiSettingsPanel />`
 - P1: lazy routes NOT done: feature index files import pages eagerly and `ask` wakes the offline queue at start; entry chunk is already 141 kB (target 600 kB), so low value. Revisit only if the budget grows.
 - P2: icon set, 404 restyle, focus polish, `any` cleanup

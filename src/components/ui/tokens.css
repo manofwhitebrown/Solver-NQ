@@ -12,6 +12,7 @@
   --warn: 176 118 20;
   --bad: 190 60 60;
   --shadow: 28 31 40;
+  --tabbar-h: 3.5rem; /* phone tab bar height, excluding the safe-area inset */
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
   --sal: env(safe-area-inset-left, 0px);

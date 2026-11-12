@@ -19,7 +19,7 @@ function Links({ side }: { side: boolean }) {
                 'flex items-center transition',
                 side
                   ? 'min-h-[44px] gap-3 rounded-md px-3 text-[15px] font-semibold'
-                  : 'min-h-[56px] flex-1 flex-col justify-center gap-0.5 text-[11px] font-medium',
+                  : 'min-h-[var(--tabbar-h)] flex-1 flex-col justify-center gap-0.5 text-[11px] font-medium',
                 isActive ? 'text-accent' : 'text-muted hover:text-ink',
                 side && isActive && 'bg-accent/10',
               )
@@ -48,7 +48,7 @@ export function Layout() {
           className="mx-auto w-full max-w-read px-5 pt-6 lg:max-w-3xl lg:px-10 lg:pt-12 lg:pb-16"
           style={{
             paddingTop: 'max(1.5rem, calc(var(--sat) + 1rem))',
-            paddingBottom: 'calc(6.5rem + var(--sab))',
+            paddingBottom: 'calc(var(--tabbar-h) + var(--sab) + 3rem)',
             paddingLeft: 'max(1.25rem, var(--sal))',
             paddingRight: 'max(1.25rem, var(--sar))',
           }}

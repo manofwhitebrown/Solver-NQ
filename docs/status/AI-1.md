@@ -43,3 +43,9 @@ SCAFFOLD READY
 ## Check (main at 0798d23)
 - typecheck, lint (0 errors), 144 tests, build: all green. `/answer/:id` is live (lazy-loaded), tts lint error fixed.
 - Remaining invalid accent colour (falls back to browser default): export/Check.tsx (AI-6) and learn/QuizSetup.tsx (AI-7). Use `<Checkbox>` from '@/components/ui' or `accent-[rgb(var(--accent))]`.
+
+## Phone layout audit (code review; not yet seen on a device)
+- BUG, hidden buttons: export/ExportPage.tsx:104 (AI-6) and learn/NewCardsPage.tsx:67 (AI-7) use `fixed bottom-0`; the phone tab bar (z-40) covers them. Fix: wrap those bars in the new `<ActionBar>` from '@/components/ui' (sits above the tab bar on phones, beside the sidebar on laptops). Or use `bottom-[calc(var(--tabbar-h)+var(--sab))] lg:bottom-0 lg:left-60`. Keep ~6rem bottom padding on those pages.
+- New token `--tabbar-h` (3.5rem). Library's selection bar/undo toast (4.75rem+sab) are fine.
+- No `100vh` problems (only max-h 50/60vh image previews in scan; acceptable). No inputs under 16px. Only sub-12px text: learn/ReviewPage.tsx:91 (11px interval hint; consider 12px).
+- Not covered: real-device checks (notch, keyboard overlapping the Ask box, Android back button). Needs a device test.

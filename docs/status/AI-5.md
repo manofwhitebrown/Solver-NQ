@@ -7,10 +7,11 @@
 - P1: verify honesty review: 42 new cases in `verify.honesty.test.ts` (word problems, units, equivalent forms, rounding, trig degrees/radians, undefined, systems, inequalities). Fixed a real bug: `sin(30)` with no unit was called `mismatch`; now `unchecked` unless degrees/radians/pi is stated (degrees converted). Badge copy: mismatch now reads "Doesn't match - double-check"; Checked tooltip says the method is not checked. Not parsed (stay `unchecked`, safe): `x ∈ {..}` sets, "to 2 decimal places" suffix.
 - P0: "Answered by <model>" line (`ModelLabel.tsx`); reads `getPrimaryModel` from `@/lib/ai` if it exists and shows a soft chip for backup models. Queued copy now says it answers when online or free quota resets.
 ## Remaining
-- P0: "Retry with best model" button is built into `ModelLabel` (`onRetry`) but not wired: needs AI-2 to export `getPrimaryModel()` AND a way to make `askQuestion` skip the cache (e.g. `{ skipCache: true }`). Then I pass `onRetry` in AnswerPage.
+- P0: "Retry with best model" button is built into `ModelLabel` (`onRetry`) but not wired. `getPrimaryModel()` now exists and the backup-model chip already works. Still needed from AI-2: an `askQuestion` option to skip the cache (e.g. `{ skipCache: true }`), because the same question otherwise returns the cached backup answer. Then I pass `onRetry` in AnswerPage.
 P1: screenshots of /answer and /graph (needs `npm run shots`; no browser here).  Retry with best model (see above). P2: TTS cleanup, remove `any`.
 ## Needs from others
-- AI-2: export `getPrimaryModel()` and an `askQuestion` option to skip the cache.
+- AI-2: an `askQuestion` option to skip the cache (getPrimaryModel is done, thanks).
+- AI-3: `npm run shots` does not exist yet, so I could not produce the /answer and /graph screenshots.
 - AI-3: `scale.test.ts` (2000 items) is timing-based and failed once on a slow sandbox. AI-8: `docs/audit/tools/layout-audit.mjs` has lint errors (`process`, `indexedDB` undefined; needs node globals in ESLint config).
 ## Notes for the manager
 - Graph curve colours are fixed hex values; check they read well in dark mode.

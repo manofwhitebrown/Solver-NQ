@@ -99,3 +99,12 @@ The user wants the app to look **appealing and professional, calm, with room to 
 
 ### Done when
 - `Android APK` is green on `main` and the APK artifact installs (the user will confirm on a phone). `Web (GitHub Pages)` green. `scripts/ci-status.sh` works. The user guide and release notes exist. Entry bundle is smaller with a CI budget.
+
+---
+
+## 5. LAYOUT AUDIT — extra items for you (added by the manager after a real-screen review)
+
+These items **belong to the Phase 2 priorities shown in brackets; they are not a new phase.** Evidence, screenshots and the acceptance rules are in `docs/audit/LAYOUT-AUDIT.md` (read sections A and B once). A reusable checking tool is in `docs/audit/tools/layout-audit.mjs`.
+
+- **[P2, optional] Layout audit workflow:** a `workflow_dispatch` GitHub Action that builds the app, runs `docs/audit/tools/layout-audit.mjs` (after AI-3 folds it into `npm run shots`) and uploads screenshots + the summary as a downloadable artifact, so the user can run it from the Actions tab without any AI.
+- **[P1, with `docs/DEVICE-TEST.md`] Add real-device layout checks** I could not do: notch/gesture-bar safe areas (bottom tab bar not under the gesture bar), keyboard open on Ask (tab bar and Send button stay reachable), rotate to landscape, 200% font size in Android settings (nothing clipped), smallest phone you have.

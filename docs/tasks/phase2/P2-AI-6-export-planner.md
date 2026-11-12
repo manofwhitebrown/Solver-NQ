@@ -98,3 +98,11 @@ A student enters exams and gets a realistic daily plan.
 
 ### Done when
 - Pretty PDF numbers are recorded and acceptable (20-answer pack in a reasonable time without crashing). `/plan` works offline with tests for the planner logic and looks good at 390 px and 1280 px.
+
+---
+
+## 5. LAYOUT AUDIT — extra items for you (added by the manager after a real-screen review)
+
+These items **belong to the Phase 2 priorities shown in brackets; they are not a new phase.** Evidence, screenshots and the acceptance rules are in `docs/audit/LAYOUT-AUDIT.md` (read sections A and B once). A reusable checking tool is in `docs/audit/tools/layout-audit.mjs`.
+
+- **[layout pass] Export and Planner:** both screens use `Page`/`PageHeader` and the standard gutters; the paper preview must **scale to the available width** (no horizontal scroll at 320 px), the options sheet and the Save/Share bar sit **above the tab bar** without magic bottom paddings (`pb-40` today). Build `/plan` on the primitives from day one and verify at 320 px. Findings 1-2.

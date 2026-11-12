@@ -103,3 +103,14 @@ Students paste or import their own study material and get a summary, a cheat she
 
 ### Done when
 - Notes works offline (local summary) and online (AI), links into cards and quizzes, has tests, and all `/learn/*` and `/notes/*` screens look clean at 390 px and 1280 px (screenshots committed).
+
+---
+
+## 5. LAYOUT AUDIT — extra items for you (added by the manager after a real-screen review)
+
+These items **belong to the Phase 2 priorities shown in brackets; they are not a new phase.** Evidence, screenshots and the acceptance rules are in `docs/audit/LAYOUT-AUDIT.md` (read sections A and B once). A reusable checking tool is in `docs/audit/tools/layout-audit.mjs`.
+
+- **[layout pass, P1 item 8] Review screen** (finding 7): add a close button and a progress bar ("9 left" -> progress bar + count), remove the empty min-height from the card (it sizes to content, centered, with room for long text), hide keyboard hints ("(Space)", "1-4") on touch devices, grade buttons >= 48 px. Hide the tab bar during review/quiz via AI-1's route flag when it exists.
+- **Stats** (finding 8): chart empty state ("Review some cards to see your progress") instead of a blank box; axis labels >= 12 px or fewer ticks; "View stats" / "Manage cards" become 44 px buttons; the Quiz "Timed exam mode" checkbox becomes a 44 px row (`<Checkbox>`).
+- **Raw LaTeX:** card lists and previews use `mathToPlain()` from AI-5 (finding 3).
+- All `/learn/*` and `/notes/*` pages use `Page`/`PageHeader` only (no own horizontal padding or `<main>`). Findings 1-2.

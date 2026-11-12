@@ -97,3 +97,11 @@ Scan works on the web. **Nobody has verified the Android path**, and the scan sc
 
 ### Done when
 - Native and web paths both have tests, failure falls back gracefully, huge photos do not crash, and `/scan` looks clean at 390 px in light and dark (screenshots committed).
+
+---
+
+## 5. LAYOUT AUDIT — extra items for you (added by the manager after a real-screen review)
+
+These items **belong to the Phase 2 priorities shown in brackets; they are not a new phase.** Evidence, screenshots and the acceptance rules are in `docs/audit/LAYOUT-AUDIT.md` (read sections A and B once). A reusable checking tool is in `docs/audit/tools/layout-audit.mjs`.
+
+- **[layout pass, P1 item 5] Scan:** use `PageHeader` (the title is 20 px today, finding 11); on touch devices drop "or drop it here" and make **Take a photo** the single obvious primary action with a short 3-step hint under it; keep >= 44 px targets on the crop screen; verify at 320 px and landscape (the crop view must fit 360 px height with its action bar).

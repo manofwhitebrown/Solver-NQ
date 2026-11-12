@@ -101,3 +101,14 @@ The answer screen is the heart of the app. It exists and is functionally rich, b
 
 ### Done when
 - The answer screen looks premium and readable at 390 px and 1280 px, light and dark (screenshots committed). The model label works with the fallback system. Verify tests pass and cover the new cases.
+
+---
+
+## 5. LAYOUT AUDIT — extra items for you (added by the manager after a real-screen review)
+
+These items **belong to the Phase 2 priorities shown in brackets; they are not a new phase.** Evidence, screenshots and the acceptance rules are in `docs/audit/LAYOUT-AUDIT.md` (read sections A and B once). A reusable checking tool is in `docs/audit/tools/layout-audit.mjs`.
+
+- **[P0, others depend on it] Export `mathToPlain(text: string): string`** (new small file `src/features/answer/plainText.ts`, re-exported from `src/features/answer/index.ts`): turns `$x = 2$` into `x = 2`, `\text{m}` into `m`, `\frac{a}{b}` into `a/b`, `x^2` into `x²` where easy, `\sqrt{x}` into `√x`, strips `$$`; never throws; unit-tested with at least 15 cases. AI-3 and AI-7 use it in lists and cards. Finding 3.
+- **[P1 item 4, Answer v2] Replace the 7-icon row** (finding 4): phone = bottom action bar above the tab bar with **labelled** actions (Star, Cards, Export, More); "More" sheet = Tags, Read aloud, Share, Copy. Every button >= 44 x 44 px, **distinct icons** (Export = download/file, Share = share-nodes, Cards = stacked cards, Copy = two sheets), `aria-label` on all. Laptop = same actions as a labelled toolbar.
+- **Question card:** show the question at 18/1.5 (not reading size) and collapse questions longer than 4 lines with "Show more"; the final answer should be visible without scrolling on a 360x640 phone in Answer mode. Finding 13.
+- **Graph:** axis labels >= 12 px, the "Zeros and intersections" control a 44 px row, `PageHeader` title. Finding 15.

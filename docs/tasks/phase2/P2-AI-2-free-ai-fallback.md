@@ -105,3 +105,11 @@ Plus these Phase 2 specifics:
 
 ### Done when
 - With a real free Gemini key the app answers, falls through the chain on a simulated 429, and queues when everything is exhausted. Tests for every failure class pass. `AddKeyForm` and `AiSettingsPanel` look good on a phone.
+
+---
+
+## 5. LAYOUT AUDIT — extra items for you (added by the manager after a real-screen review)
+
+These items **belong to the Phase 2 priorities shown in brackets; they are not a new phase.** Evidence, screenshots and the acceptance rules are in `docs/audit/LAYOUT-AUDIT.md` (read sections A and B once). A reusable checking tool is in `docs/audit/tools/layout-audit.mjs`.
+
+- **[layout pass, P1 item 7] Ask screen:** subject chips row gets an **edge fade + scroll-snap**, chips >= 44 px tall (findings 5); hide the "Ctrl/Cmd+Enter" hint on touch devices (finding 10); the Send button's disabled state must be obviously disabled; first-run "no key" card instead of the empty prompt. Use `Page`/`PageHeader` (no own padding). Verify at 320 px.

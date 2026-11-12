@@ -129,3 +129,17 @@ You own the look of the whole app. The user's verdict on the current theme and s
 ### Done when
 - Tokens, primitives, gallery, contrast test, `docs/DESIGN.md` pushed and `DESIGN V2 READY` written. The gallery looks premium in light and dark at 390 px and 1280 px (check with screenshots, not only code).
 - Onboarding works end to end and the default provider is Gemini.
+
+---
+
+## 5. LAYOUT AUDIT — extra items for you (added by the manager after a real-screen review)
+
+These items **belong to the Phase 2 priorities shown in brackets; they are not a new phase.** Evidence, screenshots and the acceptance rules are in `docs/audit/LAYOUT-AUDIT.md` (read sections A and B once). A reusable checking tool is in `docs/audit/tools/layout-audit.mjs`.
+
+- **[P0, before `DESIGN V2 READY`] One source of page padding.** `Page` owns the gutters (20 px phone / 28 tablet / 40 laptop). Remove the `px-5` + `pt-6` from the `Layout.tsx` main wrapper, make the layout provide the single `<main>`, and tell everyone in `docs/DESIGN.md` that pages must use `<Page>` (no `<main>` and no own horizontal padding). Finding 1.
+- **[P0] One title style:** `PageHeader` is the only way to render a page title (same size, weight, top position, optional subtitle/actions/back). Finding 2.
+- **[P0] Tokens:** disabled buttons must look clearly different from enabled ones in light and dark (use a neutral fill and muted text, not a washed-out accent); card/background separation in dark mode (finding 9).
+- **[P1] Tab bar v2:** labels >= 12 px; opaque `surface` with a hairline top border (no translucent blur blotches); hide it when the virtual keyboard is open (`visualViewport` height shrink) and on focused flows (`/learn/review`, `/learn/quiz`, `/scan` crop step) through a route flag; in short viewports (< 500 px tall, i.e. phone landscape) switch to a **left rail** or a 48 px compact bar and reduce top padding. Finding 6.
+- **[P1] Laptop widths:** lists and dashboards `max-w-5xl`; reading pages stay 44 rem; the answer page shows the follow-up panel only when opened (give the space to the answer). Finding 14.
+- **[P1] Textarea:** `resize-none` on touch devices (`@media (pointer: coarse)`). Finding 10.
+- **Verify:** run the layout audit tool at 320/360/412 px and fix anything from the acceptance rules that is yours (rules 1-5, 8, 9).

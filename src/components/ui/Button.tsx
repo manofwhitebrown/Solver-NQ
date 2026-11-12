@@ -7,25 +7,31 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   loading?: boolean;
   block?: boolean;
+  /** lg 48 px (default for primary), md 44 px, sm 36 px (tap area stays 44 px). */
+  size?: 'lg' | 'md' | 'sm';
 }
+
+const sizes = { lg: 'min-h-[48px] px-6', md: 'min-h-[44px] px-5', sm: 'relative min-h-[36px] px-4 text-sm before:absolute before:-inset-y-1 before:inset-x-0 before:content-[""]' };
 
 const variants: Record<Variant, string> = {
   primary: 'bg-accent text-accent-ink shadow-soft hover:brightness-110 active:brightness-95',
-  secondary: 'bg-surface text-ink border border-line hover:bg-raised',
+  secondary: 'bg-surface text-ink border border-line-strong hover:bg-raised',
   ghost: 'text-ink hover:bg-raised',
-  danger: 'bg-bad text-white hover:brightness-110',
+  danger: 'bg-bad text-bg hover:brightness-110',
 };
 
 export function Button({
-  variant = 'primary', loading, block, className, children, disabled, type = 'button', ...rest
+  variant = 'primary', size, loading, block, className, children, disabled, type = 'button', ...rest
 }: ButtonProps) {
   return (
     <button
       type={type}
       disabled={disabled || loading}
       className={cn(
-        'inline-flex min-h-[44px] items-center justify-center gap-2 rounded-md px-5 text-[15px] font-semibold',
-        'transition disabled:cursor-not-allowed disabled:opacity-50 active:scale-[.98]',
+        'inline-flex items-center justify-center gap-2 rounded-md text-base font-semibold',
+        'transition active:scale-[.98] disabled:cursor-not-allowed disabled:border-transparent',
+        'disabled:bg-disabled-bg disabled:text-disabled-ink disabled:shadow-none disabled:active:scale-100',
+        sizes[size ?? (variant === 'primary' ? 'lg' : 'md')],
         variants[variant], block && 'w-full', className,
       )}
       {...rest}

@@ -1,5 +1,6 @@
-import { createElement } from 'react';
+import { createElement, type ReactNode } from 'react';
 import type { RouteObject } from 'react-router-dom';
+import { Page } from '@/components/ui';
 import { routes as answer } from '@/features/answer';
 import { routes as ask } from '@/features/ask';
 import { routes as backup } from '@/features/backup';
@@ -31,10 +32,20 @@ if (!featureRoutes.some((r) => r.index || r.path === '')) {
   placeholders.push({ index: true, element: createElement(Placeholder, { name: 'Ask' }) });
 }
 
+// Every screen is wrapped in <Page> here, so gutters come from one place.
+const WIDE = new Set(['library', '/library', 'graph', 'learn', 'learn/cards', 'learn/stats', 'export', '/export', 'backup', '/backup']);
+function withPage(list: RouteObject[]): RouteObject[] {
+  return list.map((r) => {
+    if (r.children || !r.element) return r;
+    const key = r.index ? '' : (r.path ?? '');
+    return { ...r, element: createElement(Page, { wide: WIDE.has(key) }, r.element as ReactNode) };
+  });
+}
+
 export const routes: RouteObject[] = [
   {
     path: '/',
     element: createElement(Layout),
-    children: [...featureRoutes, ...placeholders, { path: '*', element: createElement(NotFound) }],
+    children: withPage([...featureRoutes, ...placeholders, { path: '*', element: createElement(NotFound) }]),
   },
 ];

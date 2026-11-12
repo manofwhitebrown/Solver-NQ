@@ -37,7 +37,7 @@ export function Toaster() {
       style={{ bottom: 'calc(5.5rem + var(--sab))' }}
     >
       {items.map((t) => (
-        <div key={t.id} role="status" className="pointer-events-auto flex max-w-sm animate-[pop-in_200ms] items-center gap-3 rounded-md bg-ink px-4 py-3 text-sm text-bg shadow-lift">
+        <div key={t.id} role="status" className="pointer-events-auto flex max-w-sm animate-[pop-in_200ms] items-center gap-3 rounded-md bg-ink px-4 py-3 text-sm text-bg elev-4 border-0">
           <span className={cn('h-2 w-2 shrink-0 rounded-full', dot[t.kind])} />
           {t.text}
         </div>

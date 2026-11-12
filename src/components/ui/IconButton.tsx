@@ -14,7 +14,7 @@ export function IconButton({ label, className, children, type = 'button', ...res
       title={label}
       className={cn(
         'inline-flex h-11 w-11 items-center justify-center rounded-full text-ink transition',
-        'hover:bg-raised active:scale-95 disabled:opacity-50', className,
+        'hover:bg-raised active:scale-95 disabled:text-disabled-ink', className,
       )}
       {...rest}
     >

@@ -1,6 +1,18 @@
 import type { HTMLAttributes } from 'react';
 import { cn } from './cn';
 
-export function Card({ className, ...rest }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('rounded-lg border border-line bg-surface p-5 shadow-soft', className)} {...rest} />;
+interface Props extends HTMLAttributes<HTMLDivElement> { interactive?: boolean }
+
+/** Surface + 1 px line + soft shadow (dark: lighter surface). Padding 20 phone / 24 laptop. */
+export function Card({ interactive, className, ...rest }: Props) {
+  return (
+    <div
+      className={cn(
+        'elev-1 rounded-lg p-5 lg:p-6',
+        interactive && 'cursor-pointer transition hover:elev-2 hover:border-line-strong active:scale-[.995]',
+        className,
+      )}
+      {...rest}
+    />
+  );
 }

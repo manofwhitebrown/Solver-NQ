@@ -27,7 +27,7 @@ export default function LibraryPage() {
   const filtered = !!lib.query || !!lib.filters.subject || !!lib.filters.tag || !!lib.filters.starred;
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 pt-4 pb-32">
+    <div className="pb-24">
       <div className="mb-3 flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Library</h1>
         {!selecting && !!lib.items?.length && <Button variant="ghost" onClick={lib.startSelecting}>Select</Button>}
@@ -74,6 +74,6 @@ export default function LibraryPage() {
       )}
       <AddTagSheet open={sheet === 'add'} existing={lib.tags.map(t => t.tag)} onAdd={t => void lib.addTag(t)} onClose={() => setSheet(null)} />
       <ManageTagsSheet open={sheet === 'manage'} tags={lib.tags} onChanged={() => void lib.reload()} onClose={() => setSheet(null)} />
-    </main>
+    </div>
   );
 }

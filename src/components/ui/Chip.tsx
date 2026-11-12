@@ -9,8 +9,9 @@ export function Chip({ selected, className, type = 'button', ...rest }: Props) {
       type={type}
       aria-pressed={selected}
       className={cn(
-        'inline-flex min-h-[36px] items-center rounded-full border px-3.5 text-sm font-medium transition',
-        selected ? 'border-accent bg-accent/10 text-accent' : 'border-line bg-surface text-muted hover:text-ink',
+        'relative inline-flex min-h-[36px] items-center rounded-full border px-4 text-sm font-semibold transition',
+        'before:absolute before:-inset-y-1 before:inset-x-0 before:content-[""]', // >= 44 px tap area
+        selected ? 'border-accent bg-accent-soft text-accent' : 'border-line-strong bg-surface text-ink-2 hover:bg-raised',
         className,
       )}
       {...rest}

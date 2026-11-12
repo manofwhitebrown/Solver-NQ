@@ -9,12 +9,12 @@ export function ActionBar({ children, className }: { children: ReactNode; classN
   return (
     <div
       className={cn(
-        'fixed inset-x-0 z-30 border-t border-line bg-surface/95 px-4 py-3 backdrop-blur',
-        'bottom-[calc(var(--tabbar-h)+var(--sab))] lg:bottom-0 lg:left-60',
+        'fixed inset-x-0 z-30 border-t border-line bg-surface px-5 py-3',
+        'bottom-[calc(var(--tabbar-h)+var(--sab))] lg:bottom-0 lg:left-[264px]',
         className,
       )}
     >
-      <div className="mx-auto flex max-w-read items-center gap-3 lg:max-w-3xl">{children}</div>
+      <div className="mx-auto flex max-w-read items-center gap-3 lg:max-w-wide">{children}</div>
     </div>
   );
 }

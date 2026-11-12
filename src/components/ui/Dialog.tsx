@@ -11,10 +11,10 @@ export function Dialog({ open, onClose, title, children, actions }: Props) {
       <div className="absolute inset-0 animate-[fade-in_200ms] bg-black/40" onClick={onClose} />
       <div
         ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-label={title}
-        className="relative w-full max-w-md animate-[pop-in_200ms] rounded-xl bg-surface p-6 shadow-lift focus:outline-none"
+        className="relative w-full max-w-md animate-[pop-in_200ms] elev-4 rounded-xl p-6 focus:outline-none"
       >
-        <h2 className="mb-2 text-lg font-semibold">{title}</h2>
-        <div className="text-[15px] leading-relaxed text-muted">{children}</div>
+        <h2 className="mb-2 text-lg font-bold">{title}</h2>
+        <div className="text-base text-ink-2">{children}</div>
         {actions && <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">{actions}</div>}
       </div>
     </div>

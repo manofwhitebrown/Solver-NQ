@@ -21,7 +21,7 @@ export function Tabs<T extends string>({ value, onChange, items, label }: Props<
   }
 
   return (
-    <div role="tablist" aria-label={label} onKeyDown={onKey} className="inline-flex w-full rounded-md bg-raised p-1">
+    <div role="tablist" aria-label={label} onKeyDown={onKey} className="inline-flex w-full rounded-md border border-line bg-raised p-1">
       {items.map((it) => (
         <button
           key={it.value}
@@ -32,7 +32,7 @@ export function Tabs<T extends string>({ value, onChange, items, label }: Props<
           onClick={() => onChange(it.value)}
           className={cn(
             'min-h-[44px] flex-1 rounded-sm px-3 text-sm font-semibold transition',
-            it.value === value ? 'bg-surface text-ink shadow-soft' : 'text-muted hover:text-ink',
+            it.value === value ? 'bg-surface text-ink shadow-soft ring-1 ring-line-strong/40' : 'text-ink-2 hover:text-ink',
           )}
         >
           {it.label}

@@ -28,7 +28,7 @@ jobs:
       - run: node scripts/ci-size.mjs
         env:
           VITE_BASE: /Solver-NQ/
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
   deploy:

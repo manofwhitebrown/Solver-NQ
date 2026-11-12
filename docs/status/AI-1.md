@@ -17,7 +17,7 @@ DESIGN V2 READY
 - P1: sidebar logo mark (`src/app/Logo.tsx`)
 - P2: lucide icon set (`@/components/ui/icons`, 1.75 stroke), 404 restyle, `useHideTabBar(true)` hook in `src/app/tabbar.ts`; no `any` left in my files
 
-- Seen in real headless Chromium (`@sparticuz/chromium` + `puppeteer-core`, run from /tmp): gallery at 390/1280, light/dark, onboarding step 1, Settings. Screenshots `design-*`, `settings-390-light`, `welcome-390-light` in `docs/screenshots/`. Looked fine; no sideways scroll.
+- Seen in real headless Chromium (`@sparticuz/chromium` + `puppeteer-core`, run from /tmp): gallery at 390/1280, light/dark, onboarding steps 1-3, Settings. Screenshots `design-*`, `settings-390-light`, `welcome-390-light` in `docs/screenshots/`. Looked fine; no sideways scroll.
 
 ## In progress
 - (none)

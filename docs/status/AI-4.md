@@ -1,4 +1,5 @@
 ## Done
+- Unit tests: crop math, preprocessing (fitSize, grayscale, contrast, threshold, Otsu), confidence threshold (12 tests passing).
 - Verified AI-2's Ask screen uses my ScanButton and reads { text, imageDataUrl } from router state.
 - src/lib/ocr: preprocess (downscale <=2000px, grayscale, contrast, Otsu threshold, rotate), confidence threshold (70), friendly OcrError messages, platform switch.
 - recognize(): web path uses Tesseract.js 7.0.0 (pinned), dynamically imported so it stays out of the main bundle; language from Settings (ocrLang). Native path falls back to web until the ML Kit plugin is chosen.

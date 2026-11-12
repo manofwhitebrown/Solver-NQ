@@ -6,10 +6,11 @@
 - /learn/quiz: setup (subject/tag/count/timed), multiple choice + self-graded short answer, timed exam mode, results with score + weak topics, retry the wrong ones. Uses generateQuiz when online, falls back to a local builder (buildLocalQuiz) on any failure.
 - /learn/stats: streak, accuracy, 30-day retention, reviews per day (SVG bars), daily accuracy (SVG line), new/learning/mature card counts. Linked from /learn.
 - /learn/cards: search, filter by deck, edit (front/back/deck), delete with confirm, import CSV/TSV (Anki-style, skips duplicates, validates subject), export TSV/CSV of the shown cards via saveFile.
+- /learn/cards/new?answer=<id>: previews cards from makeCardsFromAnswer, untick/edit, saves only the chosen ones.
 ## In progress
-- Card preview UI after make-cards, optional daily reminder.
+- Optional daily reminder (Capacitor LocalNotifications behind an interface, no-op on web) + toggle.
 ## Needs from others
-- AI-5: a "Make flashcards" button on the answer page should link to `/learn/cards/new?answer=<id>` (route coming from me next) so users can preview then save cards.
+- AI-5: a "Make flashcards" button on the answer page should link to `/learn/cards/new?answer=<id>` (route is live now) so users can preview then save cards.
 - AI-1/AI-5: a shared Markdown+KaTeX renderer component would let cards show math. Card text is plain text for now.
 - AI-2: generateQuiz is a stub; I will build the local fallback so quiz works offline regardless.
 ## Notes for the manager

@@ -7,6 +7,7 @@ import { MODES, SUBJECTS } from '@/features/settings/options';
 import { IMAGE_ONLY_TEXT } from '@/lib/ai';
 import { useSettings } from '@/lib/settings';
 import type { Mode, Subject } from '@/types';
+import { NoKeyCard, useNoKey } from './NoKeyCard';
 import { ImagePreview } from './ImagePreview';
 import { readPrefill } from './prefill';
 import { RecentList } from './RecentList';
@@ -26,6 +27,7 @@ export function AskPage() {
   const [mode, setMode] = useState<Mode>(settings.defaultMode);
   const [image, setImage] = useState<string | undefined>();
   const { status, error, submit, cancel, reset, retryAt } = useAsk();
+  const noKey = useNoKey();
   const location = useLocation();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -64,7 +66,9 @@ export function AskPage() {
       <p className="mt-1 text-[15px] text-muted">Type a question, or scan it from a page.</p>
 
       <div className="mt-6">
-        {status === 'busy' ? (
+        {noKey ? (
+          <NoKeyCard />
+        ) : status === 'busy' ? (
           <Thinking onCancel={cancel} />
         ) : status === 'queued' ? (
           <Card className="flex flex-col items-start gap-3" role="status">

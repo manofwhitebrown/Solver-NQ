@@ -1,9 +1,27 @@
 ## Phase 2 (AI-2)
-### Done
-- AddKeyForm pushed first: `import { AddKeyForm } from '@/features/ai-settings'` (props: `onAdded(keyId)`, `showLabel`). Pastes a Gemini key, Test key, Save key, saves on device, then auto-fetches the models Google really offers and pre-fills the chain.
-- `src/lib/ai/fallback/`: state store (persisted in localStorage `solvernq.ai.v2`, migrates old provider/model/apiKey/baseUrl on first load), error classifier, Pacific-midnight cooldown math, model ranking (`defaultPick`), ListModels fetch, key actions. `getPrimaryModel()` exported from `@/lib/ai/fallback`.
+### Done (P0)
+- `AddKeyForm` (`@/features/ai-settings`): paste Gemini key, Test key, Save key; after the first save it fetches the models Google really offers and pre-fills the chain.
+- `src/lib/ai/fallback/`: persisted state (localStorage `solvernq.ai.v2`) that migrates the old provider/model/apiKey/baseUrl on first load and imports a key later pasted in the old Settings field; `callWithFallback` (429 -> cooldown with retryDelay, daily quota -> midnight Pacific, 5xx/network -> one retry then 30 s cooldown, 404/limit 0 -> unavailable, 400/401/403 -> key invalid with no blind fall-through, safety block -> shown); key rotation within a model; keys with the same project label share one quota; token-bucket throttle and in-flight de-duplication; Save-quota mode (light models first, used by cards/quiz/similar); proxy mode unchanged.
+- When every slot is exhausted the question is queued with a retry time and answered automatically when the first cooldown ends (timer) or the app comes back online. The Ask card says "all free limits are used up ... about HH:MM".
+- `getPrimaryModel()` exported from `@/lib/ai` and `@/lib/ai/fallback`. `Answer.model` still records the model that answered.
+- `<AiSettingsPanel />` exported from `@/features/ai-settings`: key list (masked, delete), editable chain (toggle, up/down, per-slot status Ready / Cooling down until HH:MM / Unavailable / Key invalid, Test, Remove), Fetch available models with tick-to-add, Save quota, Reset cooldowns, free-tier notice, How to get a free key.
+- Ask shows a "Add your free key to start" card when there is no key.
+- 20 new tests (mocked fetch): every failure class, rotation, same-project quota, cooldown persistence across reload, exhausted -> queued -> flushed, no key in errors or logs, ranking, migration.
 ### Remaining
-- callWithFallback + wiring into runModel, throttle/dedupe, queue on exhaustion, tests, AiSettingsPanel, no-key card on Ask, then P1/P2.
+- P1: `transformText` and `transcribeImage` (AI-4 and AI-7 are waiting), Ask screen v2 layout, status line when a fallback answered. P2: streaming, remove `any`, share logic in `api/ask.ts`.
+### Needs from others
+- AI-1: mount `<AiSettingsPanel />` in Settings (and use `<AddKeyForm showLabel={false} />` in onboarding). The old Provider/Model/API key fields in Settings are now only a one-time import; please remove or hide them once the panel is mounted. Settings can keep the Proxy URL field.
+- AI-5: use `getPrimaryModel()` from `@/lib/ai`: show "Answered by <model>" when `answer.model !== getPrimaryModel()`.
+### Notes for the manager
+- Model names in the suggested chain (gemini-3.8-flash, 3.6-flash, 3.5-flash-lite, 3.1-flash-lite, 2.5-flash-lite) come from third-party pages dated Oct-Nov 2026, not from Google directly; gemini-2.0-flash was shut down in June 2026. They are only a starting point: Fetch available models replaces them with what Google lists for the user's key.
+- Not tested against the real Gemini API (no key here).
+### Manual tests for the user
+1. Settings or onboarding: paste a real free Gemini key, tap Test key (expect "Key works"), Save key. The model chain should fill with models available to you.
+2. Ask a question. An answer should open. Check the chain shows the first model as Ready.
+3. In the model chain, add a fake model (or move one you know is unavailable) to the top; ask again. It should still answer from the next model and mark the first Unavailable or Cooling down.
+4. Airplane mode, ask something new: it should say it is saved. Turn the connection back on: the answer should appear in the library.
+5. Add a wrong key and ask: you should see "Your AI key was rejected" and the key marked as rejected.
+
 ## Done
 - Provider layer (`src/lib/ai/providers`): Anthropic (browser-access header + version), OpenAI-compatible (base URL, also OpenRouter/Groq/Ollama; key optional with a custom base URL), Gemini, and proxy mode (no key sent).
 - Optional Vercel proxy `api/ask.ts` (server-side `AI_API_KEY`, per-IP rate limit, setup in header comment).

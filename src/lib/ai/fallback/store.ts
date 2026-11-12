@@ -96,3 +96,16 @@ export function importLegacy(): void {
     }
   });
 }
+
+// ---- chain editing (used by the settings panel) ----
+export function moveSlot(id: string, dir: -1 | 1): void {
+  update(s => {
+    const i = s.chain.findIndex(c => c.id === id), j = i + dir;
+    if (i < 0 || j < 0 || j >= s.chain.length) return;
+    [s.chain[i], s.chain[j]] = [s.chain[j], s.chain[i]];
+  });
+}
+export const toggleSlot = (id: string) => update(s => { const c = s.chain.find(x => x.id === id); if (c) c.enabled = !c.enabled; });
+export const removeSlot = (id: string) => update(s => { s.chain = s.chain.filter(c => c.id !== id); });
+export const resetCooldowns = () => update(s => { s.cooldowns = {}; });
+export const setSaveQuota = (v: boolean) => update(s => { s.saveQuota = v; });

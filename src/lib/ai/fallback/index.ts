@@ -6,3 +6,6 @@ export type { FallbackState, KeyEntry, ModelSlot, SlotStatus } from './types';
 export { callWithFallback } from './callWithFallback';
 export type { FallbackResult } from './callWithFallback';
 export { earliestRetry } from './store';
+export { moveSlot, toggleSlot, removeSlot, resetCooldowns, setSaveQuota } from './store';
+export { slotInfo } from './slotStatus';
+export { testSlot } from './testSlot';

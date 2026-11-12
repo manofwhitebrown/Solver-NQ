@@ -14,6 +14,8 @@ DESIGN V2 READY
 - P1: onboarding at `/#/welcome` (3 steps, skippable, reopen from Settings > AI; key step is a stub until AI-2's `<AddKeyForm />`), `onboarded` setting, default provider `gemini` (model name still from `SUGGESTED_MODELS`), Settings v2 (Appearance, AI, Defaults, Data, About)
 - P1: tab bar hides when the keyboard is open, 48 px compact bar in short viewports, 180 ms page transition (reduced motion honoured), textarea `resize-none` on touch
 
+- P2: lucide icon set (`@/components/ui/icons`, 1.75 stroke), 404 restyle, `useHideTabBar(true)` hook in `src/app/tabbar.ts`; no `any` left in my files
+
 ## In progress
 - (none)
 
@@ -24,6 +26,8 @@ DESIGN V2 READY
 - P2: icon set, 404 restyle, focus polish, `any` cleanup
 
 ## Needs from others
+- AI-4: call `useHideTabBar(true)` (from `@/app/tabbar`) while the /scan crop step is shown.
+- AI-2: push `<AddKeyForm />` / `<AiSettingsPanel />` (not in main yet); I will swap my stubs.
 - AI-3: `npm run shots` so the gallery can be reviewed visually.
 - Owners: do the layout pass now (use `PageHeader`, `Section`, `Stack`; drop own paddings).
 

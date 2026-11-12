@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useSettings } from '@/lib/settings';
 import { Toaster, cn } from '@/components/ui';
-import { AskIcon, LearnIcon, LibraryIcon, SettingsIcon } from './icons';
+import { AskIcon, LearnIcon, LibraryIcon, SettingsIcon } from '@/components/ui/icons';
+import { useTabBarForcedHidden } from './tabbar';
 import { NAV } from './nav';
 import { OnlineBanner } from './OnlineBanner';
 
@@ -30,7 +31,7 @@ function Links({ side }: { side: boolean }) {
               )
             }
           >
-            <Icon />
+            <Icon size={side ? 20 : 24} />
             {label}
           </NavLink>
         );
@@ -56,7 +57,8 @@ export function Layout() {
   const keyboard = useKeyboardOpen();
   const { pathname } = useLocation();
   const { onboarded } = useSettings();
-  const hideTabs = keyboard || FOCUSED.some((r) => r.test(pathname));
+  const forced = useTabBarForcedHidden();
+  const hideTabs = keyboard || forced || FOCUSED.some((r) => r.test(pathname));
   if (!onboarded && !pathname.startsWith('/welcome') && !pathname.startsWith('/design')) return <Navigate to="/welcome" replace />;
   return (
     <div className="min-h-full lg:flex" style={hideTabs ? ({ '--tabbar-h': '0rem' } as React.CSSProperties) : undefined}>

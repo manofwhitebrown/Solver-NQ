@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from './IconButton';
+import { BackIcon } from './icons';
 
 interface Props {
   title: string;
@@ -17,7 +18,7 @@ export function PageHeader({ title, subtitle, actions, back }: Props) {
     <header className="mb-8 flex items-start gap-3">
       {back && (
         <IconButton label="Back" onClick={() => (typeof back === 'string' ? nav(back) : nav(-1))} className="-ml-2 mt-0.5 shrink-0">
-          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="m15 5-7 7 7 7" /></svg>
+          <BackIcon />
         </IconButton>
       )}
       <div className="min-w-0 flex-1">

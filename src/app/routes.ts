@@ -4,6 +4,7 @@ import { Page } from '@/components/ui';
 import { routes as answer } from '@/features/answer';
 import { routes as ask } from '@/features/ask';
 import { routes as backup } from '@/features/backup';
+import { routes as design } from '@/features/design';
 import { routes as exportRoutes } from '@/features/export';
 import { routes as graph } from '@/features/graph';
 import { routes as learn } from '@/features/learn';
@@ -15,7 +16,7 @@ import { NotFound } from './NotFound';
 import { Placeholder } from './Placeholder';
 
 const featureRoutes: RouteObject[] = [
-  ...ask, ...scan, ...answer, ...library, ...learn, ...exportRoutes, ...settings, ...graph, ...backup,
+  ...ask, ...scan, ...answer, ...library, ...learn, ...exportRoutes, ...settings, ...graph, ...backup, ...design,
 ];
 
 // Any main path nobody has claimed yet gets a placeholder, so every tab always works.
@@ -33,7 +34,7 @@ if (!featureRoutes.some((r) => r.index || r.path === '')) {
 }
 
 // Every screen is wrapped in <Page> here, so gutters come from one place.
-const WIDE = new Set(['library', '/library', 'graph', 'learn', 'learn/cards', 'learn/stats', 'export', '/export', 'backup', '/backup']);
+const WIDE = new Set(['library', '/library', 'graph', 'learn', 'learn/cards', 'learn/stats', 'export', '/export', 'backup', '/backup', 'design']);
 function withPage(list: RouteObject[]): RouteObject[] {
   return list.map((r) => {
     if (r.children || !r.element) return r;

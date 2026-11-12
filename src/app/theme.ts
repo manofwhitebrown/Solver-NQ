@@ -11,7 +11,7 @@ export function useTheme(): void {
       document.documentElement.dataset.theme = dark ? 'dark' : 'light';
       document
         .querySelector('meta[name="theme-color"]')
-        ?.setAttribute('content', dark ? '#12141a' : '#f7f6f3');
+        ?.setAttribute('content', dark ? '#0d0f15' : '#f0f2f6');
     };
     apply();
     mq.addEventListener('change', apply);

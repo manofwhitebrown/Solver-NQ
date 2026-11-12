@@ -9,13 +9,15 @@
 - `eslint.config.js`: tiny cross-owner edit, ignore `docs/audit/tools` and `scripts` (manager's audit tool had 28 lint errors).
 - Docs: `docs/USER-GUIDE.md`, `docs/RELEASE.md`.
 
+- Dependabot: npm major bumps ignored. `docs/DEVICE-TEST.md` created (AI-4 steps + layout checks merged; other AIs' steps still to merge).
+
 ## In progress
 - Waiting for the first Android APK run with Node 22 to see if another failure appears.
 
 ## Remaining
 - P0: confirm Android APK green + artifact; confirm Web (Pages) green.
-- P1: USER-GUIDE.md, RELEASE.md, bundle budget + CI size check, offline re-check (OFFLINE.md), DEVICE-TEST.md.
-- P2: Dependabot major-ignore, README update, ARCHITECTURE.md accuracy, optional layout-audit workflow.
+- P1: offline re-check (needs a browser; none in my sandbox), final merge of DEVICE-TEST.md from all status files.
+- P2: README badges/folder map, ARCHITECTURE.md accuracy, optional layout-audit workflow.
 
 ## Needs from others
 - AI-5: `vendor-math` (641 kB) still loads at startup because `src/lib/verify/mathEnv.ts` imports mathjs statically. Lazy-load verify (dynamic import in `useAnswer.ts`/`graph/plot.ts`) for a faster first load.

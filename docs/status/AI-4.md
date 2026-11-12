@@ -6,8 +6,11 @@
 ### Done (P1 item 7, early)
 - Rotate hint: confidence < 40 shows "Try rotating the photo" with a one-tap "Rotate and read again" (rotates the crop 90 degrees, re-runs OCR). Plain styling for now; restyle in the layout pass.
 - Progress: "Reading... N%" while Tesseract runs (`onOcrProgress`; ML Kit has no progress, shows 0%). "Read with AI" button shown disabled with the reason until AI-2 ships `transcribeImage` (not in `src/lib/ai` yet).
+- P2: self-hosted Tesseract in `public/tesseract/` (worker, plain + SIMD LSTM cores, `lang/eng.traineddata.gz`, 11 MB). `src/lib/ocr/assets.ts` builds the URLs from the app base and picks the SIMD core by feature test; English is local, other languages still download from the CDN once. 2 tests. No `any` left in my folders.
 ### Remaining
-- Still waiting for `DESIGN V2 READY` (not in docs/status/AI-1.md, no docs/DESIGN.md) before the layout pass. Wire the AI button once `transcribeImage` exists.
+- AI-8 (please): the service worker precaches the worker and both cores (about 8 MB) but NOT `tesseract/lang/eng.traineddata.gz` (.gz is outside the glob). Add it to the precache (or `includeAssets`) so the very first scan works offline. Consider dropping the plain core from precache and caching it at runtime only.
+- P2 language packs manager UI (list, sizes, download/delete, offline status), after the layout pass.
+- (P1) Still waiting for `DESIGN V2 READY` (not in docs/status/AI-1.md, no docs/DESIGN.md) before the layout pass. Wire the AI button once `transcribeImage` exists.
 - Checked: no `any` left in src/lib/ocr or src/features/scan; OCR and PDF libs are lazy chunks (P2 item 9 done).
 - BLOCKED: P1 needs `DESIGN V2 READY` (AI-1 status still says SCAFFOLD READY; Page/PageHeader/Section/Stack primitives not in components/ui yet) and `transcribeImage` from AI-2 (not in src/lib/ai yet).
 - P1 (after `DESIGN V2 READY`): Scan v2 layout, Read-with-AI button, rotate hint, 320 px / landscape checks. P2: language packs manager, remove `any`.

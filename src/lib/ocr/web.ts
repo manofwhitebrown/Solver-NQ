@@ -1,3 +1,4 @@
+import { hasSimd, localTesseractPaths } from './assets';
 import { OcrError } from './errors';
 
 // Tesseract.js is lazy-loaded so it never lands in the main bundle.
@@ -18,6 +19,7 @@ async function getWorker(lang: string): Promise<Worker> {
   if (worker) await worker.terminate();
   const { createWorker } = await import('tesseract.js');
   worker = await createWorker(lang, 1, {
+    ...localTesseractPaths(import.meta.env.BASE_URL, document.baseURI, hasSimd(), lang),
     cacheMethod: 'write',
     logger: m => { if (m.status === 'recognizing text') progressCb?.(Math.round(m.progress * 100)); },
   });

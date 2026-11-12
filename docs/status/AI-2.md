@@ -1,3 +1,9 @@
+## Phase 2 (AI-2)
+### Done
+- AddKeyForm pushed first: `import { AddKeyForm } from '@/features/ai-settings'` (props: `onAdded(keyId)`, `showLabel`). Pastes a Gemini key, Test key, Save key, saves on device, then auto-fetches the models Google really offers and pre-fills the chain.
+- `src/lib/ai/fallback/`: state store (persisted in localStorage `solvernq.ai.v2`, migrates old provider/model/apiKey/baseUrl on first load), error classifier, Pacific-midnight cooldown math, model ranking (`defaultPick`), ListModels fetch, key actions. `getPrimaryModel()` exported from `@/lib/ai/fallback`.
+### Remaining
+- callWithFallback + wiring into runModel, throttle/dedupe, queue on exhaustion, tests, AiSettingsPanel, no-key card on Ask, then P1/P2.
 ## Done
 - Provider layer (`src/lib/ai/providers`): Anthropic (browser-access header + version), OpenAI-compatible (base URL, also OpenRouter/Groq/Ollama; key optional with a custom base URL), Gemini, and proxy mode (no key sent).
 - Optional Vercel proxy `api/ask.ts` (server-side `AI_API_KEY`, per-IP rate limit, setup in header comment).

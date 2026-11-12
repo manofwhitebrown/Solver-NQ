@@ -1,3 +1,5 @@
+> **Applied** in `vite.config.ts` and `src/app/App.tsx`. Kept here as a reference.
+
 # PWA config (for AI-1, who owns `vite.config.ts`)
 
 Replace the `VitePWA({...})` block with the one below, and render `<UpdatePrompt />` (from `@/sw`) once inside `App.tsx`.

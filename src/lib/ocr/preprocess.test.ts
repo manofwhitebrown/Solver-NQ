@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isLowConfidence, LOW_CONFIDENCE } from './confidence';
+import { isLowConfidence, LOW_CONFIDENCE, suggestsRotate } from './confidence';
 import { enhancePixels, fitSize, otsu } from './preprocess';
 
 describe('fitSize', () => {
@@ -44,5 +44,12 @@ describe('confidence', () => {
   it('flags values below the threshold', () => {
     expect(isLowConfidence(LOW_CONFIDENCE - 1)).toBe(true);
     expect(isLowConfidence(LOW_CONFIDENCE)).toBe(false);
+  });
+});
+
+describe('suggestsRotate', () => {
+  it('only suggests rotating for very low confidence', () => {
+    expect(suggestsRotate(10)).toBe(true);
+    expect(suggestsRotate(55)).toBe(false);
   });
 });

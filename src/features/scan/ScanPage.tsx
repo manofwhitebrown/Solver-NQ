@@ -4,7 +4,7 @@ import { Button, Card, Spinner, toast } from '@/components/ui';
 import { friendlyMessage, OcrError, recognize } from '@/lib/ocr';
 import { isNative } from '@/lib/ocr/platform';
 import { CropEditor } from './CropEditor';
-import { cropBlob, loadBitmap, rotate90 } from './imageTools';
+import { blobToDataUrl, cropBlob, loadBitmap, rotate90 } from './imageTools';
 import type { Rect } from './cropMath';
 import { takeNativePhoto } from './nativeCamera';
 import { PdfPicker } from './PdfPicker';
@@ -90,6 +90,23 @@ export function ScanPage() {
     } catch (e) { toast(friendlyMessage(e), 'error'); }
   };
 
+  // One tap: turn a crop 90 degrees and read it again.
+  const rotateItem = async (id: string) => {
+    const it = items.find(x => x.id === id);
+    if (!it) return;
+    patch(id, { busy: true });
+    try {
+      const turned = await rotate90(await (await fetch(it.dataUrl)).blob());
+      const dataUrl = await blobToDataUrl(turned);
+      const r = await recognize(turned);
+      patch(id, { dataUrl, text: r.text, confidence: r.confidence, busy: false });
+      if (r.backup) toast('Using backup reader', 'info');
+    } catch (e) {
+      patch(id, { busy: false });
+      toast(friendlyMessage(e), 'error');
+    }
+  };
+
   // Ask for one crop; the rest stay queued and are restored when the user comes back to /scan.
   const send = (id: string, text: string, dataUrl: string) => {
     saveQueue(items.filter(x => x.id !== id));
@@ -140,7 +157,7 @@ export function ScanPage() {
       {items.map(it => (
         <ResultCard key={it.id} item={it} onText={t => patch(it.id, { text: t })}
           onAsk={() => send(it.id, it.text.trim(), it.dataUrl)} onImageOnly={() => send(it.id, '', it.dataUrl)}
-          onRemove={() => removeItem(it.id)} />
+          onRemove={() => removeItem(it.id)} onRotate={() => void rotateItem(it.id)} />
       ))}
     </div>
   );

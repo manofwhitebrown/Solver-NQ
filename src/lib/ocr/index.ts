@@ -3,7 +3,7 @@ import { recognizeNative } from './native';
 import { isNative } from './platform';
 import { recognizeWeb } from './web';
 
-export { isLowConfidence, LOW_CONFIDENCE } from './confidence';
+export { isLowConfidence, LOW_CONFIDENCE, suggestsRotate } from './confidence';
 export { OcrError, friendlyMessage } from './errors';
 export { preprocess } from './preprocess';
 

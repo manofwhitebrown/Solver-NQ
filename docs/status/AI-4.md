@@ -3,6 +3,8 @@
 - Native OCR: `recognize()` uses ML Kit on Android; any failure OR empty result falls back to Tesseract and returns `backup: true`; Scan shows toast "Using backup reader". Plugin call checked against its README (`detectText({ base64Image })`). 9 mocked-plugin tests: success, empty, plugin missing, permission denied, plugin throws, fallback, web-only.
 - Large images: `src/features/scan/imageSize.ts` reads JPEG/PNG header size (incl. EXIF rotation) and `loadBitmap` decodes straight to <= 2400 px with `createImageBitmap` resize options, so a 48 MP photo is never fully decoded. 8 tests for the size math.
 - Error flows with kind next steps: camera denied (how to enable in Settings), no camera, file over 25 MB, unsupported file type, PDF with 0 pages.
+### Done (P1 item 7, early)
+- Rotate hint: confidence < 40 shows "Try rotating the photo" with a one-tap "Rotate and read again" (rotates the crop 90 degrees, re-runs OCR). Plain styling for now; restyle in the layout pass.
 ### Remaining
 - Checked: no `any` left in src/lib/ocr or src/features/scan; OCR and PDF libs are lazy chunks (P2 item 9 done).
 - BLOCKED: P1 needs `DESIGN V2 READY` (AI-1 status still says SCAFFOLD READY; Page/PageHeader/Section/Stack primitives not in components/ui yet) and `transcribeImage` from AI-2 (not in src/lib/ai yet).
@@ -11,6 +13,7 @@
 - `npm run lint` currently fails with 24 errors outside my folders: `docs/audit/tools/layout-audit.mjs` (browser/node globals not declared; needs an eslint ignore or globals) and `api/ask.ts`. My folders lint clean.
 - `scale.test.ts` (AI-3) is still a timing flake in slow sandboxes.
 ### Manual tests for the user
+0. Rotate hint: photograph text held sideways, read it; when the hint appears tap Rotate and read again.
 1. Android, camera: Scan > Take a photo > photograph printed text > crop > Read text. Text should appear within a few seconds.
 2. Offline: turn on airplane mode, repeat step 1. Native ML Kit should still read it (first run may need the model download once online).
 3. Rotated photo: take a photo with the phone sideways; it should display upright. If text is poor, use Rotate and read again.

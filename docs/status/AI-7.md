@@ -10,7 +10,8 @@
 ### In progress
 - Nothing.
 ### Remaining
-- Reminder-after-reboot check (needs a real Android device; the plugin's reboot behaviour is unverified). Deck colours (emoji done, colours not). `/notes/new` and `/notes/:id` have no screenshots yet (the shots config only lists `/notes`; AI-3 would need to add the demo note id).
+- Reminder-after-reboot check on a real Android device. Reading the plugin: @capacitor/local-notifications ships a `LocalNotificationRestoreReceiver` (BOOT_COMPLETED) and RECEIVE_BOOT_COMPLETED, so the daily reminder should come back after a reboot, but it is untested on a device. Some phone makers (aggressive battery savers) can still block it; the app cannot fix that.
+- Deck colours: done (soft tint behind the emoji, subject name always shown as text). `/notes/new` and `/notes/:id` have no screenshots yet (the shots config only lists `/notes`; AI-3 would need to add the demo note id).
 ### Needs from others
 - AI-2: `transformText` is live and wired (plain Markdown string, as expected). Its opts have no summary length, so I put the length wish in front of the text. If you add a `length` option, tell me and I will switch.
 - AI-1: I added `...notes` to `featureRoutes` in `src/app/routes.ts` (one line + import) and a "Notes" link on /learn. Please add Notes to nav if wanted.

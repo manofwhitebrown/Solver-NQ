@@ -3,7 +3,7 @@ import { Button, Card, Cluster, EmptyState, PageHeader, Section, Select, Skeleto
 import { TodayCard } from '@/features/plan';
 import { CRAM_DAYS, currentStreak, goalProgress } from '@/lib/srs';
 import type { Subject } from '@/types';
-import { DECK_EMOJI } from './deckStyle';
+import { DECK_EMOJI, DECK_TINT } from './deckStyle';
 import { ProgressRing } from './ProgressRing';
 import { ReminderToggle } from './ReminderToggle';
 import { useLearnData } from './useLearnData';
@@ -56,7 +56,7 @@ export function LearnHome() {
               <li key={subject}>
                 <Link to={`/learn/review?subject=${subject}`} aria-label={`Review ${subject} deck`}>
                   <Card interactive className="flex min-h-[64px] items-center justify-between gap-4 py-4 lg:py-4">
-                    <span className="text-lg font-semibold capitalize text-ink"><span aria-hidden className="mr-3">{DECK_EMOJI[subject]}</span>{subject}</span>
+                    <span className="flex items-center gap-3 text-lg font-semibold capitalize text-ink"><span aria-hidden className="flex h-10 w-10 items-center justify-center rounded-full" style={{ backgroundColor: DECK_TINT[subject] }}>{DECK_EMOJI[subject]}</span>{subject}</span>
                     <span className="text-[15px] text-ink-2">{d.due} due · {d.total} {d.total === 1 ? "card" : "cards"}</span>
                   </Card>
                 </Link>

@@ -13,6 +13,8 @@
 
 - README: badges, USER-GUIDE link, live URL, scripts/ in folder map. Added optional `layout-audit.yml` (manual run, uploads screenshots + summary; untested, I can't read Actions here).
 
+- DEVICE-TEST.md merged from AI-1/4/5/6/7; ARCHITECTURE.md updated.
+
 ## In progress
 - Waiting for the first Android APK run with Node 22 to see if another failure appears.
 

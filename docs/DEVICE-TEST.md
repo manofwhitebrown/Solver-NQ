@@ -22,6 +22,26 @@ Tick these on a real phone / laptop. Other AIs add steps to their status file un
 - [ ] "Pretty" PDF export with 20+ answers opens correctly.
 - [ ] Offline: airplane mode, reopen the app; library, Learn and Settings still open.
 
+## Design and screens (from AI-1)
+- [ ] Open `/#/design` on a phone and a laptop, switch light/dark: cards, inputs and disabled buttons are clearly separated.
+- [ ] Clear site data and reload: onboarding appears; Skip and Finish both land on Ask.
+- [ ] Open an answer and Learn review: no tab bar, no content hidden under the bottom bar.
+
+## Answer (from AI-5)
+- [ ] Open a saved answer in Learn mode: reveal steps, read aloud, ask a follow-up, make flashcards, export. A long equation must not break the layout.
+
+## Plan and export (from AI-6)
+- [ ] Open `/plan` at phone and laptop width, light and dark: add an exam 8 days away, tick a task, tap a week day, open plan settings. Nothing scrolls sideways.
+- [ ] Laptop: export 1, 5, then 20 answers as PDF with "Pretty"; math is sharp, no formula cut across pages, page numbers bottom right, white paper in dark theme. Repeat with Letter size.
+- [ ] Tap **Cancel** halfway through the 20-answer export: it stops within a second or two and shows "Export cancelled".
+- [ ] Android: export a PDF, Save/Share to Drive or WhatsApp; the file arrives and opens. Closing the share sheet shows no error.
+- [ ] Android: export DOCX and open it from the share sheet in Word/Docs.
+
+## Notes (from AI-7)
+- [ ] Paste a page of notes and get a summary offline (airplane mode), then improve it with AI; make cards; take the quiz.
+- [ ] Import a PDF (also a scanned one and a photo).
+- [ ] Print or save a note as PDF: the tab bar and buttons are hidden in the preview.
+
 ## Real-device layout checks
 - [ ] Notch / gesture bar: bottom tab bar is not under the gesture bar.
 - [ ] Keyboard open on Ask: tab bar and Send button stay reachable.

@@ -42,7 +42,9 @@ export function toSpeakable(markdown: string): string {
     .replace(/`([^`]*)`/g, '$1')
     .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
     .replace(/^#{1,6}\s*/gm, '').replace(/[*_>#]+/g, '')
-    .replace(/^\s*[-•]\s+/gm, '').replace(/\s+/g, ' ').trim();
+    .replace(/^\s*[-•]\s+/gm, '')
+    .replace(/([^.!?:;\s])[ \t]*\n\s*\n/g, '$1. ') // a paragraph or step break becomes a spoken pause
+    .replace(/\s+/g, ' ').trim();
 }
 
 /** Split into sentence-sized chunks (long utterances get cut off by some engines). */
@@ -91,7 +93,14 @@ function pickEngine(): Engine | null {
 
 export type TtsStatus = 'idle' | 'speaking' | 'paused';
 let status: TtsStatus = 'idle';
-let rate = 1;
+const RATE_KEY = 'solver-nq.tts.rate';
+function loadRate(): number {
+  try {
+    const n = Number(globalThis.localStorage?.getItem(RATE_KEY));
+    return n >= 0.5 && n <= 2 ? n : 1;
+  } catch { return 1; }
+}
+let rate = loadRate();
 let chunks: string[] = [];
 let index = 0;
 let run = 0;
@@ -124,6 +133,9 @@ export const tts = {
   resume() { if (status === 'paused') void play(); },
   stop() { run++; pickEngine()?.stop(); chunks = []; index = 0; set('idle'); },
   /** 0.5 - 2. Applies from the next sentence. */
-  setRate(r: number) { rate = Math.min(2, Math.max(0.5, r)); },
+  setRate(r: number) {
+    rate = Math.min(2, Math.max(0.5, r));
+    try { globalThis.localStorage?.setItem(RATE_KEY, String(rate)); } catch { /* storage unavailable: speed just is not remembered */ }
+  },
   subscribe(l: (s: TtsStatus) => void) { listeners.add(l); return () => { listeners.delete(l); }; },
 };

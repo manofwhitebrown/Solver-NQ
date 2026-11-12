@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { speakMath, toSpeakable, chunkText } from './tts';
+import { describe, it, expect, vi } from 'vitest';
+import { speakMath, toSpeakable, chunkText, tts } from './tts';
 
 describe('speakMath', () => {
   it('says squares and powers naturally', () => {
@@ -34,5 +34,20 @@ describe('chunkText', () => {
   it('splits by sentence and caps length', () => {
     expect(chunkText('One. Two! Three?')).toEqual(['One.', 'Two!', 'Three?']);
     expect(chunkText('word '.repeat(100)).every((c) => c.length <= 220)).toBe(true);
+  });
+});
+
+describe('natural pauses and remembered speed', () => {
+  it('turns paragraph breaks into sentence ends so the voice pauses', () => {
+    expect(toSpeakable('Step one title\n\nDivide both sides by 2')).toBe('Step one title. Divide both sides by 2');
+    expect(toSpeakable('Already ends.\n\nNext')).toBe('Already ends. Next');
+  });
+  it('remembers the reading speed', () => {
+    const store = new Map<string, string>();
+    vi.stubGlobal('localStorage', { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v) });
+    tts.setRate(1.5);
+    expect([...store.values()]).toEqual(['1.5']);
+    vi.unstubAllGlobals();
+    tts.setRate(1);
   });
 });

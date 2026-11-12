@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Share } from '@capacitor/share';
-import type { Answer, Flashcard, Question } from '@/types';
+import type { Answer, Question } from '@/types';
 import { BottomSheet, Button, Card, EmptyState, Skeleton, Spinner, toast } from '@/components/ui';
-import { makeCardsFromAnswer } from '@/lib/srs';
 import { tts } from '@/lib/tts';
 import { ActionChips } from './ActionChips';
 import { answerToMarkdown } from './answerText';
-import { CardsSheet } from './CardsSheet';
 import { copyText } from './clipboard';
 import { FinalAnswerCard } from './FinalAnswerCard';
 import { FollowUpChat } from './FollowUpChat';
@@ -67,16 +65,8 @@ function AnswerBody({ q, a, updateQuestion, addFollowUp }: {
   const [revealed, setRevealed] = useState(a.mode === 'answer' || a.steps.filter((s) => !s.id.startsWith('fu-')).length === 0);
   const [tagsOpen, setTagsOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
-  const [cards, setCards] = useState<Flashcard[] | null>(null);
-  const [busyCards, setBusyCards] = useState(false);
   const graphFn = findGraphable(q.text, a.finalAnswer);
 
-  const makeCards = async () => {
-    setBusyCards(true);
-    try { setCards(await makeCardsFromAnswer(a.id)); }
-    catch (e) { toast(e instanceof Error ? e.message : 'Could not make flashcards', 'error'); }
-    finally { setBusyCards(false); }
-  };
   const copy = async () => { toast((await copyText(answerToMarkdown(q, a))) ? 'Copied' : 'Could not copy', 'success'); };
   const share = async () => {
     const text = answerToMarkdown(q, a);
@@ -93,9 +83,9 @@ function AnswerBody({ q, a, updateQuestion, addFollowUp }: {
           <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">{q.subject}</p>
           <Markdown>{q.text}</Markdown>
         </Card>
-        <Toolbar q={q} a={a} graphFn={graphFn} busyCards={busyCards}
+        <Toolbar q={q} a={a} graphFn={graphFn}
           onStar={() => void updateQuestion({ starred: !q.starred })} onTags={() => setTagsOpen(true)}
-          onCards={() => void makeCards()} onExport={() => navigate(`/export?ids=${q.id}`)}
+          onCards={() => navigate(`/learn/cards/new?answer=${a.id}`)} onExport={() => navigate(`/export?ids=${q.id}`)}
           onShare={() => void share()} onCopy={() => void copy()} />
         <FinalAnswerCard text={a.finalAnswer} hidden={!revealed} onReveal={() => setRevealed(true)} />
         {revealed && <VerifyBadge verified={a.verified} />}
@@ -114,7 +104,6 @@ function AnswerBody({ q, a, updateQuestion, addFollowUp }: {
         <div className="h-[55dvh]"><FollowUpChat answerId={a.id} onStep={addFollowUp} /></div>
       </BottomSheet>
       <TagsSheet open={tagsOpen} tags={q.tags} onClose={() => setTagsOpen(false)} onChange={(tags) => void updateQuestion({ tags })} />
-      <CardsSheet cards={cards} onClose={() => setCards(null)} />
     </div>
   );
 }

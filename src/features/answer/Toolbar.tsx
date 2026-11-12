@@ -11,10 +11,9 @@ const SPEEDS = [1, 1.25, 1.5, 0.75];
 interface Props {
   q: Question; a: Answer; graphFn: string | null;
   onStar: () => void; onTags: () => void; onCards: () => void; onExport: () => void; onShare: () => void; onCopy: () => void;
-  busyCards: boolean;
 }
 
-export function Toolbar({ q, a, graphFn, busyCards, onStar, onTags, onCards, onExport, onShare, onCopy }: Props) {
+export function Toolbar({ q, a, graphFn, onStar, onTags, onCards, onExport, onShare, onCopy }: Props) {
   const status = useSyncExternalStore(tts.subscribe, tts.getStatus);
   const speak = () => {
     if (!tts.isSupported()) { toast('Read aloud is not available on this device', 'error'); return; }
@@ -29,7 +28,7 @@ export function Toolbar({ q, a, graphFn, busyCards, onStar, onTags, onCards, onE
       <IconButton label={q.starred ? 'Remove star' : 'Save to starred'} aria-pressed={q.starred} onClick={onStar}
         className={q.starred ? 'text-warn' : ''}><Icon name="star" filled={q.starred} /></IconButton>
       <IconButton label="Tags" onClick={onTags}><Icon name="tag" /></IconButton>
-      <IconButton label="Make flashcards" onClick={onCards} disabled={busyCards}><Icon name="cards" /></IconButton>
+      <IconButton label="Make flashcards" onClick={onCards}><Icon name="cards" /></IconButton>
       <IconButton label="Export" onClick={onExport}><Icon name="export" /></IconButton>
       <IconButton label={status === 'speaking' ? 'Pause reading' : status === 'paused' ? 'Resume reading' : 'Read aloud'} onClick={speak}
         className={status !== 'idle' ? 'text-accent' : ''}><Icon name="speaker" /></IconButton>

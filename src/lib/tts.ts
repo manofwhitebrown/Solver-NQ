@@ -28,7 +28,7 @@ export function speakMath(latex: string): string {
   s = s.replace(/(^|[=(,])\s*-\s*(?=[\w(])/g, '$1 negative ');
   s = s.replace(/=/g, ' equals ').replace(/\+/g, ' plus ').replace(/-/g, ' minus ')
     .replace(/\*/g, ' times ').replace(/\//g, ' over ');
-  s = s.replace(/[(){}\[\]\\]/g, ' ').replace(/(\d)([a-z])\b/gi, '$1 $2');
+  s = s.replace(/[(){}[\]\\]/g, ' ').replace(/(\d)([a-z])\b/gi, '$1 $2');
   return s.replace(/\s+/g, ' ').trim();
 }
 

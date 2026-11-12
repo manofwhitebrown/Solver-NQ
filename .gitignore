@@ -6,3 +6,5 @@ dev-dist
 *.local
 android/app/build
 .DS_Store
+dist-shots
+shots-out

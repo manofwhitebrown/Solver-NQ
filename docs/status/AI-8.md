@@ -48,3 +48,9 @@
 - Done: `api/ask.ts` fully typed (no `any`); `ReviewPage` effect dependency fixed (`cram`); README now documents the proxy env vars (`AI_API_KEY`, `AI_PROVIDER`, `AI_BASE_URL`), which AI-2 asked for. `npm run lint` now reports 0 warnings.
 - Left as is, on purpose: 4 low-severity `npm audit` findings come from the pinned KaTeX chain (fix needs a breaking bump); `vendor-math` still loads at startup (lazy-loading verify touches AI-5's files and carries risk for little gain).
 - Still needs a person and a phone: everything under "Manual tests" in docs/DEVICE-TEST.md, a real Gemini key test, and the signed release secrets.
+
+## Final cleanup (12 Nov 2026)
+- Removed all 13 `any` in `api/ask.ts` (typed request/response/provider shapes), fixed the `cram` hook dependency in `ReviewPage.tsx`: lint now has 0 errors and 0 warnings.
+- README documents the proxy env vars (`AI_API_KEY`, `AI_PROVIDER`, `AI_BASE_URL`).
+- Verified: typecheck, 358/358 tests, build, and latest Android APK + Pages runs green.
+- Left as is: 4 low npm-audit findings in the pinned KaTeX/remark-math chain (needs a breaking upgrade).

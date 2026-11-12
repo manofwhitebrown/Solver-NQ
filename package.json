@@ -13,6 +13,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
+    "@capacitor-community/text-to-speech": "8.0.2",
     "@capacitor/android": "8.6.0",
     "@capacitor/camera": "8.2.6",
     "@capacitor/core": "8.6.0",

@@ -43,7 +43,7 @@ export default function LibraryPage() {
   return (
     <div className={cn(selecting && 'pb-24')}>
       <PageHeader title="Library" subtitle={items ? `${items.length} ${items.length === 1 ? 'item' : 'items'}${filtered ? ' found' : ''}` : undefined}
-        actions={!selecting && !!items?.length ? <Button size="sm" variant="secondary" onClick={lib.startSelecting}>Select</Button> : undefined} />
+        actions={!selecting && !!items?.length ? <Button variant="secondary" onClick={lib.startSelecting}>Select</Button> : undefined} />
       <Section>
         <Stack gap={4}>
           <Toolbar className="flex-nowrap">

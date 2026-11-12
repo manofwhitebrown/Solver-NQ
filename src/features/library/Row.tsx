@@ -55,10 +55,12 @@ export function Row({ item, selecting, selected, onToggle, onStar }: Props) {
     <li className={cn('elev-1 flex min-h-[64px] items-start gap-2 rounded-lg p-4', selected && 'border-accent bg-accent-soft')}
       onPointerDown={down} onPointerUp={up} onPointerLeave={up} onPointerCancel={up}>
       {selecting && (
-        // Decision: a bare checkbox in a 44 px label. <Checkbox> needs visible text and the whole row already names the item.
-        <label className="-my-1 -ml-2 flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center">
+        // Decision: a bare checkbox (<Checkbox> needs visible text; the row already has it). The real input fills a 44 px
+        // hit area and is invisible; the 20 px box is drawn next to it.
+        <label className="relative -my-1 -ml-2 flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center">
           <input type="checkbox" checked={selected} onChange={onToggle} aria-label={`Select: ${snippet(q.text, 40)}`}
-            className="h-5 w-5 [accent-color:rgb(var(--accent))]" />
+            className="peer absolute inset-0 h-full w-full cursor-pointer opacity-0" />
+          <span aria-hidden className="flex h-5 w-5 items-center justify-center rounded border-2 border-line-strong bg-surface text-caption font-bold leading-none text-transparent peer-checked:border-accent peer-checked:bg-accent peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-accent">✓</span>
         </label>
       )}
       {selecting

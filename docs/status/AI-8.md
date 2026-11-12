@@ -11,13 +11,15 @@
 
 - Dependabot: npm major bumps ignored. `docs/DEVICE-TEST.md` created (AI-4 steps + layout checks merged; other AIs' steps still to merge).
 
+- README: badges, USER-GUIDE link, live URL, scripts/ in folder map. Added optional `layout-audit.yml` (manual run, uploads screenshots + summary; untested, I can't read Actions here).
+
 ## In progress
 - Waiting for the first Android APK run with Node 22 to see if another failure appears.
 
 ## Remaining
 - P0: confirm Android APK green + artifact; confirm Web (Pages) green.
 - P1: offline re-check (needs a browser; none in my sandbox), final merge of DEVICE-TEST.md from all status files.
-- P2: README badges/folder map, ARCHITECTURE.md accuracy, optional layout-audit workflow.
+- P2: ARCHITECTURE.md accuracy, optional layout-audit workflow.
 
 ## Needs from others
 - AI-5: `vendor-math` (641 kB) still loads at startup because `src/lib/verify/mathEnv.ts` imports mathjs statically. Lazy-load verify (dynamic import in `useAnswer.ts`/`graph/plot.ts`) for a faster first load.

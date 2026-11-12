@@ -1,0 +1,26 @@
+name: Layout audit
+# Run by hand: Actions -> Layout audit -> Run workflow. Download the "layout-audit" artifact (screenshots + report.json + summary.txt).
+on: workflow_dispatch
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm i --no-save puppeteer-core @sparticuz/chromium
+      - run: npm run build
+      - name: Serve and audit
+        run: |
+          mkdir -p audit-out
+          npx vite preview --port 4173 > preview.log 2>&1 &
+          sleep 5
+          BASE=http://localhost:4173/ OUT=audit-out node docs/audit/tools/layout-audit.mjs 2>&1 | tee audit-out/summary.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: layout-audit
+          path: audit-out

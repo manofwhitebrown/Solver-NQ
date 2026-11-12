@@ -1,5 +1,8 @@
 # Solver-NQ
 
+[![Web (GitHub Pages)](https://github.com/manofwhitebrown/Solver-NQ/actions/workflows/web.yml/badge.svg)](https://github.com/manofwhitebrown/Solver-NQ/actions/workflows/web.yml)
+[![Android APK](https://github.com/manofwhitebrown/Solver-NQ/actions/workflows/android.yml/badge.svg)](https://github.com/manofwhitebrown/Solver-NQ/actions/workflows/android.yml)
+
 A study app: scan or type a question, get a step-by-step answer, save it in a library, export to PDF / Markdown / DOCX, and practise with flashcards and quizzes. It runs as an **Android app** and as a **web app**, and works offline for everything already saved.
 
 - **Learn mode** reveals the steps one at a time. **Answer mode** shows the full solution.
@@ -29,6 +32,8 @@ Prefer Vercel? Import the repo; `vercel.json` is already set up.
 
 ## Get the Android APK
 
+New to this? Follow the friendly [User Guide](docs/USER-GUIDE.md). Live web app: https://manofwhitebrown.github.io/Solver-NQ/
+
 1. Open the repo's **Actions** tab, then the latest green **Android APK** run.
 2. Download the artifact `solver-nq-debug-<commit>` at the bottom of the run page and unzip it.
 3. Copy `app-debug.apk` to the phone and install it (allow "install unknown apps" if asked).
@@ -54,9 +59,10 @@ src/components   shared UI components
 src/features     one folder per screen
 src/lib          logic: ai, db, ocr, verify, export, srs
 src/sw           "update available" prompt
+scripts/         CI helpers (ci-status.sh reads Actions results, ci-size.mjs bundle budget)
 android/         Capacitor Android project
 .github/         CI workflows, secret scan, dependabot
 docs/            architecture, security, offline, per-AI status
 ```
 
-More: [ARCHITECTURE](docs/ARCHITECTURE.md), [SECURITY](docs/SECURITY.md), [CONTRIBUTING-AI](docs/CONTRIBUTING-AI.md).
+More: [USER-GUIDE](docs/USER-GUIDE.md), [RELEASE](docs/RELEASE.md), [DEVICE-TEST](docs/DEVICE-TEST.md), [ARCHITECTURE](docs/ARCHITECTURE.md), [SECURITY](docs/SECURITY.md), [CONTRIBUTING-AI](docs/CONTRIBUTING-AI.md).

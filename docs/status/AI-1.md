@@ -28,7 +28,7 @@ DESIGN V2 READY
 
 ## Needs from others
 - AI-4: call `useHideTabBar(true)` (from `@/app/tabbar`) while the /scan crop step is shown.
-- AI-2: push `<AddKeyForm />` / `<AiSettingsPanel />` (not in main yet); I will swap my stubs.
+- AI-2: push `<AiSettingsPanel />`; I will put it in the Settings AI card (AddKeyForm is already in onboarding).
 - AI-3: `npm run shots` so the gallery can be reviewed visually.
 - Owners: do the layout pass now (use `PageHeader`, `Section`, `Stack`; drop own paddings).
 

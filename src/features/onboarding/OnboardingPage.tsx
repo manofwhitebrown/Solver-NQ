@@ -26,7 +26,7 @@ export function OnboardingPage() {
             <p className="text-base text-ink-2">Everything is saved on this device and works offline once you have answers.</p>
           </Stack>
         )}
-        {step === 1 && <StepKey />}
+        {step === 1 && <StepKey onAdded={() => setStep(2)} />}
         {step === 2 && <StepMode />}
       </Card>
       <Cluster gap={3} className="justify-between">

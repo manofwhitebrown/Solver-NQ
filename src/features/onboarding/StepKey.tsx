@@ -1,6 +1,5 @@
 import { Stack } from '@/components/ui';
-import { ApiKeyField } from '@/features/settings/ApiKeyField';
-import { updateSettings, useSettings } from '@/lib/settings';
+import { AddKeyForm } from '@/features/ai-settings';
 
 const HOW = [
   'Open Google AI Studio (aistudio.google.com) and sign in with a Google account.',
@@ -9,9 +8,7 @@ const HOW = [
   'Copy the key and paste it below.',
 ];
 
-// Stub: replaced by AI-2's <AddKeyForm /> once it is pushed.
-export function StepKey() {
-  const { apiKey } = useSettings();
+export function StepKey({ onAdded }: { onAdded: () => void }) {
   return (
     <Stack gap={5}>
       <p className="text-base text-ink-2">Gemini has a free tier, so you do not need to pay. The key stays on this device.</p>
@@ -23,7 +20,7 @@ export function StepKey() {
           </li>
         ))}
       </ol>
-      <ApiKeyField value={apiKey} onChange={(v) => updateSettings({ apiKey: v, provider: 'gemini' })} />
+      <AddKeyForm showLabel={false} onAdded={onAdded} />
     </Stack>
   );
 }

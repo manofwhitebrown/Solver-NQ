@@ -1,4 +1,5 @@
 ## Done
+- Batch queue persists across the Ask round-trip (sessionStorage, 3 tests).
 - Unit tests: crop math, preprocessing (fitSize, grayscale, contrast, threshold, Otsu), confidence threshold (12 tests passing).
 - Verified AI-2's Ask screen uses my ScanButton and reads { text, imageDataUrl } from router state.
 - src/lib/ocr: preprocess (downscale <=2000px, grayscale, contrast, Otsu threshold, rotate), confidence threshold (70), friendly OcrError messages, platform switch.
@@ -17,6 +18,6 @@
 - AI-8: ANSWERED. I am NOT self-hosting; keep your rule in PWA-CONFIG.md. Tesseract 7 loads its worker and core from cdn.jsdelivr.net/npm/tesseract.js@v7 and tesseract.js-core@v7 (your pattern matches both). Language data comes from cdn.jsdelivr.net/npm/@tesseract.js-data/<lang> and is cached by Tesseract in IndexedDB, so it needs no SW rule. First OCR must happen online once. (Earlier request, now resolved:) offline OCR needs runtime caching of Tesseract assets. Language data (eng.traineddata) is cached in IndexedDB by Tesseract after first use. The worker script and wasm core are fetched from the CDN by default, so the service worker should cache them, or tell me and I will self-host them under /tesseract/.
 ## Notes for the manager
 - Bundle: tesseract.js and pdfjs-dist are lazy chunks, not in the main chunk (checked: 0 matches in index-*.js). My scan code adds ~2-14 kB to main. Main is ~1.1 MB overall mostly from other features, worth a look by the manager. PDF chunk ~444 kB (gzip 134 kB) plus a ~1.27 MB pdf.worker, only loaded when a PDF is chosen.
-- Batch: Ask takes one question at a time, so each crop has its own Ask button. The remaining queue is not kept after navigating to the Ask screen.
+- Batch: Ask takes one question at a time, so each crop has its own Ask button. The remaining crops are saved in sessionStorage (src/features/scan/queue.ts) and restored when the user returns to /scan (e.g. via the Ask screen's Scan button). No change needed in AI-2's files. The queue lasts for the browser tab session only.
 - Not yet verified on a real device or with a real photo (build/typecheck only).
 - Native recognizer and camera are implemented but untested on a device. I did not touch android/ (AI-8's).

@@ -8,6 +8,7 @@ import { cropBlob, loadBitmap, rotate90 } from './imageTools';
 import type { Rect } from './cropMath';
 import { takeNativePhoto } from './nativeCamera';
 import { PdfPicker } from './PdfPicker';
+import { loadQueue, saveQueue } from './queue';
 import { ResultCard, type ScanItem } from './ResultCard';
 import type { ScanResult } from './result';
 
@@ -19,7 +20,7 @@ export function ScanPage() {
   const [url, setUrl] = useState('');
   const [rect, setRect] = useState<Rect>(FULL);
   const [enhance, setEnhance] = useState(true);
-  const [items, setItems] = useState<ScanItem[]>([]);
+  const [items, setItems] = useState<ScanItem[]>(loadQueue);
   const [pdf, setPdf] = useState<Blob | null>(null);
   const [loading, setLoading] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -43,6 +44,9 @@ export function ScanPage() {
     setUrl(u);
     return () => URL.revokeObjectURL(u);
   }, [source]);
+
+  // Keep edits too, so leaving /scan by any route doesn't lose finished crops.
+  useEffect(() => { saveQueue(items); }, [items]);
 
   useEffect(() => {
     const onPaste = (e: ClipboardEvent) => {
@@ -84,9 +88,16 @@ export function ScanPage() {
     } catch (e) { toast(friendlyMessage(e), 'error'); }
   };
 
-  const send = (text: string, dataUrl: string) => {
+  // Ask for one crop; the rest stay queued and are restored when the user comes back to /scan.
+  const send = (id: string, text: string, dataUrl: string) => {
+    saveQueue(items.filter(x => x.id !== id));
     const state: ScanResult = { text, imageDataUrl: dataUrl };
     nav('/', { state });
+  };
+
+  const removeItem = (id: string) => {
+    const rest = items.filter(x => x.id !== id);
+    setItems(rest); saveQueue(rest);
   };
 
   const onDrop = (e: React.DragEvent) => {
@@ -123,10 +134,11 @@ export function ScanPage() {
           </div>
         </div>
       )}
+      {items.length > 1 && <p className="text-sm text-ink-soft">{items.length} questions waiting. Ask one at a time; the rest will be here when you come back.</p>}
       {items.map(it => (
         <ResultCard key={it.id} item={it} onText={t => patch(it.id, { text: t })}
-          onAsk={() => send(it.text.trim(), it.dataUrl)} onImageOnly={() => send('', it.dataUrl)}
-          onRemove={() => setItems(xs => xs.filter(x => x.id !== it.id))} />
+          onAsk={() => send(it.id, it.text.trim(), it.dataUrl)} onImageOnly={() => send(it.id, '', it.dataUrl)}
+          onRemove={() => removeItem(it.id)} />
       ))}
     </div>
   );

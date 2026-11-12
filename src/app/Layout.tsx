@@ -5,6 +5,7 @@ import { Toaster, cn } from '@/components/ui';
 import { AskIcon, LearnIcon, LibraryIcon, SettingsIcon } from '@/components/ui/icons';
 import { useTabBarForcedHidden } from './tabbar';
 import { NAV } from './nav';
+import { Logo } from './Logo';
 import { OnlineBanner } from './OnlineBanner';
 
 /** Focused flows own the bottom edge, so the tab bar is hidden there. */
@@ -63,7 +64,7 @@ export function Layout() {
   return (
     <div className="min-h-full lg:flex" style={hideTabs ? ({ '--tabbar-h': '0rem' } as React.CSSProperties) : undefined}>
       <aside className="hidden w-[264px] shrink-0 border-r border-line bg-surface px-4 py-8 lg:flex lg:flex-col lg:gap-1">
-        <div className="mb-6 px-3 text-xl font-bold tracking-tight">Solver-NQ</div>
+        <div className="mb-6"><Logo /></div>
         <nav aria-label="Main" className="flex flex-col gap-1"><Links side /></nav>
       </aside>
 

@@ -14,6 +14,7 @@ DESIGN V2 READY
 - P1: onboarding at `/#/welcome` (3 steps, skippable, reopen from Settings > AI; key step is a stub until AI-2's `<AddKeyForm />`), `onboarded` setting, default provider `gemini` (model name still from `SUGGESTED_MODELS`), Settings v2 (Appearance, AI, Defaults, Data, About)
 - P1: tab bar hides when the keyboard is open, 48 px compact bar in short viewports, 180 ms page transition (reduced motion honoured), textarea `resize-none` on touch
 
+- P1: sidebar logo mark (`src/app/Logo.tsx`)
 - P2: lucide icon set (`@/components/ui/icons`, 1.75 stroke), 404 restyle, `useHideTabBar(true)` hook in `src/app/tabbar.ts`; no `any` left in my files
 
 ## In progress
@@ -21,7 +22,7 @@ DESIGN V2 READY
 
 ## Remaining
 - P0: screenshot check of the gallery (no browser here)
-- P1: logo mark, `/scan` crop-step tab bar flag, 64 rem width for the answer follow-up panel (AI-5), swap stub for AI-2's `<AddKeyForm />` and `<AiSettingsPanel />`
+- P1: `/scan` crop-step tab bar flag, 64 rem width for the answer follow-up panel (AI-5), swap stub for AI-2's `<AddKeyForm />` and `<AiSettingsPanel />`
 - P1: lazy routes NOT done: feature index files import pages eagerly and `ask` wakes the offline queue at start; entry chunk is already 141 kB (target 600 kB), so low value. Revisit only if the budget grows.
 - P2: icon set, 404 restyle, focus polish, `any` cleanup
 

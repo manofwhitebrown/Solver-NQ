@@ -7,14 +7,14 @@ export function geminiProvider(cfg: AiConfig): Provider {
     async complete({ system, messages, imageDataUrl, signal }) {
       const img = imageDataUrl ? splitDataUrl(imageDataUrl) : null;
       const contents = messages.map((m, i) => {
-        const parts: any[] = [{ text: m.content }];
+        const parts: Array<Record<string, unknown>> = [{ text: m.content }];
         if (i === 0 && img && m.role === 'user') parts.push({ inlineData: { mimeType: img.mime, data: img.data } });
         return { role: m.role === 'assistant' ? 'model' : 'user', parts };
       });
-      const json = await postJson(`${base}/models/${encodeURIComponent(cfg.model)}:generateContent`,
+      const json = (await postJson(`${base}/models/${encodeURIComponent(cfg.model)}:generateContent`,
         { 'x-goog-api-key': cfg.apiKey ?? '' },
-        { systemInstruction: { parts: [{ text: system }] }, contents }, signal);
-      return (json.candidates?.[0]?.content?.parts ?? []).map((p: any) => p.text ?? '').join('');
+        { systemInstruction: { parts: [{ text: system }] }, contents }, signal)) as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+      return (json.candidates?.[0]?.content?.parts ?? []).map((p) => p.text ?? '').join('');
     },
   };
 }

@@ -1,17 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Answer } from '@/types';
 
-const store = vi.hoisted(() => ({
-  q: new Map<string, any>(), a: new Map<string, any>(), cache: new Map<string, any>(), pending: new Map<string, any>(),
-}));
+type Row = { id: string; [k: string]: unknown };
+const store = vi.hoisted(() => {
+  type R = { id: string; [k: string]: unknown };
+  return { q: new Map<string, R>(), a: new Map<string, R>(), cache: new Map<string, R>(), pending: new Map<string, R>() };
+});
 
 vi.mock('@/lib/db', () => ({
-  saveQuestion: async (q: any) => { store.q.set(q.id, q); },
-  saveAnswer: async (a: any) => { store.a.set(a.id, a); },
+  saveQuestion: async (q: Row) => { store.q.set(q.id, q); },
+  saveAnswer: async (a: Row) => { store.a.set(a.id, a); },
   getAnswer: async (id: string) => store.a.get(id),
   getQuestion: async (id: string) => store.q.get(id),
   getCachedAnswer: async (h: string) => store.cache.get(h),
-  putCachedAnswer: async (h: string, a: any) => { store.cache.set(h, a); },
-  queuePending: async (i: any) => { store.pending.set(i.id, i); },
+  putCachedAnswer: async (h: string, a: Row) => { store.cache.set(h, a); },
+  queuePending: async (i: Row) => { store.pending.set(i.id, i); },
   listPending: async () => [...store.pending.values()],
   removePending: async (id: string) => { store.pending.delete(id); },
   listLibrary: async () => [],
@@ -37,7 +40,7 @@ describe('askQuestion', () => {
     vi.stubGlobal('fetch', okFetch());
     const r = await askQuestion(input);
     expect('answerId' in r).toBe(true);
-    const a = store.a.get((r as any).answerId);
+    const a = store.a.get((r as { answerId: string }).answerId) as unknown as Answer;
     expect(a.finalAnswer).toBe('x=2');
     expect(a.steps[0].id).toBeTruthy();
     expect(a.model).toBe('test-model');
@@ -47,8 +50,8 @@ describe('askQuestion', () => {
   it('answers the same question from cache without calling the network', async () => {
     const f = okFetch();
     vi.stubGlobal('fetch', f);
-    const first = await askQuestion(input) as any;
-    const again = await askQuestion({ ...input, text: '  solve   X+1=3 ' }) as any;
+    const first = await askQuestion(input) as { answerId: string };
+    const again = await askQuestion({ ...input, text: '  solve   X+1=3 ' }) as { answerId: string };
     expect(again.answerId).toBe(first.answerId);
     expect(f).toHaveBeenCalledTimes(1);
   });

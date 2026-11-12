@@ -13,12 +13,12 @@ export function anthropicProvider(cfg: AiConfig): Provider {
               { type: 'text', text: m.content },
             ] }
           : m);
-      const json = await postJson(`${base}/v1/messages`, {
+      const json = (await postJson(`${base}/v1/messages`, {
         'x-api-key': cfg.apiKey ?? '',
         'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true',
-      }, { model: cfg.model, max_tokens: 4096, system, messages: msgs }, signal);
-      return (json.content ?? []).filter((p: any) => p.type === 'text').map((p: any) => p.text).join('');
+      }, { model: cfg.model, max_tokens: 4096, system, messages: msgs }, signal)) as { content?: Array<{ type: string; text?: string }> };
+      return (json.content ?? []).filter((p) => p.type === 'text').map((p) => p.text ?? '').join('');
     },
   };
 }

@@ -36,7 +36,7 @@ export async function generateCards(answerId: string): Promise<Array<{ front: st
   const { text } = await runModel(CARDS_PROMPT, [{ role: 'user', content: solutionText(q, a) }]);
   const j = parseJsonLoose(text);
   const cards = (Array.isArray(j) ? j : [])
-    .map((c: any) => ({ front: String(c?.front ?? '').trim(), back: String(c?.back ?? '').trim() }))
+    .map((c: Record<string, unknown> | null) => ({ front: String(c?.front ?? '').trim(), back: String(c?.back ?? '').trim() }))
     .filter((c) => c.front && c.back);
   if (!cards.length) throw new AiError('unknown');
   return cards;

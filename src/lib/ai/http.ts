@@ -3,7 +3,7 @@ import { AiError, errorFromNetwork, errorFromStatus } from './errors';
 const TIMEOUT_MS = 60_000;
 
 /** POST JSON, with timeout + caller cancel. Never logs headers or bodies. */
-export async function postJson(url: string, headers: Record<string, string>, body: unknown, signal?: AbortSignal): Promise<any> {
+export async function postJson(url: string, headers: Record<string, string>, body: unknown, signal?: AbortSignal): Promise<unknown> {
   const ctrl = new AbortController();
   let timedOut = false;
   const timer = setTimeout(() => { timedOut = true; ctrl.abort(); }, TIMEOUT_MS);

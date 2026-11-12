@@ -30,10 +30,12 @@ const str = (v: unknown) => (typeof v === 'string' ? v : v == null ? '' : String
 
 /** Turn raw model text into an answer. Never throws: falls back to one raw step. */
 export function parseAnswer(raw: string): ParsedAnswer {
-  const j = parseJsonLoose(raw) as any;
+  const j = parseJsonLoose(raw) as Record<string, unknown> | null;
   if (j && typeof j === 'object' && !Array.isArray(j)) {
     const steps = Array.isArray(j.steps)
-      ? j.steps.map((s: any) => ({ title: str(s?.title), body: str(s?.body) })).filter((s: any) => s.title || s.body)
+      ? (j.steps as Array<Record<string, unknown> | null>)
+          .map((s) => ({ title: str(s?.title), body: str(s?.body) }))
+          .filter((s) => s.title || s.body)
       : [];
     if (steps.length || j.finalAnswer) {
       return { finalAnswer: str(j.finalAnswer), steps, summary: j.summary ? str(j.summary) : undefined };

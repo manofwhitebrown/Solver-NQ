@@ -14,8 +14,8 @@ export function openaiProvider(cfg: AiConfig): Provider {
             ] }
           : m);
       const headers: Record<string, string> = cfg.apiKey ? { Authorization: `Bearer ${cfg.apiKey}` } : {};
-      const json = await postJson(`${base}/chat/completions`, headers,
-        { model: cfg.model, messages: [{ role: 'system', content: system }, ...msgs] }, signal);
+      const json = (await postJson(`${base}/chat/completions`, headers,
+        { model: cfg.model, messages: [{ role: 'system', content: system }, ...msgs] }, signal)) as { choices?: Array<{ message?: { content?: string } }> };
       return json.choices?.[0]?.message?.content ?? '';
     },
   };

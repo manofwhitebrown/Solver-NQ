@@ -5,9 +5,9 @@ import { postJson } from '../http';
 export function proxyProvider(cfg: AiConfig): Provider {
   return {
     async complete({ system, messages, imageDataUrl, signal }) {
-      const json = await postJson(cfg.proxyUrl!, {}, {
+      const json = (await postJson(cfg.proxyUrl!, {}, {
         provider: cfg.provider, model: cfg.model, system, messages, imageDataUrl,
-      }, signal);
+      }, signal)) as { text?: string };
       return json.text ?? '';
     },
   };

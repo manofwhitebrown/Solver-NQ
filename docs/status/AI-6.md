@@ -1,10 +1,27 @@
 ## Done
-- Cloned repo (git, extraheader auth). Main has README only; no scaffold yet.
-- Wrote pure logic locally (not pushed yet): options, filename, markdown builder, LaTeX-to-plain-text, study-pack filter/TOC.
-## In progress
-- Waiting for SCAFFOLD READY in docs/status/AI-1.md before pushing any code (workflow section 5).
-- Next: saveFile (web + Capacitor), PDF (pretty + text), DOCX, export screen.
+- Deps (pinned): jspdf, html-to-image, docx, pdf-lib, @capacitor/core, @capacitor/filesystem, @capacitor/share. All lazy-loaded; jsPDF is its own ~400 kB chunk, the export page is a separate ~8 kB chunk, nothing in the main bundle.
+- `src/lib/export`: `saveFile` (web download / Android Filesystem cache + Share), Markdown (keeps `$...$`), TXT, JSON, DOCX (math as readable text), selectable-text PDF, "pretty" PDF (KaTeX -> html-to-image blocks, a block is never split across pages), study pack (cover, contents, answers, optional flashcards; merged with pdf-lib), filenames like `Math - Quadratic equations - 2026-11-12.pdf`, `print.css`.
+- Contract functions kept: `saveFile`, `exportPdf`, `exportMarkdown`, `exportDocx`, `exportStudyPack` (+ `exportTxt`, `exportJson`, `buildExport` which returns blob/filename/ms so the UI can show size and time).
+- `/export?ids=a,b,c` screen: preview (first 3 on screen, all in print), format chips, Options BottomSheet, progress bar, result card (size, time, Save/Share, Open on web), Print button on laptop. No `ids` = study-pack mode with subject / date range / starred filters and flashcards toggle.
+- Tests: 11 (filename, plain-text math, markdown, filters, option mapping, and real DOCX / text PDF / study-pack generation in Node). Full repo: typecheck, build, lint (my files), 90 tests all pass.
+
+## Measured (honest numbers)
+- Text-mode PDF, 20 synthetic answers (4 steps each), Node, no browser: ~150-210 ms, 78 KB, 10 pages.
+- NOT measured yet: pretty-mode PDF time/size, anything on Android. No browser is available in my environment, so the pretty PDF (KaTeX + rasterising) and the screen have only been typechecked and built, never rendered.
+
+## In progress / not done
+- Pretty PDF: needs a real browser check (math rendering, page breaks, time and size for a 20-answer pack). A single block taller than a page is currently scaled down to fit, not split.
+- "Include original question image" is NOT implemented (not offered in the UI). Needs the image from AI-3's `src/lib/db/images.ts`; will add once I confirm its API.
+- Markdown "round-trips" is only checked as: math delimiters and structure are preserved. There is no importer, so no true round-trip test.
+- DOCX is checked structurally (valid zip with word/document.xml). Not opened in Word.
+- Android: `saveFile` untested on a device. `npx cap sync` is needed so the filesystem/share plugins are in the APK.
+
 ## Needs from others
-- AI-1: SCAFFOLD READY (package.json, Vite, types.ts stubs).
+- AI-3: the library's selection bar should link to `/export?ids=<id1>,<id2>` (ids are question ids) and a "Study pack" entry to `/export` with no ids.
+- AI-8: run `npx cap sync android` in the APK workflow so @capacitor/filesystem and @capacitor/share are included.
+- AI-5: `src/lib/tts.ts:31` has a lint error (no-useless-escape).
+
 ## Notes for the manager
-- Planned deps (pinned, lazy-loaded): jspdf, html-to-image, docx, @capacitor/filesystem, @capacitor/share.
+- `types.ts` already defines a different `ExportOptions` (includeSteps/includeImages/paper/title). I accept that shape and extend it (`ExportConfig`), mapping it onto an internal `ResolvedOptions`. I did not edit `types.ts`.
+- Selectable-text PDF uses the built-in Helvetica font, so non-Latin text (e.g. Hindi, Telugu, Chinese) will not render there. Pretty mode renders via the browser and handles it. A bundled font would be a >1 MB file, so I left it out; tell me if you want it.
+- Several AIs push to main at once; my pushes occasionally needed a retry. One of my early local commits accidentally contained a deletion of the stub; I caught it before it reached main and redid it cleanly.

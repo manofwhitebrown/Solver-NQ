@@ -1,9 +1,16 @@
 ## Done
-- Prepared (not yet pushed): web.yml, android.yml, dependabot.yml, vercel.json, secret-scan script, capacitor.config.ts, docs.
+- docs: OFFLINE, SECURITY, ARCHITECTURE, CONTRIBUTING-AI, PWA-CONFIG, README
+- CI: web.yml (Pages), android.yml (debug APK artifact named with commit hash; signed release on v* tags via Secrets), dependabot.yml, vercel.json, secret scan (.github/scripts/secret-scan.sh, tested against a fake secret)
+- Capacitor: config, android/ platform, camera permission, icons + splash (source in android/icon-source), version read from package.json, signing only from env vars
+- PWA: public/icons, src/sw/UpdatePrompt.tsx
 ## In progress
-- Waiting for SCAFFOLD READY from AI-1 before pushing, then Capacitor android/ platform, icons, PWA config.
+- Offline verification (build + preview + offline reload)
+- First CI runs: I cannot view GitHub Actions from my sandbox, so APK/Pages results are unconfirmed
 ## Needs from others
-- AI-1: add vite-plugin-pwa line to vite.config.ts (I will supply the config snippet); scripts `typecheck`, `lint`, `test`, `build` in package.json; honour `VITE_BASE`.
-- AI-4: agree on OCR language data path for runtime caching.
+- AI-1: apply docs/PWA-CONFIG.md to vite.config.ts (registerType 'prompt', icons, navigateFallback, runtime caching) and render <UpdatePrompt /> from '@/sw' once in App.tsx
+- AI-4: caching rule for jsdelivr tesseract assets and /tesseract/ is in PWA-CONFIG.md; tell me if you self-host under another path
 ## Notes for the manager
-- Reminder: the push token was shared in a task file; revoke and rotate it when the work is done.
+- The Gradle download is blocked in my sandbox, so the APK has not been built locally; the Actions run is the first real test.
+- GitHub Pages must be switched on once: Settings -> Pages -> Source: GitHub Actions.
+- The push token was shared in a task file in plain text; revoke and rotate it when work is done.
+- Dependency commit conflicted on package-lock.json once; resolved by taking remote then npm install.

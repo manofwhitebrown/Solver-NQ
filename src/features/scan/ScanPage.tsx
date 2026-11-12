@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Spinner, toast } from '@/components/ui';
+import { ActionBar, Button, Card, PageHeader, Spinner, Stack, toast } from '@/components/ui';
 import { friendlyMessage, OcrError, onOcrProgress, recognize } from '@/lib/ocr';
 import { isNative } from '@/lib/ocr/platform';
 import { CropEditor } from './CropEditor';
+import { StepIndicator } from './StepIndicator';
 import { blobToDataUrl, cropBlob, loadBitmap, rotate90 } from './imageTools';
 import type { Rect } from './cropMath';
 import { takeNativePhoto } from './nativeCamera';
@@ -127,40 +128,59 @@ export function ScanPage() {
     if (f) void open(f); else toast('Please drop an image or PDF file.', 'error');
   };
 
+  const step = !source ? 1 : items.length ? 3 : 2;
+  const touch = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
+  const [hint, setHint] = useState(() => { try { return !localStorage.getItem('scanHintSeen'); } catch { return false; } });
+  const dismissHint = () => { setHint(false); try { localStorage.setItem('scanHintSeen', '1'); } catch { /* storage unavailable */ } };
+
   return (
-    <div className="mx-auto max-w-2xl space-y-4 p-4"
-      onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={onDrop}>
-      <h1 className="text-xl font-semibold">Scan a question</h1>
-      {pdf ? (
-        <PdfPicker file={pdf} onCancel={cancelPdf} onPage={img => { setPdf(null); void open(img); }} />
-      ) : !source ? (
-        <Card className={`space-y-4 p-6 text-center ${dragging ? 'ring-2 ring-accent' : ''}`}>
-          <p className="text-ink-soft">Take a photo, choose an image, paste one, or drop it here.</p>
-          <div className="flex flex-wrap justify-center gap-2">
-            <Button onClick={() => (isNative() ? native('camera') : cam.current?.click())}>Take a photo</Button>
-            <Button variant="secondary" onClick={() => gal.current?.click()}>Choose image or PDF</Button>
-          </div>
-          {loading && <Spinner />}
-          <input ref={cam} type="file" accept="image/*" capture="environment" hidden onChange={pick} />
-          <input ref={gal} type="file" accept="image/*,application/pdf" hidden onChange={pick} />
-        </Card>
-      ) : (
-        <div className="space-y-3">
-          <CropEditor url={url} rect={rect} onChange={setRect} />
-          <div className="flex flex-wrap gap-2">
-            <Button variant="secondary" onClick={async () => { setSource(await rotate90(source)); setRect(FULL); }}>Rotate</Button>
-            <Button variant={enhance ? 'primary' : 'secondary'} aria-pressed={enhance} onClick={() => setEnhance(v => !v)}>Enhance</Button>
-            <Button onClick={addCrop}>{items.length ? 'Read another crop' : 'Read text'}</Button>
-            <Button variant="ghost" onClick={() => { setSource(null); }}>New image</Button>
-          </div>
-        </div>
+    <div onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={onDrop}
+      className={source ? 'pb-24' : ''}>
+      <PageHeader title="Scan a question" subtitle="Photograph it, crop it, check the text."
+        actions={source && !pdf ? <Button variant="ghost" size="sm" onClick={() => setSource(null)}>New image</Button> : undefined} />
+      <Stack gap={6}>
+        <div className="[@media(max-height:500px)]:hidden"><StepIndicator step={step} /></div>
+        {pdf ? (
+          <PdfPicker file={pdf} onCancel={cancelPdf} onPage={img => { setPdf(null); void open(img); }} />
+        ) : !source ? (
+          <Card className={dragging ? 'ring-2 ring-accent' : ''}>
+            <Stack gap={4} className="items-center text-center">
+              <Button size="lg" block onClick={() => (isNative() ? native('camera') : cam.current?.click())}>Take a photo</Button>
+              <Button variant="secondary" block onClick={() => gal.current?.click()}>Choose image or PDF</Button>
+              <p className="text-sm text-ink-2">
+                1. Take a photo. 2. Drag the corners around the question. 3. Check the text and ask.
+                {!touch && ' You can also paste or drop an image here.'}
+              </p>
+              {loading && <Spinner />}
+              <input ref={cam} type="file" accept="image/*" capture="environment" hidden onChange={pick} />
+              <input ref={gal} type="file" accept="image/*,application/pdf" hidden onChange={pick} />
+            </Stack>
+          </Card>
+        ) : (
+          <Stack gap={3}>
+            {hint && (
+              <p className="flex items-center justify-between gap-3 rounded-md bg-accent-soft [@media(max-height:500px)]:hidden p-3 text-sm text-ink" role="status">
+                <span>Drag the corners so the box covers just the question.</span>
+                <Button variant="ghost" size="sm" className="whitespace-nowrap" onClick={dismissHint}>Got it</Button>
+              </p>
+            )}
+            <CropEditor url={url} rect={rect} onChange={r => { setRect(r); if (hint) dismissHint(); }} />
+          </Stack>
+        )}
+        {items.length > 1 && <p className="text-sm text-ink-2">{items.length} questions waiting. Ask one at a time; the rest will be here when you come back.</p>}
+        {items.map(it => (
+          <ResultCard key={it.id} item={it} onText={t => patch(it.id, { text: t })}
+            onAsk={() => send(it.id, it.text.trim(), it.dataUrl)} onImageOnly={() => send(it.id, '', it.dataUrl)}
+            onRemove={() => removeItem(it.id)} onRotate={() => void rotateItem(it.id)} />
+        ))}
+      </Stack>
+      {source && !pdf && (
+        <ActionBar>
+          <Button variant="secondary" className="whitespace-nowrap !px-3" onClick={async () => { setSource(await rotate90(source)); setRect(FULL); }}>Rotate</Button>
+          <Button variant={enhance ? 'secondary' : 'ghost'} className="whitespace-nowrap !px-3" aria-pressed={enhance} onClick={() => setEnhance(v => !v)}>Enhance</Button>
+          <Button className="ml-auto min-w-0 flex-1 whitespace-nowrap !px-4 sm:flex-none" onClick={addCrop}>{items.length ? 'Read another' : 'Read text'}</Button>
+        </ActionBar>
       )}
-      {items.length > 1 && <p className="text-sm text-ink-soft">{items.length} questions waiting. Ask one at a time; the rest will be here when you come back.</p>}
-      {items.map(it => (
-        <ResultCard key={it.id} item={it} onText={t => patch(it.id, { text: t })}
-          onAsk={() => send(it.id, it.text.trim(), it.dataUrl)} onImageOnly={() => send(it.id, '', it.dataUrl)}
-          onRemove={() => removeItem(it.id)} onRotate={() => void rotateItem(it.id)} />
-      ))}
     </div>
   );
 }

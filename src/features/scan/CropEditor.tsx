@@ -49,7 +49,7 @@ export function CropEditor({ url, rect, onChange }: Props) {
   };
 
   return (
-    <div className="max-h-[60vh] overflow-auto rounded-lg border border-line bg-raised"
+    <div className="max-h-[max(9rem,calc(100svh-17rem))] [@media(max-height:500px)]:max-h-[max(6rem,calc(100svh-15rem))] overflow-auto rounded-lg border border-line bg-raised"
       style={{ touchAction: zoom > 1 ? 'pan-x pan-y' : 'pan-y' }}
       onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={endPointer}
       onPointerCancel={endPointer} onWheel={onWheel}>
@@ -63,7 +63,9 @@ export function CropEditor({ url, rect, onChange }: Props) {
           style={{ left: `${rect.x * 100}%`, top: `${rect.y * 100}%`, width: `${rect.w * 100}%`, height: `${rect.h * 100}%`, touchAction: 'none' }}>
           {HANDLES.map(([h, pos]) => (
             <span key={h} onPointerDown={startDrag(h)} aria-label={`Resize ${h}`}
-              className={`absolute h-7 w-7 rounded-full border-2 border-accent bg-surface ${pos}`} style={{ touchAction: 'none' }} />
+              className={`absolute flex h-12 w-12 items-center justify-center ${pos}`} style={{ touchAction: 'none' }}>
+              <span className="h-5 w-5 rounded-full border-2 border-accent bg-surface" />
+            </span>
           ))}
         </div>
       </div>

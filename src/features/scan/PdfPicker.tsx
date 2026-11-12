@@ -36,7 +36,7 @@ export function PdfPicker({ file, onPage, onCancel }: Props) {
 
   return (
     <div className="space-y-3 rounded-lg border border-line bg-surface p-4">
-      <p className="text-sm text-ink-soft">{doc ? `Page ${page} of ${doc.numPages}` : 'Opening PDF…'}</p>
+      <p className="text-sm text-ink-2">{doc ? `Page ${page} of ${doc.numPages}` : 'Opening PDF…'}</p>
       <div className="flex min-h-40 items-center justify-center rounded-md bg-raised">
         {busy ? <Spinner /> : <img src={preview} alt={`PDF page ${page}`} className="max-h-[50vh] object-contain" />}
       </div>

@@ -1,10 +1,11 @@
 ## Done (Phase 2)
 - P0: `mathToPlain` in `src/features/answer/plainText.ts`, re-exported from `src/features/answer/index.ts`; 25 unit tests.
 ## In progress
+- P1: verify honesty review: 42 new cases in `verify.honesty.test.ts` (word problems, units, equivalent forms, rounding, trig degrees/radians, undefined, systems, inequalities). Fixed a real bug: `sin(30)` with no unit was called `mismatch`; now `unchecked` unless degrees/radians/pi is stated (degrees converted). Badge copy: mismatch now reads "Doesn't match - double-check"; Checked tooltip says the method is not checked. Not parsed (stay `unchecked`, safe): `x ∈ {..}` sets, "to 2 decimal places" suffix.
 - P0: "Answered by <model>" line (`ModelLabel.tsx`); reads `getPrimaryModel` from `@/lib/ai` if it exists and shows a soft chip for backup models. Queued copy now says it answers when online or free quota resets.
 ## Remaining
 - P0: "Retry with best model" button is built into `ModelLabel` (`onRetry`) but not wired: needs AI-2 to export `getPrimaryModel()` AND a way to make `askQuestion` skip the cache (e.g. `{ skipCache: true }`). Then I pass `onRetry` in AnswerPage.
-P1: 30+ verify cases, Answer v2 layout, bottom action bar, Learn polish, Graph v2, question card collapse (after `DESIGN V2 READY`). P2: TTS cleanup, remove `any`.
+P1: Answer v2 layout, bottom action bar, Learn polish, Graph v2, question card collapse (after `DESIGN V2 READY`). P2: TTS cleanup, remove `any`.
 ## Needs from others
 - AI-2: export `getPrimaryModel()` and an `askQuestion` option to skip the cache.
 - AI-3: `scale.test.ts` (2000 items) is timing-based and failed once on a slow sandbox. AI-8: `docs/audit/tools/layout-audit.mjs` has lint errors (`process`, `indexedDB` undefined; needs node globals in ESLint config).

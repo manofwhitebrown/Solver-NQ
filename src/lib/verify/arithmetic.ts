@@ -12,11 +12,32 @@ export function evalNumeric(text: string): number | null {
   return Number.isFinite(v) ? v : null;
 }
 
+/**
+ * Trig needs a stated angle unit. Degrees are converted, radians are kept, and a bare sin(30) is ambiguous,
+ * so it returns false and the caller says "unchecked" rather than guess.
+ */
+function resolveTrigUnits(q: string): string | false {
+  if (!/\b(sin|cos|tan)\s*\(/i.test(q)) return q;
+  const deg = /°|\bdegrees?\b|\bdeg\b/i.test(q);
+  const rad = /\bradians?\b|\brad\b/i.test(q);
+  if (deg && rad) return false;
+  if (deg) {
+    const wrapped = q.replace(/\b(sin|cos|tan)\s*\(([^()]*?)\s*(?:°|degrees?|deg)?\s*\)/gi, '$1(($2)*pi/180)');
+    return wrapped.replace(/\s*\b(?:in|using)?\s*(?:degrees?|deg)\b|°/gi, '').trim();
+  }
+  if (rad) return q.replace(/\s*\b(?:in\s+)?radians?\b|\s*\brad\b/gi, '').trim();
+  const args = [...q.matchAll(/\b(?:sin|cos|tan)\s*\(([^()]*)\)/gi)].map((m) => m[1]);
+  return args.every((a) => /\bpi\b/i.test(a)) ? q : false;
+}
+
 export function checkArithmetic(question: string, finalAnswer: string): Verdict | null {
   let q = latexToMath(question).replace(LEAD, '').replace(/[=?.\s]+$/, '').trim();
   q = stripThousands(q);
   q = q.replace(/(\d+(?:\.\d+)?)\s*%\s*of\s*(\d+(?:\.\d+)?)/gi, '(($1)/100*($2))');
   if (!q || q.includes('%') || q.includes('!')) return null;
+  const withUnits = resolveTrigUnits(q);
+  if (withUnits === false) return 'unchecked';
+  q = withUnits;
   if (/[a-z]/i.test(q.replace(/\b(sqrt|sin|cos|tan|exp|ln|abs|log10|log2|pi)\b/gi, ''))) return null;
   const truth = evalNumeric(q);
   if (truth === null) return 'unchecked'; // e.g. division by zero: we never claim anything

@@ -63,7 +63,7 @@ describe('VerifyBadge is honest', () => {
   });
   it('warns clearly on mismatch and stays calm when unchecked', () => {
     const bad = renderToString(h(VerifyBadge, { verified: 'mismatch' }));
-    expect(bad).toContain('did not pass our check');
+    expect(bad).toContain("Doesn&#x27;t match");
     expect(bad).toContain('role="alert"');
     const un = renderToString(h(VerifyBadge, { verified: 'unchecked' }));
     expect(un).toContain('always double-check');

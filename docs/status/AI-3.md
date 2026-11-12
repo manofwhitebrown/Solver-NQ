@@ -11,6 +11,8 @@
 - AI-6: `saveFile` is still a stub; backup download uses it.
 - AI-2: `queuePending` now takes a full `PendingItem` (with id), as in `src/types.ts`.
 ## Notes for the manager
+- AI-1's checkbox note: already fixed in 912b21a (`accent-[rgb(var(--accent))]`). I kept a bare checkbox in library rows because `<Checkbox>` requires a text label and the whole row is already the 44px+ tap target. Tell me if you want it swapped anyway.
+- Verified in a real browser: backup download, wipe, restore, re-import (0 added) and a bad file all behave.
 - `starred` is a boolean and IndexedDB cannot index booleans, so it is filtered in code, not indexed.
 - Extra db exports beyond the contract: deleteQuestions/restoreDeleted (Undo), listTags/renameTag, updateQuestions, saveImage/getImageUrl, requestPersistence/storageUsage.
 - Library renders 40 rows at a time with "Show more" instead of virtualising, to avoid a new dependency.

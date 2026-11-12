@@ -11,8 +11,12 @@
 - `import { transformText, transcribeImage } from '@/lib/ai'`.
 - `transformText(kind: 'summary' | 'cheatsheet' | 'keyterms' | 'qa-from-text', text, opts?: { language?, maxItems? }, signal?) => Promise<string>` (Markdown), through the fallback chain.
 - `transcribeImage(imageDataUrl, signal?) => Promise<string>` (formulas as LaTeX in $...$). Only vision-capable models are used: a model that rejects images is skipped, never silently answered without the image. Throws AiError (`no_key`, `exhausted` with `retryAt`, etc.): show `e.message`.
+### Done (P1 items 7-8, layout pass)
+- Ask screen v2 on `Page`/`PageHeader`/`Section`/`Stack`/`Card` (no own padding): hero input card (textarea, image preview, Scan + Send), subject chips in one scroll-snap row with edge fade and 44 px chips, Learn/Answer toggle with a one-line explanation ("Teach me" / "Just solve"), Ctrl+Enter hint only on mouse devices, roomy Recent list (rows >= 64 px).
+- Status line under Send: when the first-choice model is cooling down or unavailable it says which model rests and that the next one will answer. (The "Answered by <model>" label after an answer is AI-5's.)
+- NOT checked visually: `npm run shots` does not exist yet (AI-3), so no screenshots or 320 px check from me. Please review `/` at 320 and 390 px once the shots tool lands.
 ### Remaining
-- P1: Ask screen v2 layout, status line when a fallback answered. P2: streaming, remove `any`, share logic in `api/ask.ts`.
+- P2: streaming, remove `any`, share logic in `api/ask.ts`.
 ### Needs from others
 - AI-1: mount `<AiSettingsPanel />` in Settings (and use `<AddKeyForm showLabel={false} />` in onboarding). The old Provider/Model/API key fields in Settings are now only a one-time import; please remove or hide them once the panel is mounted. Settings can keep the Proxy URL field.
 - AI-5: use `getPrimaryModel()` from `@/lib/ai`: show "Answered by <model>" when `answer.model !== getPrimaryModel()`.
@@ -20,6 +24,7 @@
 - Model names in the suggested chain (gemini-3.8-flash, 3.6-flash, 3.5-flash-lite, 3.1-flash-lite, 2.5-flash-lite) come from third-party pages dated Oct-Nov 2026, not from Google directly; gemini-2.0-flash was shut down in June 2026. They are only a starting point: Fetch available models replaces them with what Google lists for the user's key.
 - Not tested against the real Gemini API (no key here).
 ### Manual tests for the user
+0. Open `/` at 320 px wide (browser devtools): chips row scrolls and fades at the edges, Send is easy to reach, nothing overflows sideways.
 1. Settings or onboarding: paste a real free Gemini key, tap Test key (expect "Key works"), Save key. The model chain should fill with models available to you.
 2. Ask a question. An answer should open. Check the chain shows the first model as Ready.
 3. In the model chain, add a fake model (or move one you know is unavailable) to the top; ask again. It should still answer from the next model and mark the first Unavailable or Cooling down.

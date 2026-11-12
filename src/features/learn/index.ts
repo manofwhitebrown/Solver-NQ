@@ -1,5 +1,6 @@
 import { createElement } from 'react';
 import type { RouteObject } from 'react-router-dom';
+import { CardsPage } from './CardsPage';
 import { LearnHome } from './LearnHome';
 import { QuizPage } from './QuizPage';
 import { ReviewPage } from './ReviewPage';
@@ -10,4 +11,5 @@ export const routes: RouteObject[] = [
   { path: 'learn/review', element: createElement(ReviewPage) },
   { path: 'learn/quiz', element: createElement(QuizPage) },
   { path: 'learn/stats', element: createElement(StatsPage) },
+  { path: 'learn/cards', element: createElement(CardsPage) },
 ];

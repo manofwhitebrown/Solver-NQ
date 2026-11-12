@@ -39,7 +39,10 @@ export function LearnHome() {
         <Link to="/learn/quiz"><Button block variant="secondary">Start quiz</Button></Link>
       </div>
 
-      <Link to="/learn/stats" className="text-[15px] font-medium text-accent underline-offset-2 hover:underline">View stats</Link>
+      <div className="flex gap-5 text-[15px] font-medium text-accent">
+        <Link to="/learn/stats" className="underline-offset-2 hover:underline">View stats</Link>
+        <Link to="/learn/cards" className="underline-offset-2 hover:underline">Manage cards</Link>
+      </div>
 
       <h2 className="pt-2 text-base font-semibold">Decks</h2>
       {cards.length === 0 ? (

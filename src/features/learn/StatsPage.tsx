@@ -48,7 +48,7 @@ export function StatsPage() {
           </Card>
         </Stack>
       </Section>
-      <Link to="/learn"><Button block variant="secondary">Back to Learn</Button></Link>
+      <Link to="/learn" className="block"><Button block variant="secondary">Back to Learn</Button></Link>
     </>
   );
 }

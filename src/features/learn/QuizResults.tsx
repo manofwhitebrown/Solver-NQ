@@ -42,7 +42,7 @@ export function QuizResults({ session, outcomes, onRetryWrong }: {
 
       <div className="flex flex-col gap-3">
         {wrong.length > 0 && <Button block onClick={() => onRetryWrong(wrong)}>Retry the {wrong.length} wrong</Button>}
-        <Link to="/learn"><Button block variant="secondary">Back to Learn</Button></Link>
+        <Link to="/learn" className="block"><Button block variant="secondary">Back to Learn</Button></Link>
       </div>
       </Stack></Section>
     </>

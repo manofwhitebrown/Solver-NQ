@@ -57,7 +57,7 @@ export function LearnHome() {
                 <Link to={`/learn/review?subject=${subject}`} aria-label={`Review ${subject} deck`}>
                   <Card interactive className="flex min-h-[64px] items-center justify-between gap-4 py-4 lg:py-4">
                     <span className="text-lg font-semibold capitalize text-ink"><span aria-hidden className="mr-3">{DECK_EMOJI[subject]}</span>{subject}</span>
-                    <span className="text-[15px] text-ink-2">{d.due} due · {d.total} cards</span>
+                    <span className="text-[15px] text-ink-2">{d.due} due · {d.total} {d.total === 1 ? "card" : "cards"}</span>
                   </Card>
                 </Link>
               </li>

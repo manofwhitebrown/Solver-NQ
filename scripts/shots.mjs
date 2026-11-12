@@ -65,7 +65,7 @@ async function jpeg(page, file) {
 
 const isMissing = (text) => /page not found|this screen is being built/i.test(text);
 const layout = {}, a11y = {}, errors = {}, skipped = new Map(), shots = [];
-const outDir = full ? OUT : TMP;
+const outDir = OUT; // images always go to docs/screenshots (partial runs replace only the matching ones)
 fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(outDir, { recursive: true });
 for (const f of fs.readdirSync(OUT)) if (/\.jpg$/.test(f) && (full || only.some((o) => f.startsWith(o + '__') || f.startsWith(o + '-')))) fs.rmSync(path.join(OUT, f));
 

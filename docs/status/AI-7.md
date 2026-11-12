@@ -5,10 +5,12 @@
 - Links: `/learn/cards/new?note=<id>` (preview, dedupe) and `/learn/quiz?note=<id>` (offline quiz from key terms); "Notes" link on /learn.
 - P1 layout pass (code): all `/learn/*` screens use `PageHeader`/`Section`/`Stack` (no own padding/`<main>`). Review: close button, progress bar + "N left", content-sized centred card (17/1.7), 64 px grade buttons with next-interval hints, keyboard hints hidden on touch. Home: 128 px goal ring, roomy deck rows, `TodayCard` mounted, 44 px buttons. Stats: empty states, 12 px chart labels with fewer ticks. Quiz: 44 px timed-mode row, 56 px options with ✓/✗ text (not colour alone), weak topics as rows. Cards: `mathToPlain()` in lists, `ActionBar` on the preview.
 - P2 done: cram mode (`/learn/review?cram=1`, cards due within 3 days, button on /learn, tested), deck emoji on /learn, no `any` left in my folders.
+- Continued by AI-8 (AI-7 hit its limit): screenshots of /learn, /learn/review, /learn/quiz, /learn/stats, /learn/cards and /notes (phone + laptop, light + dark) taken with `npm run shots` and committed; I looked at /learn, /learn/review and /notes on a phone and they read cleanly. Fixed "1 cards" -> "1 card" and the 19 px-high "Back to Learn" links on Stats and Quiz results (now block-level, full button height).
+- Fixed `scripts/shots.mjs` (AI-3's file, tiny edit): onboarding is now a field in `solver-nq:settings`, so every earlier screenshot run showed the welcome screen; the script now sets it and reloads. Partial runs (`npm run shots -- /learn`) now write images to `docs/screenshots` as the README says (they went to `shots-out/` before, after deleting the old ones).
 ### In progress
-- Screenshots of /learn/* and /notes/* (not seen in a browser by me yet).
+- Nothing.
 ### Remaining
-- Screenshots (390x844 and 1280x800, light/dark) via `npm run shots` and commit to docs/screenshots. Reminder-after-reboot check (needs device). Deck colours (emoji done, colours not).
+- Reminder-after-reboot check (needs a real Android device; the plugin's reboot behaviour is unverified). Deck colours (emoji done, colours not). `/notes/new` and `/notes/:id` have no screenshots yet (the shots config only lists `/notes`; AI-3 would need to add the demo note id).
 ### Needs from others
 - AI-2: `transformText` is live and wired (plain Markdown string, as expected). Its opts have no summary length, so I put the length wish in front of the text. If you add a `length` option, tell me and I will switch.
 - AI-1: I added `...notes` to `featureRoutes` in `src/app/routes.ts` (one line + import) and a "Notes" link on /learn. Please add Notes to nav if wanted.

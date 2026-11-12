@@ -2,7 +2,7 @@
 - P0: `mathToPlain` in `src/features/answer/plainText.ts`, re-exported from `src/features/answer/index.ts`; 25 unit tests.
 ## In progress
 - P1: Answer v2 layout (code, not yet seen on a screen): `PageHeader` + Back, `QuestionCard` (18/1.5, collapses >4 lines), accent-soft final answer card, numbered step cards 20 px apart, Learn mode with "Step N of M" progress, try-this callout, reveal animation and `aria-live`; phone `PhoneBar` (Star, Cards, Export, More; labelled, 56 px) + `MoreSheet` (Tags, Read aloud, Share, Copy, Graph this) + full-height `FollowUpSheet`; laptop labelled `Toolbar` + 360 px follow-up panel; distinct icons (download, share-nodes, stacked cards, two sheets). Wide equations scroll in their own box; single-line `$$..$$` is now a real display block (it used to render inline, and an old test hid that). Cross-owner edit: added `'answer/:id'` to `WIDE` in `src/app/routes.ts` so the laptop side panel fits.
-- P1: Graph v2: `PageHeader`, layout rhythm, legend swatch with colour AND dash style, axis labels 12 px, 44 px "Zeros and intersections" row, +/- zoom buttons (44 px) beside pinch/wheel, fixed-height canvas. `?f=` prefill unchanged.
+- P1: Graph v2 (curve colours now theme-aware CSS vars, lighter in dark mode): `PageHeader`, layout rhythm, legend swatch with colour AND dash style, axis labels 12 px, 44 px "Zeros and intersections" row, +/- zoom buttons (44 px) beside pinch/wheel, fixed-height canvas. `?f=` prefill unchanged.
 - P2: TTS: paragraph/step breaks become spoken pauses, reading speed is remembered (localStorage, safe if unavailable); LaTeX already spoken as words. No `any` left in my folders (grep clean). KaTeX and highlight.js stay lazy via the lazy `/answer` route.
 - P1: verify honesty review: 42 new cases in `verify.honesty.test.ts` (word problems, units, equivalent forms, rounding, trig degrees/radians, undefined, systems, inequalities). Fixed a real bug: `sin(30)` with no unit was called `mismatch`; now `unchecked` unless degrees/radians/pi is stated (degrees converted). Badge copy: mismatch now reads "Doesn't match - double-check"; Checked tooltip says the method is not checked. Not parsed (stay `unchecked`, safe): `x ∈ {..}` sets, "to 2 decimal places" suffix.
 - P0: "Answered by <model>" line (`ModelLabel.tsx`); reads `getPrimaryModel` from `@/lib/ai` if it exists and shows a soft chip for backup models. Queued copy now says it answers when online or free quota resets.
@@ -14,7 +14,6 @@ P1: screenshots of /answer and /graph (needs `npm run shots`; no browser here). 
 - AI-3: `npm run shots` does not exist yet, so I could not produce the /answer and /graph screenshots.
 - AI-3: `scale.test.ts` (2000 items) is timing-based and failed once on a slow sandbox. AI-8: `docs/audit/tools/layout-audit.mjs` has lint errors (`process`, `indexedDB` undefined; needs node globals in ESLint config).
 ## Notes for the manager
-- Graph curve colours are fixed hex values; check they read well in dark mode.
 - Inline (not display) wide equations inside a paragraph can still overflow; check on a phone.
 - No browser in my environment: nothing visually verified yet.
 ## Manual tests for the user

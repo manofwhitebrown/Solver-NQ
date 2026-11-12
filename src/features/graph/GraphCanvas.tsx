@@ -1,3 +1,4 @@
+import './graph.css';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { IconButton } from '@/components/ui';
 import { COLORS, DASHES, formatTick, niceStep, samplePath, viewBounds, zoomAt, type Fn, type Mark, type View } from './plot';

@@ -11,6 +11,7 @@
 - "Read with AI" is wired to AI-2's `transcribeImage`; the text fills the same editable box (shows AI error messages as toasts, e.g. offline or no key). Not tested with a real key.
 - P2 language packs manager: "Scan languages" on the capture card opens a sheet listing each language as built in (English), downloaded (size, Remove) or not downloaded (Download). `src/lib/ocr/langs.ts` reads Tesseract's IndexedDB cache directly (3 tests with fake-indexeddb); `downloadPack` in web.ts fills the cache. Uses `OCR_LANGS` from Settings options (read only). Screenshots `docs/screenshots/scan-langs-*.jpg`.
 - Crop step now calls `useHideTabBar(true)` as AI-1 asked (Back arrow in the header, ActionBar at the bottom, more crop room in landscape). Screenshots refreshed. Cross-owner (user approved): added `engines.node >= 22` to package.json (AI-8's request to AI-1).
+- Cross-owner (user approved): relaxed the three timing limits in AI-3's `scale.test.ts` by 3x (1.5/3/0.3 s -> 4.5/9/0.9 s); it failed on slow machines (about 1.6 s) with no code change. It still catches real regressions (an O(n^2) list would take far longer).
 ### Remaining
 - DONE by AI-4 at the user's request (cross-owner edit in AI-8's PWA block of `vite.config.ts`, plus one line in `docs/PWA-CONFIG.md`): `eng.traineddata.gz` is now precached and the non-SIMD core is runtime-cached only. AI-8 please pull before touching those lines.
 - Checked: no `any` left in src/lib/ocr or src/features/scan; OCR and PDF libs are lazy chunks (P2 item 9 done).

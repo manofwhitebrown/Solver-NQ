@@ -90,3 +90,23 @@ Screenshots: `docs/audit/img/` (8 contact sheets). Reusable tool: `docs/audit/to
 3. **AI-3 P0** demo data + audit tool in `npm run shots` (everyone verifies with it).
 4. Everyone's **layout pass** (their bracketed items) after `DESIGN V2 READY`; AI-1 P1 (tab bar v2, laptop widths) can run in parallel.
 5. The manager re-runs the same audit on `main` and signs off, or sends back only the items that still fail the acceptance rules.
+
+## E. Compatibility check against the Phase 2 palette and layout plan
+
+I compared every audit item with the original Phase 2 instructions. These clashes existed and are **already fixed in the task files** (nothing else conflicts; the palette values, spacing scale, elevation levels and type scale are unchanged by the audit):
+
+| # | Clash | Resolution |
+|---|---|---|
+| 1 | P2-AI-1 said the tab bar should be **translucent**; the screenshots show blotchy blurred content behind it. | **Opaque** `surface` + hairline. Updated in P2-AI-1. |
+| 2 | Removing the padding from `Layout.tsx` would leave Ask, Settings and Export (which rely on it) touching the screen edges until their owners migrate. | AI-1 wraps **every** existing screen in `<Page>` in the same push; owners refine later. |
+| 3 | Two stacked bottom bars on the answer page (action bar + tab bar, about 113 px of a 640 px phone) vs "final answer visible without scrolling". | Tab bar **hidden** on `/answer/:id` (and review, quiz, scan crop); the action bar is the only bottom bar. Rule: at most one extra sticky bar of 56 px above the tab bar anywhere else. |
+| 4 | Route code-splitting was given to both AI-1 and AI-8. | AI-1: lazy routes. AI-8: vendor chunks and the CI size budget. |
+| 5 | Chip height 36-40 px vs the 44 px tap-target rule. | Tap area >= 44 px (visible chip can stay smaller). |
+| 6 | Disabled buttons must look different, but the contrast test asserts AA on everything. | `--disabled-*` tokens, exempt from the text-contrast rule, with their own difference test. |
+| 7 | Screenshot format: the audit tool writes PNG, Phase 2 says JPEG <= 150 KB. | AI-3 converts before committing. |
+| 8 | Landscape left rail vs the 264 px laptop sidebar. | Same navigation component with a compact variant for short viewports (< 500 px tall). |
+| 9 | Question text 18/1.5 vs "fewer font sizes". | 18 is already in the scale (card titles); no new size. |
+
+## F. Design freeze
+
+When the manager signs off Phase 2, **the tokens, spacing scale and layout primitives are frozen.** In Phase 3 and 4 nobody changes them directly; a needed change goes through the manager. Every new screen or feature uses `Page`, `PageHeader`, `Section`, `Stack`, `Card` and the tokens, and passes the acceptance rules in section A.

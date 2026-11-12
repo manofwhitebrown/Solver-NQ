@@ -36,3 +36,27 @@
 - Fixed: Export button was hidden under the phone tab bar (now uses the shared ActionBar); raw `$...$` in headings and contents; `\int` etc. printed as junk in the text PDF (now mapped to ASCII); `\Rightarrow`/`\quad` leaking as words; question printed twice; names like "Study pack - Study pack"; cover now shows the date.
 - Added tests: src/lib/export/__tests__/plaintext.test.ts.
 - Still not done: not tested on a real Android device (saveFile via Filesystem + Share); contents page has no page numbers; non-Latin text (Hindi, Chinese) shows as ? in the selectable-text PDF, use Pretty mode for those.
+
+# Phase 2 (AI-6, resumed 12 Nov 2026)
+
+## Done (Phase 2)
+- P0.1 Pretty PDF numbers: no browser in my environment. I rely on AI-8's real-browser run (20 answers: 12 pages, ~480-610 KB, 23-26 s). Still open: 1 and 5 answer packs, Letter size, visual check of page breaks (see Manual tests).
+- P0.2 Memory safety: `pdfPretty` now renders one block at a time (node removed and canvas zeroed right after use), yields to the UI between blocks, forces white paper (`color-scheme:light`), supports **Cancel** (AbortSignal through `buildExport` -> pretty PDF and study pack; leaving the page also aborts), and a block/answer that fails to draw is replaced by a short note while the rest continues (`onWarn` shows "N parts could not be drawn").
+- P0.3 `saveFile`: cache dir + file URI + Share (`canShare` check, closed share sheet = `'cancelled'`, not an error), safe file names, chunked base64 (no `FileReader`). 7 mocked-plugin tests in `__tests__/saveFile.test.ts`.
+
+## In progress / Remaining
+- P1 Study Planner (`src/lib/plan`, `src/features/plan`, `/plan`, `TodayCard`) - next.
+- P2 export layout pass (waits for `DESIGN V2 READY`), Obsidian front matter, remove `any`.
+
+## Needs from others
+- AI-3: `kvSet/kvGet` not in `src/lib/db` yet; planner will use a small wrapper behind one interface until then.
+
+## Notes for the manager
+- Not mine, seen in a full run: `scale.test.ts` (AI-3) fails under load again; lint errors in `api/ask.ts` (AI-2) and `docs/audit/tools/layout-audit.mjs` (AI-8: node/browser globals not declared in eslint config).
+
+## Manual tests for the user
+1. Laptop Chrome: open `/export` with 1, then 5, then 20 saved answers, format PDF + "Pretty". Note time and size. Check math is sharp, no formula cut across pages, page numbers bottom right, white paper in dark theme. Repeat with Letter.
+2. Same 20-answer export: tap **Cancel** halfway. It must stop within a second or two and show "Export cancelled".
+3. Android: export a PDF, tap Save/Share, pick Drive or WhatsApp, confirm the file arrives and opens. Close the share sheet without choosing: no error should appear.
+4. Android: export DOCX and open it from the share sheet in Word/Docs.
+

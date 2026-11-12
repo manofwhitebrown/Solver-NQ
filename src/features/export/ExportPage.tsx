@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ActionBar, Button, Chip, EmptyState, Spinner, toast } from '@/components/ui';
 import { listLibrary } from '@/lib/db';
@@ -28,6 +28,9 @@ export default function ExportPage() {
   const [progress, setProgress] = useState<[number, number]>([0, 1]);
   const [result, setResult] = useState<BuildResult | null>(null);
   const [error, setError] = useState('');
+  const [warn, setWarn] = useState(0);
+  const abortRef = useRef<AbortController | null>(null);
+  useEffect(() => () => abortRef.current?.abort(), []); // leaving the page stops the work
 
   useEffect(() => {
     let live = true;
@@ -39,15 +42,18 @@ export default function ExportPage() {
   }, [ids, isPack, filter]);
 
   async function run() {
-    setBusy(true); setError(''); setResult(null); setProgress([0, 1]);
+    setBusy(true); setError(''); setWarn(0); setResult(null); setProgress([0, 1]);
+    const ctl = new AbortController();
+    abortRef.current = ctl;
     try {
       const r = await buildExport({
         format: isPack ? 'pack' : format, ids, filter, config: opts,
-        onProgress: (d, t) => setProgress([d, t]),
+        onProgress: (d, t) => setProgress([d, t]), signal: ctl.signal, onWarn: setWarn,
       });
       setResult(r);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Export failed');
+      if (e instanceof Error && e.name === 'AbortError') toast('Export cancelled');
+      else setError(e instanceof Error ? e.message : 'Export failed');
     } finally { setBusy(false); }
   }
 
@@ -97,6 +103,7 @@ export default function ExportPage() {
             <p className="text-[13px] text-muted">Building… {pct}%</p>
           </div>
         )}
+        {warn > 0 && <p className="text-[15px] text-muted">{warn} part{warn > 1 ? 's' : ''} could not be drawn and {warn > 1 ? 'were' : 'was'} replaced by a note.</p>}
         {error && <p role="alert" className="text-[15px] text-bad">{error}</p>}
         {result && <ResultCard result={result} onShareError={(m) => toast(m, 'error')} />}
       </div>
@@ -106,6 +113,7 @@ export default function ExportPage() {
           <Button block loading={busy} disabled={!items?.length} onClick={run}>
             {isPack ? 'Build study pack' : `Export ${FORMATS.find((f) => f.value === format)?.label}`}
           </Button>
+          {busy && <Button variant="secondary" onClick={() => abortRef.current?.abort()}>Cancel</Button>}
           <Button variant="secondary" className="hidden lg:inline-flex" disabled={!items?.length} onClick={() => window.print()}>Print</Button>
         </ActionBar>
       </div>

@@ -12,6 +12,7 @@ export type Progress = (done: number, total: number) => void;
 export interface BuildRequest {
   format: ExportFormat; ids?: string[]; filter?: StudyPackFilter;
   config?: ExportConfig; onProgress?: Progress;
+  signal?: AbortSignal; onWarn?: (failed: number) => void;
 }
 export interface BuildResult { blob: Blob; filename: string; ms: number; count: number }
 
@@ -49,12 +50,13 @@ export async function buildExport(req: BuildRequest): Promise<BuildResult> {
 
   if (req.format === 'pdf') {
     blob = opts.pdfMode === 'pretty'
-      ? await (await import('./pdfPretty')).buildPrettyPdf(items, opts, title, req.onProgress)
+      ? await (await import('./pdfPretty')).buildPrettyPdf(items, opts, title, req.onProgress, { signal: req.signal, onWarn: req.onWarn })
       : await (await import('./pdfText')).buildTextPdf(items, opts, title, req.onProgress);
   } else if (req.format === 'pack') {
     ext = 'pdf';
     const cards = opts.includeCards ? await listCards({ subject: req.filter?.subject }) : [];
-    blob = await (await import('./studyPack')).buildPackPdf(items, cards, opts, req.filter ?? {}, req.onProgress);
+    blob = await (await import('./studyPack')).buildPackPdf(items, cards, opts, req.filter ?? {}, req.onProgress,
+      { signal: req.signal, onWarn: req.onWarn });
   } else if (req.format === 'docx') {
     blob = await (await import('./docx')).buildDocx(items, opts, title);
   } else if (req.format === 'json') {

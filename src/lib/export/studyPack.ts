@@ -11,7 +11,7 @@ import { dateStamp } from './filename';
  */
 export async function buildPackPdf(
   items: ExportItem[], cards: Flashcard[], opts: ResolvedOptions, filter: StudyPackFilter,
-  onProgress?: (d: number, t: number) => void,
+  onProgress?: (d: number, t: number) => void, hooks: import('./pdfPretty').PrettyHooks = {},
 ): Promise<Blob> {
   const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({ unit: 'pt', format: opts.pageSize });
@@ -39,7 +39,7 @@ export async function buildPackPdf(
   const frontCount = doc.getNumberOfPages();
   const packOpts = { ...opts, includeCards: false };
   const body = opts.pdfMode === 'pretty'
-    ? await (await import('./pdfPretty')).buildPrettyPdf(items, packOpts, 'Answers', onProgress)
+    ? await (await import('./pdfPretty')).buildPrettyPdf(items, packOpts, 'Answers', onProgress, hooks)
     : await (await import('./pdfText')).buildTextPdf(items, packOpts, 'Answers', onProgress);
 
   if (cards.length) {

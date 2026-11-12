@@ -1,7 +1,34 @@
-// STUB owned by AI-7. Grades: 0 Again, 1 Hard, 2 Good, 3 Easy (SM-2 style).
-import type { Flashcard } from '@/types';
+import type { Flashcard } from '../../types';
+import { getAnswer, getQuestion, listCards } from '../db';
+import { generateCards } from '../ai';
+import { buildLocalCards, dedupe, toFlashcards, type CardDraft } from './cardMaker';
 
-const ni = (): never => { throw new Error('not implemented'); };
+export * from './scheduler';
+export * from './day';
+export * from './progress';
+export * from './cardMaker';
+export * from './csv';
+export * from './quizScore';
+export * from './session';
 
-export function nextReview(_card: Flashcard, _grade: 0 | 1 | 2 | 3): Flashcard { return ni(); }
-export async function makeCardsFromAnswer(_answerId: string): Promise<Flashcard[]> { return ni(); }
+/**
+ * Build (not save) cards for a saved answer. Local first; if online, try to
+ * improve with the AI, falling back silently to the local set.
+ * The UI previews the result and saves with putCard().
+ */
+export async function makeCardsFromAnswer(answerId: string): Promise<Flashcard[]> {
+  const a = await getAnswer(answerId);
+  if (!a) throw new Error('Answer not found');
+  const q = await getQuestion(a.questionId);
+  const subject = q?.subject ?? 'other';
+
+  let drafts: CardDraft[] = buildLocalCards(q, a);
+  if (typeof navigator === 'undefined' || navigator.onLine) {
+    try {
+      const ai = await generateCards(answerId);
+      if (ai.length) drafts = [...ai, ...drafts];
+    } catch { /* offline or no key: keep local cards */ }
+  }
+  const existing = await listCards({});
+  return toFlashcards(dedupe(drafts, existing), a, subject);
+}

@@ -10,6 +10,8 @@ import { runModel } from './run';
 
 export interface AskInput { text: string; subject: Subject; mode: Mode; imageDataUrl?: string }
 
+export const IMAGE_ONLY_TEXT = 'Answer the question shown in the image.';
+
 const isOnline = () => typeof navigator === 'undefined' || navigator.onLine;
 
 /** Call the AI, parse, save question + answer, fill the cache. Throws AiError on failure. */
@@ -53,7 +55,7 @@ async function queue(input: AskInput): Promise<{ queued: true }> {
 export async function askQuestion(input: AskInput, signal?: AbortSignal): Promise<{ answerId: string } | { queued: true }> {
   const text = input.text.trim();
   if (!text && !input.imageDataUrl) throw new AiError('bad_request');
-  const clean = { ...input, text };
+  const clean = { ...input, text: text || IMAGE_ONLY_TEXT };
   if (!isOnline()) {
     // Cached answers still work offline; anything else waits in the queue.
     try { return await answerNow(clean, signal); } catch (e) {

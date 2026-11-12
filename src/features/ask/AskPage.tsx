@@ -1,8 +1,12 @@
-import { useState, type KeyboardEvent } from 'react';
+import { useEffect, useState, type KeyboardEvent } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Card, Chip, Tabs, Textarea } from '@/components/ui';
 import { MODES, SUBJECTS } from '@/features/settings/options';
+
+import { IMAGE_ONLY_TEXT } from '@/lib/ai';
 import { useSettings } from '@/lib/settings';
 import type { Mode, Subject } from '@/types';
+import { ImagePreview } from './ImagePreview';
 import { RecentList } from './RecentList';
 import { ScanSlot } from './ScanSlot';
 import { Thinking } from './Thinking';
@@ -18,13 +22,25 @@ export function AskPage() {
   const [text, setText] = useState('');
   const [subject, setSubject] = useState<Subject>(settings.defaultSubject);
   const [mode, setMode] = useState<Mode>(settings.defaultMode);
+  const [image, setImage] = useState<string | undefined>();
   const { status, error, submit, cancel, reset } = useAsk();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const canSend = text.trim().length > 0;
+  // /scan hands back { text, imageDataUrl } through router state. Take it once, then clear it.
+  useEffect(() => {
+    const s = location.state as { text?: unknown; imageDataUrl?: unknown } | null;
+    if (!s || typeof s.text !== 'string') return;
+    setText(s.text);
+    setImage(typeof s.imageDataUrl === 'string' ? s.imageDataUrl : undefined);
+    navigate('.', { replace: true, state: null });
+  }, [location.state, navigate]);
+
+  const canSend = text.trim().length > 0 || !!image;
   const send = async () => {
     if (!canSend || status === 'busy') return;
-    const ok = await submit({ text, subject, mode });
-    if (ok) setText('');
+    const ok = await submit({ text: text.trim() || IMAGE_ONLY_TEXT, subject, mode, imageDataUrl: image });
+    if (ok) { setText(''); setImage(undefined); }
   };
   const onKey = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); void send(); }
@@ -54,6 +70,8 @@ export function AskPage() {
               onKeyDown={onKey}
               className="min-h-[160px] text-[17px]"
             />
+
+            {image && <ImagePreview src={image} onRemove={() => setImage(undefined)} />}
 
             <div role="group" aria-label="Subject" className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
               {SUBJECTS.map((s) => (

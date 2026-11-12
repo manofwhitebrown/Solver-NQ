@@ -73,4 +73,15 @@ describe('askQuestion', () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 401 })));
     await expect(askQuestion(input)).rejects.toThrow(/key was rejected/i);
   });
+
+  it('accepts an image-only question, sends the image, and does not cache it', async () => {
+    const f = okFetch();
+    vi.stubGlobal('fetch', f);
+    const r = await askQuestion({ text: '  ', subject: 'math', mode: 'answer', imageDataUrl: 'data:image/png;base64,AAAA' });
+    expect('answerId' in r).toBe(true);
+    const body = JSON.parse((f.mock.calls[0] as unknown as [string, { body: string }])[1].body);
+    expect(JSON.stringify(body.messages)).toContain('"type":"image"');
+    expect(JSON.stringify(body.messages)).toContain('shown in the image');
+    expect(store.cache.size).toBe(0);
+  });
 });

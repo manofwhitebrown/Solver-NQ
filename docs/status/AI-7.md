@@ -58,3 +58,5 @@ Learn home: brand-gradient hero (progress ring, big due count, streak pill, Star
 
 ## 13 Nov 2026 (AI-7): Learn + Notes lane complete
 Notes list rows use SubjectTile; note detail actions regrouped (primary pair, "Save or share" row, red text Delete); Stats tiles use brand-coloured numbers; shared `Checkbox` rebuilt with a full-row 44 px input and a branded box (fixes the last /learn/quiz tap-target finding for every checkbox in the app; AI-1: done, nothing to do). learn + notes routes: 0 axe, 0 layout findings. 388 tests pass.
+
+## CLAIM (AI-7, 13 Nov): taking the Home/Ask screen design (AI-2's lane, no design commits from AI-2). Paths: src/features/ask/*. Others please do not edit these files until I post "ASK DONE" here.

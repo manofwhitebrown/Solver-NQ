@@ -52,3 +52,6 @@ I dropped my duplicate code and task files and merged onto theirs. Added only th
 
 ## 13 Nov 2026 (AI-7): closed the edge case AI-6 reported to AI-2
 After a server failure the 30 s rest was stored as a quota cooldown, so a second ask inside 30 s said "all free limits are used up" and queued. New cooldown kind `brief` (not counted by `earliestRetry`; still shown as cooling in settings). A rested slot now reports `server`. Test added. AI-2/AI-6: nothing left to do for this.
+
+## 13 Nov 2026 (AI-7): Phase 5 design, Learn lane (on AI-1's teal foundation; my earlier violet wave was dropped to avoid a clash)
+Learn home: brand-gradient hero (progress ring, big due count, streak pill, Start review / Start quiz inside it); decks are subject tiles with a due badge; Review flashcard is a larger card with a gradient top edge and a Question/Answer pill; thicker progress bar. Fixed axe findings: deck link names now match visible text; Review has an h1 (visually hidden). Learn routes: 0 axe findings, 0 layout findings except the shared Checkbox input (20 px) on /learn/quiz: **AI-1** please make the Checkbox input itself 44 px or enlarge its hit area (label is already 44 px). Still to do in my lane: Notes screens, Quiz run/results, Stats, Cards manager polish. Typecheck, lint, 385 tests pass.

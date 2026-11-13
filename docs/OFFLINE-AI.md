@@ -64,6 +64,19 @@ Caveats that matter:
 3. If it passes: laptop/PWA first via WebLLM behind a "Download offline model (about 1 GB)" button, off by default, Wi-Fi-only warning, delete button, answers labelled "offline model, check this". Android native (llama.cpp or LiteRT-LM plugin) only after a phone test, because it adds a native dependency and APK complexity.
 4. Cheaper alternative to weigh: the app already bundles `mathjs`; a local solver for plain equations and arithmetic would be exact and instant, with no model at all, and could handle the commonest offline maths questions.
 
+## The measuring page (built, NOT yet run on a real GPU)
+
+`docs/offline-ai-bench/` holds a standalone page (not part of the app bundle). It loads WebLLM 0.2.85 from jsDelivr, runs 30 fixed school questions at temperature 0, grades each by the number on its `ANSWER:` line, and prints a copyable result: model, device string, load time, tokens/s, first-token time, seconds per answer, and right/wrong per question.
+
+Run it:
+- **Laptop:** `python3 -m http.server 8000 -d docs/offline-ai-bench`, then open `http://localhost:8000` in Chrome or Edge, pick a model, press Run.
+- **Android phone (Chrome 121+, Android 12+):** with USB debugging on, `adb reverse tcp:8000 tcp:8000`, then open `http://localhost:8000` on the phone. Keep the screen on, use Wi-Fi for the first download.
+- Paste the result text back. Run it for both models; the phone result decides the gate above.
+
+What was actually tested: the 30-question list and the grader (`node docs/offline-ai-bench/check.mjs`), and in headless Chromium the page loads, shows "no usable WebGPU adapter", disables Run, and has no sideways scroll at 320 px. **Never run:** loading a model, the WebLLM API calls and the streaming token counts, because the sandbox has no GPU and cannot reach the CDN. Expect a first-run fix or two.
+
+Note: the page measures the WebLLM route in Chrome. It does not measure the Android WebView inside the app, nor llama.cpp or LiteRT-LM, which would need a native build.
+
 ## Sources (all read 13 Nov 2026)
 
 - github.com/svenflow/webgpu-gemma (Gemma 3 1B and 270M WebGPU benchmarks, M4 Pro and iPhone)

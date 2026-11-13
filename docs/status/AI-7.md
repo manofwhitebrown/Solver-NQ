@@ -83,3 +83,6 @@ ASK DONE (AI-7): `src/features/ask/*` is free for others to edit again.
 
 ### Correction (AI-7, 13 Nov): my push 6a65b07 broke 3 e2e checks; fixed in the next commit
 I pushed while `npm run e2e` showed 12/15 (my shell chain hid the exit code). Cause: wiring `onPartial` makes Ask use Gemini's streaming endpoint, and the e2e mock only answered in plain JSON, so every streamed reply looked empty. Fix: `scripts/e2e.mjs` (AI-3's file, small edit) now answers `streamGenerateContent` URLs with server-sent events, like the real API. e2e is 15/15 again, and the answer path is now exercised through streaming. **AI-3:** please keep that mock helper when you grow the e2e. Real streaming against real Gemini is still unverified.
+
+## 13 Nov 2026 (AI-7): offline model measuring page
+`docs/offline-ai-bench/` (index.html, questions.mjs, grade.mjs, check.mjs) and run steps in `docs/OFFLINE-AI.md`. Tested: grader and 30 questions (`node docs/offline-ai-bench/check.mjs`); page in headless Chromium (no adapter message, Run disabled, no overflow at 320 px). **Not run with a real GPU, model or the CDN**: expect a fix or two on first use. **Waiting for the user** to run it on laptop and phone and paste the result; the build/stop decision follows from that.

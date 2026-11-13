@@ -15,7 +15,7 @@ const defaultSleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
 const liteFirst = (slots: ModelSlot[]) =>
   [...slots].sort((a, b) => Number(/lite/.test(b.model)) - Number(/lite/.test(a.model)));
 
-function setCooldown(k: KeyEntry, model: string, until: number, kind: 'cooldown' | 'unavailable') {
+function setCooldown(k: KeyEntry, model: string, until: number, kind: 'cooldown' | 'brief' | 'unavailable') {
   update(s => { s.cooldowns[cooldownId(k, model)] = { until, kind }; });
 }
 
@@ -43,7 +43,8 @@ export async function callWithFallback(req: CompletionRequest, opts: FallbackOpt
   for (const slot of slots) {
     for (const k of keysFor(slot, loadState().keys)) {
       if (loadState().invalidKeys.includes(k.id)) { sawBadKey = true; continue; }
-      if (activeCooldown(loadState(), k, slot.model, now())) continue;
+      const cd = activeCooldown(loadState(), k, slot.model, now());
+      if (cd) { if (cd.kind === 'brief') sawServer = true; continue; } // still resting after a server problem
       let attempt = 0, req2 = req;
       for (;;) {
         tried = true;
@@ -65,7 +66,7 @@ export async function callWithFallback(req: CompletionRequest, opts: FallbackOpt
             continue;
           }
           if (f.kind === 'quota') { sawQuota = true; setCooldown(k, slot.model, cooldownUntil(f, now()), 'cooldown'); }
-          else if (f.kind === 'transient' || f.kind === 'incomplete') { sawServer = true; setCooldown(k, slot.model, now() + 30_000, 'cooldown'); }
+          else if (f.kind === 'transient' || f.kind === 'incomplete') { sawServer = true; setCooldown(k, slot.model, now() + 30_000, 'brief'); }
           else if (f.kind === 'unavailable') { setCooldown(k, slot.model, now() + UNAVAILABLE_MS, 'unavailable'); sawUnavailable = true; }
           else if (f.kind === 'badkey') { update(s => { if (!s.invalidKeys.includes(k.id)) s.invalidKeys.push(k.id); }); sawBadKey = true; }
           break; // next key / next slot

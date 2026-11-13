@@ -12,5 +12,5 @@ export function slotInfo(s: FallbackState, slot: ModelSlot, now = Date.now()): S
   if (cds.some(c => !c)) return { status: 'ready' };
   const kinds = cds as NonNullable<(typeof cds)[number]>[];
   if (kinds.every(c => c.kind === 'unavailable')) return { status: 'unavailable' };
-  return { status: 'cooling', until: Math.min(...kinds.filter(c => c.kind === 'cooldown').map(c => c.until)) };
+  return { status: 'cooling', until: Math.min(...kinds.filter(c => c.kind !== 'unavailable').map(c => c.until)) };
 }

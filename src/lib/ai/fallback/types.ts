@@ -12,7 +12,8 @@ export interface KeyEntry {
 /** One step of the chain. keyId empty = rotate across every key of that provider. */
 export interface ModelSlot { id: string; provider: SlotProvider; model: string; keyId: string; enabled: boolean }
 
-export type CooldownKind = 'cooldown' | 'unavailable';
+/** cooldown = over quota; brief = short rest after a server/network/cut-off failure; unavailable = model missing. */
+export type CooldownKind = 'cooldown' | 'brief' | 'unavailable';
 export interface Cooldown { until: number; kind: CooldownKind }
 
 export interface FallbackState {

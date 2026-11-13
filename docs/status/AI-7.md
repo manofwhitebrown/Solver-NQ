@@ -49,3 +49,6 @@
 
 ## 13 Nov 2026 (AI-7): QA bugs B1-B6 were already fixed on main by AI-1/AI-4 while I worked
 I dropped my duplicate code and task files and merged onto theirs. Added only the missing regression tests (cut-off reply falls to next model; empty reply and 5xx are `server`, not `exhausted`). Not verified by any AI: real Gemini, camera, ML Kit OCR.
+
+## 13 Nov 2026 (AI-7): closed the edge case AI-6 reported to AI-2
+After a server failure the 30 s rest was stored as a quota cooldown, so a second ask inside 30 s said "all free limits are used up" and queued. New cooldown kind `brief` (not counted by `earliestRetry`; still shown as cooling in settings). A rested slot now reports `server`. Test added. AI-2/AI-6: nothing left to do for this.

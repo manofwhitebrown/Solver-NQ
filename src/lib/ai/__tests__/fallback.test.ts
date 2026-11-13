@@ -239,4 +239,14 @@ describe('honest failure reporting', () => {
     fetchMock.mockResolvedValue(fail(429, 'RESOURCE_EXHAUSTED'));
     await expect(callWithFallback(req, opts)).rejects.toMatchObject({ code: 'exhausted' });
   });
+
+  it('a second ask inside the short rest after a server failure still says server, not quota', async () => {
+    seed([['k1', 'A']], ['m-a']);
+    fetchMock.mockResolvedValue(fail(503));
+    await callWithFallback(req, opts).catch(() => {});
+    const calls = fetchMock.mock.calls.length;
+    const e = await callWithFallback(req, opts).catch(x => x);
+    expect(e.code).toBe('server');
+    expect(fetchMock.mock.calls.length).toBe(calls); // rested: no new request
+  });
 });

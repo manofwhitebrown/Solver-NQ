@@ -4,7 +4,7 @@ import { ratio, readVar } from './contrast';
 
 const SURFACES = ['bg', 'surface', 'raised', 'overlay'];
 const TEXT = ['ink', 'ink-2', 'muted', 'accent', 'ok', 'warn', 'bad'];
-const ALL = [...SURFACES, 'line', 'line-strong', ...TEXT, 'accent-soft', 'ok-soft', 'warn-soft', 'bad-soft', 'disabled-bg', 'disabled-ink'];
+const ALL = [...SURFACES, 'line', 'line-strong', ...TEXT, 'accent-2', 'accent-soft', 'ok-soft', 'warn-soft', 'bad-soft', 'disabled-bg', 'disabled-ink'];
 
 export function Swatches({ theme }: { theme: string }) {
   const [, tick] = useState(0);

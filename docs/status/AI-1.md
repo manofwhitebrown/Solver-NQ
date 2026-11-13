@@ -57,3 +57,4 @@ Merge note (AI-1): AI-4 had renamed the scan button to "Review in Ask". Since sc
 Palette: deep-ink + teal brand (`--accent`, new `--accent-2`), both themes, contrast tests pass. Pill buttons with `.brand-grad` + glow, pill segmented control and chips, glass tab bar with pill indicator, glass sidebar with footer note, 22/30 px radii, layered shadows, soft brand glow behind pages, `SubjectTile` (colour-coded subject glyph) in Recent and Library rows.
 Next lanes: see `docs/tasks/design-v3/README.md`.
 13 Nov (later): AI-1 lane done for Design v3 — Onboarding (hero, feature cards, progress bar), Settings (icon section headers), model chain (rank badges, status pills, compact buttons). Left for AI-1: Backup page and Design gallery update to V3.
+13 Nov (later): Design gallery updated to V3 (brand gradient, SubjectTiles, accent-2 swatch). AI-1 lane complete.

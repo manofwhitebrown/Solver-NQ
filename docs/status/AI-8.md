@@ -1,4 +1,30 @@
-# AI-8 status (Phase 2)
+# AI-8 status (Phase 6, 13 Nov 2026)
+
+## Phase 6 (13 Nov 2026) - keystore helper, icons, device checklist
+- **Keystore helper:** `.github/workflows/create-keystore.yml` (manual, needs a confirm tick). Random password via `openssl rand`, masked with `::add-mask::`, only the public SHA-256 fingerprint is printed. Uploads one artifact `solver-nq-keystore` (1-day retention) with `SECRETS.txt` (the four secret values) and `release.jks`. Store and key password are the same value because PKCS12 requires it; the alias is `solvernq`. `docs/RELEASE.md` rewritten for a non-developer (run it, copy four values, delete the artifact, back up in two places, tag `v1.0.0` from the GitHub Releases page or with git).
+  - Ran: the workflow's script body locally with a real `keytool` (key generated, base64 round trip identical, password opens the key, alias correct, YAML valid).
+  - NOT run: the workflow itself on GitHub Actions (my sandbox cannot start workflows). The user's first run is the real test.
+  - Heads-up: artifacts of a **public** repo can be downloaded by any signed-in GitHub user until deleted. RELEASE.md tells the user to finish and delete within one sitting (it also expires after a day). If the repo is public and that worries the manager, the safer option is to make the repo private for the 10 minutes it takes.
+- **Icons:** one mark (teal tile + bold white check, from `Logo.tsx`). `public/favicon.svg` (dark-tab aware), `favicon.ico` (16/32/48), `apple-touch-icon.png`, `icons/pwa-192/512/maskable-512.png`; manifest + `index.html` links + precache; Android adaptive icon (vector layers + Android 13 themed monochrome), legacy launcher PNGs, light and night splash screens, `colors.xml` + `values-night`. Details and regenerate command in `docs/ICONS.md` (`node scripts/make-icons.mjs`, no new dependency).
+  - Seen in a headless Chromium render: 16 px frame and 16 px SVG on light and dark tab colours, maskable under circle mask and safe zone, all Android PNGs and splashes. The adaptive icon was only seen as a reconstruction from the same numbers.
+  - NOT verified: the Android resources in a real Gradle build (Gradle and dl.google.com are blocked here; the `Android APK` run is the test, one new attribute `windowSplashScreenBackground` in `styles.xml` is the likeliest thing to need a fix), the launcher and splash on a phone, the installed PWA icon.
+- **DEVICE-TEST.md:** rewritten and shortened, grouped Phone (Android) and Laptop, merged from AI-1..7 plus the leftovers list (reboot reminder, install over old APK, cloud sync, real Gemini key, icon check).
+- Before the push: typecheck, lint, 388 unit tests, secret scan, and 15/15 `npm run e2e` all passed; production build with `VITE_BASE=/Solver-NQ/` has the right icon links, manifest and precache.
+
+## In progress
+- Waiting for the `Android APK` and `Web` runs on this push (I cannot read Actions from here; the user or manager must tell me if either is red).
+
+## Needs from others
+- AI-1: `src/app/theme.ts` still sets the `theme-color` meta to `#0d0f15` / `#f0f2f6`, which no longer match the app background. Please use `#f1f6f6` (light) and `#070f11` (dark), the same as `--bg` in `tokens.css`. I kept a single `theme-color` meta in `index.html` because that code only updates the first one.
+- AI-1 (optional): add `"icons": "node scripts/make-icons.mjs"` to `package.json` scripts.
+- Manager: write `RELEASE GO` in `docs/status/MANAGER.md` after the user has added the four secrets (job 5, Play Store assets and privacy policy, waits for the signed release).
+
+## Manual tests for the user
+- Actions, **Create signing keystore**, Run workflow: it goes green and one artifact `solver-nq-keystore` appears with `SECRETS.txt` and `release.jks`; follow `docs/RELEASE.md`.
+- After the next APK build: the launcher icon is the teal tick tile (also as an Android 13 themed icon), the splash is light or dark with the tile, the browser tab shows the tick on light and dark tabs. All of this is in `docs/DEVICE-TEST.md`.
+
+---
+# Earlier phases (history)
 
 ## Done
 - P0-1: `android.yml` and `web.yml` now use Node 22 (Capacitor CLI 8.6 needs >=22).

@@ -46,3 +46,6 @@
 - Not verified by me: screens in a real browser/phone (no DOM test environment here), and the Android reminder on a device. Please include /learn, /learn/review, /learn/quiz, /learn/stats, /learn/cards, /learn/cards/new in the phone-layout audit.
 - Quiz uses QuizItem from src/types.ts. Timed mode = 1 minute per question; unanswered items count as wrong at time-up.
 - Interval is in days; Again relearns in 10 minutes; ease floor 1.3; streak survives until end of the next local day.
+
+## 13 Nov 2026 (AI-7): QA bugs B1-B6 were already fixed on main by AI-1/AI-4 while I worked
+I dropped my duplicate code and task files and merged onto theirs. Added only the missing regression tests (cut-off reply falls to next model; empty reply and 5xx are `server`, not `exhausted`). Not verified by any AI: real Gemini, camera, ML Kit OCR.

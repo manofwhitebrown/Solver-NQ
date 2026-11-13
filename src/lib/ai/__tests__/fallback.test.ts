@@ -189,4 +189,26 @@ describe('cooldown math', () => {
     const d = nextPacificMidnight(NOW) - NOW;
     expect(d).toBeGreaterThan(0); expect(d).toBeLessThanOrEqual(24 * 3_600_000 + 1000);
   });
+
+  it('a reply cut off by the token limit is not accepted; the next model answers', async () => {
+    seed([['k1', 'A']], ['m-a', 'm-b']);
+    fetchMock.mockResolvedValueOnce({ ok: true, status: 200, text: async () => '', json: async () => ({ candidates: [{ finishReason: 'MAX_TOKENS', content: { parts: [{ text: '{"finalAnswer":' }] } }] }) })
+      .mockResolvedValueOnce(ok('whole'));
+    const r = await callWithFallback(req, opts);
+    expect(r.text).toBe('whole');
+  });
+
+  it('an empty reply everywhere is a server-side problem, never reported as exhausted quota', async () => {
+    seed([['k1', 'A']], ['m-a']);
+    fetchMock.mockResolvedValue(ok(''));
+    await expect(callWithFallback(req, opts)).rejects.toMatchObject({ code: 'server' });
+  });
+
+  it('server failures on every model are reported as a server problem, not exhausted quota', async () => {
+    seed([['k1', 'A']], ['m-a', 'm-b']);
+    fetchMock.mockResolvedValue(fail(503));
+    const e = await callWithFallback(req, opts).catch(x => x);
+    expect(e).toBeInstanceOf(AiError);
+    expect(e.code).toBe('server');
+  });
 });

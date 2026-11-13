@@ -16,13 +16,13 @@ function base64ToBlob(data: string, type: string): Blob {
   return new Blob([bytes], { type });
 }
 
-export async function exportBackup(): Promise<string> {
+export async function exportBackup(opts: { images?: boolean } = {}): Promise<string> {
   const [questions, answers, flashcards, imgRows, notes, kv] = await Promise.all([
     db.questions.toArray(), db.answers.toArray(), db.flashcards.toArray(), db.images.toArray(),
     db.notes.toArray(), db.kv.toArray(),
   ]);
   const images: BackupImage[] = [];
-  for (const r of imgRows) images.push({ id: r.id, type: r.blob.type, data: await blobToBase64(r.blob) });
+  for (const r of opts.images === false ? [] : imgRows) images.push({ id: r.id, type: r.blob.type, data: await blobToBase64(r.blob) });
   const file: BackupFile = { app: 'solver-nq', version: BACKUP_VERSION, exportedAt: Date.now(), questions, answers, flashcards, images, notes, kv };
   return JSON.stringify(file);
 }

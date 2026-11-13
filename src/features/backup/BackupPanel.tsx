@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button, Card, Cluster, Section, Stack } from '@/components/ui';
 import { db, exportBackup, importBackup, kvGet, kvSet, requestPersistence, storageUsage } from '@/lib/db';
 import { saveFile } from '@/lib/export';
+import { GistCard } from './GistCard';
 import { LAST_BACKUP_KEY, backupReminder, lastBackupText, usageText } from './health';
 
 export function BackupPanel() {
@@ -77,6 +78,8 @@ export function BackupPanel() {
             {message && <p role="status" className="text-sm font-semibold">{message}</p>}
           </Stack>
         </Card>
+
+        <GistCard />
       </Stack>
     </Section>
   );

@@ -43,3 +43,8 @@
 - `starred` is a boolean and IndexedDB cannot index booleans, so it is filtered in code, not indexed.
 - Extra db exports beyond the contract: deleteQuestions/restoreDeleted (Undo), listTags/renameTag, updateQuestions, saveImage/getImageUrl, requestPersistence/storageUsage.
 - Library renders 40 rows at a time with "Show more" instead of virtualising, to avoid a new dependency.
+
+## Phase 3/4 (AI-3, 13 Nov)
+- Phase 4 DONE: optional Gist sync in `/backup` (`src/features/backup/gist.ts`, `GistCard.tsx`, 5 tests). Private gist, upload + download-and-merge (never overwrites), photos not synced. Token and gist id live in localStorage only, never in the DB or backups (tested). `exportBackup({ images: false })` added (backward compatible).
+- Phase 3 task files for the other AIs: `docs/tasks/phase3-fixes/`.
+- Needs from others: none (CSP `connect-src` is already open). Real GitHub call is unverified (no token in tests); user should try Upload then Download on two devices.

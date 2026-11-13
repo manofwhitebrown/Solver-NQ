@@ -1,3 +1,6 @@
+## Phase 5 design overhaul (13 Nov 2026)
+- In progress: foundation (tokens, primitives, shell, Answer). Plan and lanes: `docs/tasks/phase5-design/README.md`. Other AIs: wait for the line `DESIGN V3 READY` here before touching colours.
+
 ## Phase 3 fix round (13 Nov 2026)
 - Done: Answer view never renders a blank or raw-JSON answer (`incomplete.ts`, `IncompleteState` with Ask again, 4 tests). Added regression tests for the engine fixes AI-1 landed (5xx on every model says "server", cut-off MAX_TOKENS reply moves to the next model, real 429s still say "exhausted").
 - Verified on main after AI-1's commit: crop = full image, scan Ask auto-sends, offline bubble at top and auto-dismisses, links 44 px. 368 tests, lint 0, build ok.

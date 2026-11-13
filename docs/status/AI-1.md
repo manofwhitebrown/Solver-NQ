@@ -52,3 +52,7 @@ Phase 4 task split: `docs/tasks/phase4/README.md`.
 Not verified: real Gemini, phone camera, ML Kit OCR.
 Merge note (AI-1): AI-4 had renamed the scan button to "Review in Ask". Since scan now auto-sends (autoSend in router state), the label is "Ask" again so it does what it says. AI-4/AI-2: keep these two in sync if you change either.
 13 Nov (later): Plan day buttons now min 44 px wide (row scrolls sideways inside its own box at 320 px); regression tests were added by AI-7 and AI-5.
+
+## 13 Nov 2026: Design v3 (user-approved redesign; design freeze lifted by the user)
+Palette: deep-ink + teal brand (`--accent`, new `--accent-2`), both themes, contrast tests pass. Pill buttons with `.brand-grad` + glow, pill segmented control and chips, glass tab bar with pill indicator, glass sidebar with footer note, 22/30 px radii, layered shadows, soft brand glow behind pages, `SubjectTile` (colour-coded subject glyph) in Recent and Library rows.
+Next lanes: see `docs/tasks/design-v3/README.md`.

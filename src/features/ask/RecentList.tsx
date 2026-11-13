@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Section } from '@/components/ui';
+import { Section, SubjectTile } from '@/components/ui';
 import { SUBJECTS } from '@/features/settings/options';
 import { listLibrary } from '@/lib/db';
 import type { LibraryEntry } from '@/types';
@@ -22,9 +22,13 @@ export function RecentList() {
       <ul className="elev-1 divide-y divide-line overflow-hidden rounded-lg">
         {items.map(({ q, a }) => (
           <li key={q.id}>
-            <Link to={`/answer/${a!.id}`} className="flex min-h-[64px] flex-col justify-center gap-1 px-5 py-4 transition hover:bg-raised">
-              <span className="line-clamp-1 text-base font-semibold">{q.text}</span>
-              <span className="text-sm text-muted">{label(q.subject)}</span>
+            <Link to={`/answer/${a!.id}`} className="flex min-h-[72px] items-center gap-4 px-5 py-4 transition hover:bg-raised">
+              <SubjectTile subject={q.subject} />
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="line-clamp-1 text-base font-semibold">{q.text}</span>
+                <span className="text-sm text-muted">{label(q.subject)}</span>
+              </span>
+              <span aria-hidden className="text-lg text-muted">›</span>
             </Link>
           </li>
         ))}

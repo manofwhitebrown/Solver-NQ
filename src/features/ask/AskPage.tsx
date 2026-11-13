@@ -86,10 +86,10 @@ export function AskPage() {
           </Card>
         ) : (
           <Stack gap={6}>
-            <Card>
+            <Card className="elev-2 focus-within:border-accent">
               <Stack gap={4}>
                 <Textarea aria-label="Your question" placeholder="e.g. Solve 2x + 5 = 17" value={text}
-                  onChange={e => setText(e.target.value)} onKeyDown={onKey} className="min-h-[160px] text-read" />
+                  onChange={e => setText(e.target.value)} onKeyDown={onKey} className="min-h-[160px] border-transparent bg-transparent px-0 text-read focus:ring-0" />
                 {image && <ImagePreview src={image} onRemove={() => setImage(undefined)} />}
                 {error && <p role="alert" className="text-base text-bad">{error}</p>}
                 <div className="flex gap-3">

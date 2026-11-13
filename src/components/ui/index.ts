@@ -19,3 +19,4 @@ export { cn } from './cn';
 export { Page } from './Page';
 export { PageHeader } from './PageHeader';
 export { Stack, Cluster, Section, Toolbar } from './layout';
+export { SubjectTile } from './SubjectTile';

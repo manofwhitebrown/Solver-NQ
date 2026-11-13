@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { IconButton, cn } from '@/components/ui';
+import { IconButton, SubjectTile, cn } from '@/components/ui';
 import { mathToPlain } from '@/features/answer/plainText';
 import { getImageUrl, type LibraryItem } from '@/lib/db';
 import { subjectLabel } from './subjects';
@@ -37,12 +37,14 @@ export function Row({ item, selecting, selected, onToggle, onStar }: Props) {
 
   const body = (
     <div className="flex min-w-0 flex-1 gap-4">
-      {thumb && <img src={thumb} alt="" className="h-16 w-16 shrink-0 rounded-md object-cover" />}
+      {thumb
+        ? <img src={thumb} alt="" className="h-16 w-16 shrink-0 rounded-md object-cover" />
+        : <SubjectTile subject={q.subject} size={48} className="mt-0.5" />}
       <div className="min-w-0 flex-1">
         <p className="line-clamp-2 break-words text-base font-semibold text-ink">{snippet(q.text, 160) || 'Scanned question'}</p>
         {a && <p className="mt-1 line-clamp-2 break-words text-sm text-ink-2">{snippet(a.finalAnswer, 140)}</p>}
         <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-muted">
-          <span className="rounded-full bg-raised px-2 py-0.5 font-semibold text-ink-2">{subjectLabel(q.subject)}</span>
+          <span className="rounded-full bg-accent-soft px-2.5 py-0.5 font-semibold text-accent">{subjectLabel(q.subject)}</span>
           {q.tags.slice(0, 3).map(t => <span key={t} className="max-w-[10rem] truncate">#{t}</span>)}
           {q.tags.length > 3 && <span>+{q.tags.length - 3}</span>}
           <span className="whitespace-nowrap">{new Date(q.createdAt).toLocaleDateString()}</span>

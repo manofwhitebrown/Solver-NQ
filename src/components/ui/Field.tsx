@@ -14,6 +14,6 @@ export function Field({ label, htmlFor, hint, children }: {
 }
 
 export const controlClass =
-  'w-full min-h-[48px] rounded-md border border-line-strong bg-raised px-4 text-base text-ink ' +
+  'w-full min-h-[48px] rounded-md border border-line bg-raised px-4 text-base text-ink ' +
   'placeholder:text-muted transition focus:border-accent focus:outline-none ' +
   'focus:ring-[3px] focus:ring-accent/35 disabled:border-line disabled:bg-disabled-bg disabled:text-disabled-ink';

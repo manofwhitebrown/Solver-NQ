@@ -22,8 +22,8 @@ export function PageHeader({ title, subtitle, actions, back }: Props) {
         </IconButton>
       )}
       <div className="min-w-0 flex-1">
-        <h1 className="text-2xl font-bold tracking-tight text-ink lg:text-3xl">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-muted">{subtitle}</p>}
+        <h1 className="text-[28px] font-extrabold tracking-tight text-ink lg:text-4xl">{title}</h1>
+        {subtitle && <p className="mt-1.5 text-base text-muted">{subtitle}</p>}
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
     </header>

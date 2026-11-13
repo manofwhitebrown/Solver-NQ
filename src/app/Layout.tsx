@@ -25,14 +25,16 @@ function Links({ side }: { side: boolean }) {
               cn(
                 'flex items-center transition',
                 side
-                  ? 'min-h-[44px] gap-3 rounded-md px-3 text-[15px] font-semibold'
-                  : 'min-h-[var(--tabbar-h)] flex-1 flex-col justify-center gap-1 text-[12px] font-semibold',
+                  ? 'min-h-[48px] gap-3 rounded-full px-4 text-[15px] font-semibold'
+                  : 'min-h-[var(--tabbar-h)] flex-1 flex-col justify-center gap-0.5 text-[12px] font-semibold',
                 isActive ? 'text-accent' : 'text-ink-2 hover:text-ink',
-                side && isActive && 'bg-accent-soft',
+                side && isActive && 'bg-accent-soft shadow-soft',
               )
             }
           >
-            <Icon size={side ? 20 : 24} />
+            {side ? <Icon size={20} /> : (
+              <span className="flex h-8 w-14 items-center justify-center rounded-full transition [[aria-current=page]_&]:bg-accent-soft"><Icon size={22} /></span>
+            )}
             {label}
           </NavLink>
         );
@@ -63,9 +65,13 @@ export function Layout() {
   if (!onboarded && !pathname.startsWith('/welcome') && !pathname.startsWith('/design')) return <Navigate to="/welcome" replace />;
   return (
     <div className="min-h-full lg:flex" style={hideTabs ? ({ '--tabbar-h': '0rem' } as React.CSSProperties) : undefined}>
-      <aside className="hidden w-[264px] shrink-0 border-r border-line bg-surface px-4 py-8 lg:flex lg:flex-col lg:gap-1">
+      <aside className="glass sticky top-0 hidden h-screen w-[272px] shrink-0 border-r border-line px-4 py-8 lg:flex lg:flex-col lg:gap-1">
         <div className="mb-6"><Logo /></div>
         <nav aria-label="Main" className="flex flex-col gap-1"><Links side /></nav>
+        <p className="mt-auto rounded-lg bg-accent-soft p-4 text-sm text-ink-2">
+          <span className="block font-bold text-ink">Free to use</span>
+          Your key and your notes stay on this device.
+        </p>
       </aside>
 
       <div className="min-w-0 flex-1">
@@ -76,7 +82,7 @@ export function Layout() {
       {!hideTabs && (
         <nav
           aria-label="Main"
-          className="fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-surface lg:hidden"
+          className="glass fixed inset-x-0 bottom-0 z-40 flex border-t border-line shadow-lift lg:hidden"
           style={{ paddingBottom: 'var(--sab)', paddingLeft: 'var(--sal)', paddingRight: 'var(--sar)' }}
         >
           <Links side={false} />

@@ -1,13 +1,13 @@
 /* Design tokens. Colors are "r g b" triplets so Tailwind can add alpha. */
 :root {
-  --bg: 240 242 246;  --surface: 255 255 255;  --raised: 247 248 251;  --overlay: 255 255 255;
-  --line: 221 225 233;  --line-strong: 122 131 150; /* line = decoration, line-strong = control borders */
-  --ink: 16 22 38;  --ink-2: 61 70 89;  --muted: 94 103 122;
-  --accent: 70 60 200;  --accent-ink: 255 255 255;  --accent-soft: 236 238 255;
+  --bg: 241 246 246;  --surface: 255 255 255;  --raised: 246 250 250;  --overlay: 255 255 255;
+  --line: 218 229 230;  --line-strong: 110 128 131; /* line = decoration, line-strong = control borders */
+  --ink: 10 28 31;  --ink-2: 50 69 73;  --muted: 86 104 108;
+  --accent: 13 112 104;  --accent-2: 21 98 128;  --accent-ink: 255 255 255;  --accent-soft: 221 242 239;
   --ok: 18 120 82;  --warn: 138 84 0;  --bad: 176 36 48;
   --ok-soft: 222 244 234;  --warn-soft: 252 238 211;  --bad-soft: 252 229 231;
-  --disabled-bg: 228 231 238;  --disabled-ink: 128 136 152;
-  --shadow: 16 22 38;
+  --disabled-bg: 226 233 234;  --disabled-ink: 126 140 144;
+  --shadow: 8 40 44;
   --tabbar-h: 3.5rem; /* phone tab bar height, excluding the safe-area inset */
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
@@ -17,22 +17,22 @@
 }
 
 :root[data-theme='dark'] {
-  --bg: 13 15 21;  --surface: 21 24 33;  --raised: 29 33 44;  --overlay: 38 43 57;
-  --line: 43 49 64;  --line-strong: 112 121 142;
-  --ink: 236 238 244;  --ink-2: 193 198 210;  --muted: 150 158 176;
-  --accent: 158 170 250;  --accent-ink: 14 16 40;  --accent-soft: 33 38 72;
+  --bg: 7 15 17;  --surface: 14 25 28;  --raised: 20 34 38;  --overlay: 27 44 49;
+  --line: 33 50 55;  --line-strong: 108 130 134;
+  --ink: 232 243 244;  --ink-2: 188 206 209;  --muted: 142 163 167;
+  --accent: 94 207 194;  --accent-2: 125 190 238;  --accent-ink: 4 30 28;  --accent-soft: 16 50 50;
   --ok: 96 204 158;  --warn: 232 182 96;  --bad: 246 132 138;
   --ok-soft: 20 52 42;  --warn-soft: 56 44 20;  --bad-soft: 66 30 36;
-  --disabled-bg: 33 37 49;  --disabled-ink: 108 117 138;
+  --disabled-bg: 28 42 46;  --disabled-ink: 104 124 128;
   --shadow: 0 0 0;
   color-scheme: dark;
 }
 
 /* Elevation: light = border + soft shadow; dark = lighter surface + hairline border. */
 .elev-1 { background: rgb(var(--surface)); border: 1px solid rgb(var(--line));
-  box-shadow: 0 1px 2px rgb(var(--shadow) / .05), 0 2px 8px rgb(var(--shadow) / .06); }
+  box-shadow: 0 1px 1px rgb(var(--shadow) / .04), 0 4px 14px rgb(var(--shadow) / .07); }
 .elev-2 { background: rgb(var(--surface)); border: 1px solid rgb(var(--line));
-  box-shadow: 0 2px 4px rgb(var(--shadow) / .06), 0 8px 24px rgb(var(--shadow) / .08); }
+  box-shadow: 0 2px 4px rgb(var(--shadow) / .06), 0 12px 32px rgb(var(--shadow) / .12); }
 .elev-3 { background: rgb(var(--overlay)); border: 1px solid rgb(var(--line));
   box-shadow: 0 4px 8px rgb(var(--shadow) / .08), 0 16px 40px rgb(var(--shadow) / .12); }
 .elev-4 { background: rgb(var(--overlay)); border: 1px solid rgb(var(--line));
@@ -56,7 +56,16 @@ body {
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   transition: background-color 200ms, color 200ms;
+  /* soft brand glow behind the top of every screen */
+  background-image:
+    radial-gradient(900px 380px at 85% -80px, rgb(var(--accent) / .13), transparent 70%),
+    radial-gradient(700px 320px at 0% -60px, rgb(var(--accent-2) / .09), transparent 70%);
+  background-repeat: no-repeat; background-attachment: fixed;
 }
+
+/* Brand gradient: primary buttons, logo tile, hero accents. Text on it always uses --accent-ink. */
+.brand-grad { background-image: linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent-2))); }
+.glass { background: rgb(var(--surface) / .82); -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4); }
 
 :focus-visible {
   outline: 2px solid rgb(var(--accent));

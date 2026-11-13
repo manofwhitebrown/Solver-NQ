@@ -1,4 +1,4 @@
-export type AiErrorCode = 'no_key' | 'bad_key' | 'rate_limit' | 'timeout' | 'offline' | 'cors' | 'cancelled' | 'bad_request' | 'server' | 'exhausted' | 'blocked' | 'no_model' | 'unknown';
+export type AiErrorCode = 'no_key' | 'bad_key' | 'rate_limit' | 'timeout' | 'offline' | 'cors' | 'cancelled' | 'bad_request' | 'server' | 'exhausted' | 'blocked' | 'no_model' | 'cut_off' | 'empty' | 'image_refused' | 'unknown';
 
 const MESSAGES: Record<AiErrorCode, string> = {
   no_key: 'Add your AI key in Settings first.',
@@ -13,6 +13,9 @@ const MESSAGES: Record<AiErrorCode, string> = {
   exhausted: "All free limits are used up. I'll answer automatically when quota resets.",
   blocked: 'The AI declined to answer this one (safety filter). Try rewording the question.',
   no_model: 'None of your chosen models is available. Open AI settings and tap Fetch available models.',
+  cut_off: 'The reply was cut off. Try again, or ask a shorter question.',
+  empty: 'The AI sent nothing back. Try again.',
+  image_refused: 'The AI would not read this picture. Type the question instead.',
   unknown: 'Something went wrong while asking the AI.',
 };
 

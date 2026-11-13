@@ -1,6 +1,7 @@
 import { AiError } from '../errors';
 import type { CompletionRequest } from '../types';
 import { cooldownUntil, nextPacificMidnight } from './classify';
+import { verifiedFirst } from './rank';
 import { SlotFailure, callSlot } from './slotCall';
 import { activeCooldown, cooldownId, earliestRetry, importLegacy, loadState, update } from './store';
 import type { KeyEntry, ModelSlot } from './types';
@@ -10,6 +11,8 @@ export interface FallbackOptions { light?: boolean; requireImage?: boolean; now?
 
 const rotation = new Map<string, number>();
 const UNAVAILABLE_MS = 6 * 3_600_000;
+/** Most HTTP calls one question may spend across all models and keys (a 500-everywhere run used to make 12). */
+export const MAX_CALLS_PER_QUESTION = 4;
 const defaultSleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
 
 const liteFirst = (slots: ModelSlot[]) =>
@@ -35,18 +38,22 @@ export async function callWithFallback(req: CompletionRequest, opts: FallbackOpt
   importLegacy();
   const state = loadState();
   if (!state.keys.length) throw new AiError('no_key');
-  const enabled = state.chain.filter(c => c.enabled);
+  const enabled = verifiedFirst(state.chain.filter(c => c.enabled)); // guessed names never go before verified ones
   const slots = opts.light || state.saveQuota ? liteFirst(enabled) : enabled;
   const first = enabled[0]?.model;
 
   let sawBadKey = false, sawUnavailable = false, sawQuota = false, sawServer = false, tried = false;
-  for (const slot of slots) {
+  let calls = 0;
+  let incomplete: 'cut_off' | 'empty' | undefined; // a reply arrived but was cut off or empty
+  pass: for (const slot of slots) {
     for (const k of keysFor(slot, loadState().keys)) {
       if (loadState().invalidKeys.includes(k.id)) { sawBadKey = true; continue; }
       const cd = activeCooldown(loadState(), k, slot.model, now());
       if (cd) { if (cd.kind === 'brief') sawServer = true; continue; } // still resting after a server problem
       let attempt = 0, req2 = req;
       for (;;) {
+        if (calls >= MAX_CALLS_PER_QUESTION) break pass; // single pass, hard cap: report what we saw
+        calls++;
         tried = true;
         try {
           const text = await callSlot(k, slot.model, req2);
@@ -60,13 +67,16 @@ export async function callWithFallback(req: CompletionRequest, opts: FallbackOpt
             if (req2.imageDataUrl) { req2 = { ...req2, imageDataUrl: undefined }; continue; } // model may not accept images
             throw new AiError('bad_request');
           }
-          if ((f.kind === 'transient' || f.kind === 'incomplete') && attempt === 0) {
+          // One quick retry of a network/server blip, and only for the first call of the question.
+          if (f.kind === 'transient' && attempt === 0 && calls === 1) {
             attempt++;
             await sleep(400 + Math.random() * 600);
             continue;
           }
+          // A single cut-off or empty reply says nothing about the model: do not park it, just try the next one.
+          if (f.kind === 'incomplete') { incomplete = f.reason ?? 'cut_off'; break; }
           if (f.kind === 'quota') { sawQuota = true; setCooldown(k, slot.model, cooldownUntil(f, now()), 'cooldown'); }
-          else if (f.kind === 'transient' || f.kind === 'incomplete') { sawServer = true; setCooldown(k, slot.model, now() + 30_000, 'brief'); }
+          else if (f.kind === 'transient') { sawServer = true; setCooldown(k, slot.model, now() + 30_000, 'brief'); }
           else if (f.kind === 'unavailable') { setCooldown(k, slot.model, now() + UNAVAILABLE_MS, 'unavailable'); sawUnavailable = true; }
           else if (f.kind === 'badkey') { update(s => { if (!s.invalidKeys.includes(k.id)) s.invalidKeys.push(k.id); }); sawBadKey = true; }
           break; // next key / next slot
@@ -77,6 +87,7 @@ export async function callWithFallback(req: CompletionRequest, opts: FallbackOpt
   if (sawBadKey && !earliestRetry(now())) throw new AiError('bad_key');
   const retryAt = earliestRetry(now());
   // Only say "limits used up" when something was actually over quota; otherwise it was a server/network problem.
+  if (incomplete && !sawQuota && !sawUnavailable) throw new AiError(incomplete);
   if (sawServer && !sawQuota && !sawUnavailable) throw new AiError('server');
   if (retryAt) throw new AiError('exhausted', retryAt);
   if (sawUnavailable || !tried) throw new AiError('no_model');

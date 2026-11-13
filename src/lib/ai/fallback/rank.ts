@@ -2,6 +2,10 @@
 // we rank whatever Google currently lists. Strongest first, preview/experimental last.
 const SKIP = /image|tts|embed|live|audio|robotics|computer-use|imagen|veo|lyria|aqa|learnlm|gemma|vision-only|thinking-exp/i;
 
+/**
+ * GUESSED names (from third-party pages, not from Google). Every slot built from them is marked
+ * `verified: false`, ranks after any verified model, and is dropped as soon as ListModels does not show it.
+ */
 export const SUGGESTED_MODELS = [
   'gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-2.5-flash-lite',
 ];
@@ -28,4 +32,12 @@ export function defaultPick(models: string[]): string[] {
   const flash = ranked.filter(m => tier(m) === 2).slice(0, 2);
   const lite = ranked.filter(m => tier(m) === 1).slice(0, 2);
   return [...flash, ...lite];
+}
+
+/** Models Google has retired: never added from old settings. (gemini-2.0-flash was shut down in June 2026.) */
+export const isRetiredModel = (m: string) => /^gemini-(1\.|2\.0)/.test(m);
+
+/** Unverified (guessed) slots never go before a verified one. Stable: the user's order is kept inside each group. */
+export function verifiedFirst<T extends { verified?: boolean }>(slots: T[]): T[] {
+  return [...slots].sort((a, b) => Number(a.verified === false) - Number(b.verified === false));
 }

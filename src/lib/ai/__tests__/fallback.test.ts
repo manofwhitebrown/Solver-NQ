@@ -5,7 +5,8 @@ vi.mock('@/lib/settings', () => ({ getSettings: () => ({ provider: 'gemini', mod
 import { AiError } from '../errors';
 import { callWithFallback } from '../fallback/callWithFallback';
 import { cooldownUntil, nextPacificMidnight } from '../fallback/classify';
-import { loadState, resetCache } from '../fallback/store';
+import { verifyChain } from '../fallback/models';
+import { getPrimaryModel, loadState, resetCache } from '../fallback/store';
 import { resetThrottle } from '../fallback/throttle';
 import type { FallbackState } from '../fallback/types';
 
@@ -198,10 +199,10 @@ describe('cooldown math', () => {
     expect(r.text).toBe('whole');
   });
 
-  it('an empty reply everywhere is a server-side problem, never reported as exhausted quota', async () => {
+  it('an empty reply everywhere says "sent nothing back", never exhausted quota', async () => {
     seed([['k1', 'A']], ['m-a']);
     fetchMock.mockResolvedValue(ok(''));
-    await expect(callWithFallback(req, opts)).rejects.toMatchObject({ code: 'server' });
+    await expect(callWithFallback(req, opts)).rejects.toMatchObject({ code: 'empty' });
   });
 
   it('server failures on every model are reported as a server problem, not exhausted quota', async () => {
@@ -223,15 +224,59 @@ describe('honest failure reporting', () => {
   it('a reply cut off by the token limit is not accepted; the next model answers', async () => {
     seed([['k1', 'A']], ['m-a', 'm-b']);
     const cut = { ok: true, status: 200, text: async () => '', json: async () => ({ candidates: [{ finishReason: 'MAX_TOKENS', content: { parts: [{ text: '{"finalAnswer":"x' }] } }] }) };
-    fetchMock.mockResolvedValueOnce(cut).mockResolvedValueOnce(cut).mockResolvedValueOnce(ok('from b'));
+    fetchMock.mockResolvedValueOnce(cut).mockResolvedValueOnce(ok('from b'));
     const r = await callWithFallback(req, opts);
     expect(r).toMatchObject({ text: 'from b', model: 'm-b' });
   });
 
-  it('an empty reply everywhere is reported as a service problem, never as quota', async () => {
+  it('an empty reply everywhere is reported as empty, never as quota', async () => {
     seed([['k1', 'A']], ['m-a']);
     fetchMock.mockResolvedValue(ok(''));
+    await expect(callWithFallback(req, opts)).rejects.toMatchObject({ code: 'empty' });
+  });
+
+  it('R3: a cut-off reply everywhere gets its own plain message', async () => {
+    seed([['k1', 'A']], ['m-a', 'm-b']);
+    const cut = { ok: true, status: 200, text: async () => '', json: async () => ({ candidates: [{ finishReason: 'MAX_TOKENS', content: { parts: [{ text: '{"final' }] } }] }) };
+    fetchMock.mockResolvedValue(cut);
+    await expect(callWithFallback(req, opts)).rejects.toMatchObject({
+      code: 'cut_off', message: 'The reply was cut off. Try again, or ask a shorter question.',
+    });
+  });
+
+  it('R3: one cut-off or empty reply does not park the model as cooling down', async () => {
+    seed([['k1', 'A']], ['m-a']);
+    const cut = { ok: true, status: 200, text: async () => '', json: async () => ({ candidates: [{ finishReason: 'MAX_TOKENS', content: { parts: [{ text: 'x' }] } }] }) };
+    fetchMock.mockResolvedValueOnce(cut);
+    await expect(callWithFallback(req, opts)).rejects.toMatchObject({ code: 'cut_off' });
+    expect(loadState().cooldowns).toEqual({});
+    fetchMock.mockResolvedValueOnce(ok(''));
+    await expect(callWithFallback(req, opts)).rejects.toMatchObject({ code: 'empty' });
+    expect(loadState().cooldowns).toEqual({});
+    // the very next question goes straight to the same model and works
+    fetchMock.mockResolvedValueOnce(ok('fine'));
+    expect(await callWithFallback(req, opts)).toMatchObject({ text: 'fine', model: 'm-a', usedFallback: false });
+  });
+
+  it('R4: 500 on every model makes at most 4 calls per question', async () => {
+    seed([['k1', 'A']], ['m1', 'm2', 'm3', 'm4', 'm5', 'm6']);
+    fetchMock.mockResolvedValue(fail(500));
     await expect(callWithFallback(req, opts)).rejects.toMatchObject({ code: 'server' });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+
+  it('R4: a network failure everywhere also stops at 4 calls', async () => {
+    seed([['k1', 'A']], ['m1', 'm2', 'm3', 'm4', 'm5', 'm6']);
+    fetchMock.mockRejectedValue(new TypeError('Failed to fetch'));
+    await expect(callWithFallback(req, opts)).rejects.toMatchObject({ code: 'server' });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+
+  it('R4: a first-call blip is retried once on the same model, then the answer comes back', async () => {
+    seed([['k1', 'A']], ['m-a', 'm-b']);
+    fetchMock.mockResolvedValueOnce(fail(503)).mockResolvedValueOnce(ok('again'));
+    expect(await callWithFallback(req, opts)).toMatchObject({ text: 'again', model: 'm-a' });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it('real quota failures still say exhausted', async () => {
@@ -248,5 +293,56 @@ describe('honest failure reporting', () => {
     const e = await callWithFallback(req, opts).catch(x => x);
     expect(e.code).toBe('server');
     expect(fetchMock.mock.calls.length).toBe(calls); // rested: no new request
+  });
+});
+
+describe('R5 guessed names', () => {
+  const seedSlots = (slots: Array<{ model: string; verified?: boolean }>) => {
+    seed([['k1', 'A']], []);
+    const st = JSON.parse(mem.get('solvernq.ai.v2') as string);
+    st.chain = slots.map((c, i) => ({ id: `s${i}`, provider: 'gemini', keyId: '', enabled: true, ...c }));
+    mem.set('solvernq.ai.v2', JSON.stringify(st));
+    resetCache();
+  };
+  it('a guessed name placed first is still tried after the verified model', async () => {
+    seedSlots([{ model: 'guess-1', verified: false }, { model: 'real-1', verified: true }]);
+    fetchMock.mockResolvedValueOnce(ok('from real'));
+    expect(await callWithFallback(req, opts)).toMatchObject({ text: 'from real', model: 'real-1', usedFallback: false });
+    expect(calledModels()).toEqual(['real-1']);
+    expect(getPrimaryModel()).toBe('real-1');
+  });
+  it('a guess is only used when the verified models fail', async () => {
+    seedSlots([{ model: 'guess-1', verified: false }, { model: 'real-1', verified: true }]);
+    fetchMock.mockResolvedValueOnce(fail(429, 'RESOURCE_EXHAUSTED')).mockResolvedValueOnce(ok('from guess'));
+    expect(await callWithFallback(req, opts)).toMatchObject({ model: 'guess-1', usedFallback: true });
+    expect(calledModels()).toEqual(['real-1', 'guess-1']);
+  });
+  it('verifyChain keeps listed names (verified), drops unlisted guesses, never touches user-managed slots', async () => {
+    seedSlots([{ model: 'guess-gone', verified: false }, { model: 'guess-real', verified: false }, { model: 'mine' }]);
+    fetchMock.mockResolvedValueOnce({ ok: true, status: 200, text: async () => '', json: async () => ({ models: [{ name: 'models/guess-real', supportedGenerationMethods: ['generateContent'] }] }) });
+    expect(await verifyChain()).toBe('verified');
+    expect(loadState().chain.map(c => [c.model, c.verified])).toEqual([['guess-real', true], ['mine', undefined]]);
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/models?');
+  });
+  it('verifyChain falls back to the ranked list when every guess is gone', async () => {
+    seedSlots([{ model: 'guess-gone', verified: false }]);
+    fetchMock.mockResolvedValueOnce({ ok: true, status: 200, text: async () => '', json: async () => ({ models: [{ name: 'models/gemini-9-flash', supportedGenerationMethods: ['generateContent'] }] }) });
+    await verifyChain();
+    expect(loadState().chain.map(c => [c.model, c.verified])).toEqual([['gemini-9-flash', true]]);
+  });
+  it('verifyChain never wipes the chain when ListModels comes back empty', async () => {
+    seedSlots([{ model: 'guess', verified: false }]);
+    fetchMock.mockResolvedValueOnce({ ok: true, status: 200, text: async () => '', json: async () => ({ candidates: [] }) });
+    expect(await verifyChain()).toBe('skipped');
+    expect(loadState().chain.map(c => c.model)).toEqual(['guess']);
+  });
+  it('verifyChain does nothing (and makes no call) when nothing is unverified or the call fails', async () => {
+    seedSlots([{ model: 'mine' }]);
+    expect(await verifyChain()).toBe('skipped');
+    expect(fetchMock).not.toHaveBeenCalled();
+    seedSlots([{ model: 'guess', verified: false }]);
+    fetchMock.mockRejectedValueOnce(new TypeError('offline'));
+    expect(await verifyChain()).toBe('skipped');
+    expect(loadState().chain).toHaveLength(1);
   });
 });

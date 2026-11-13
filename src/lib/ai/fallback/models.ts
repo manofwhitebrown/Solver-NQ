@@ -25,14 +25,36 @@ export async function fetchGeminiModels(key: string, signal?: AbortSignal): Prom
 }
 
 /** Add chosen models to the end of the chain (skipping ones already there). */
-export function addModels(models: string[], provider: KeyEntry['provider'] = 'gemini'): void {
+export function addModels(models: string[], provider: KeyEntry['provider'] = 'gemini', verified = true): void {
   update(s => {
     for (const model of models) {
-      if (!s.chain.some(c => c.provider === provider && c.model === model)) {
-        s.chain.push({ id: newId(), provider, model, keyId: '', enabled: true });
-      }
+      const have = s.chain.find(c => c.provider === provider && c.model === model);
+      if (have) { if (verified && have.verified === false) have.verified = true; continue; }
+      s.chain.push({ id: newId(), provider, model, keyId: '', enabled: true, verified });
     }
   });
+}
+
+/**
+ * Check the Gemini slots against what Google really lists for this key. Listed names become verified;
+ * guessed or migrated names that are not listed are removed; if nothing is left, the ranked defaults are added.
+ * Quietly does nothing on any failure (offline, bad key): the chain just keeps its ordering rule.
+ */
+export async function verifyChain(signal?: AbortSignal): Promise<'verified' | 'skipped'> {
+  const st = loadState();
+  const key = st.keys.find(k => k.provider === 'gemini' && !st.invalidKeys.includes(k.id));
+  if (!key || !st.chain.some(c => c.provider === 'gemini' && c.verified === false)) return 'skipped';
+  try {
+    const names = await fetchGeminiModels(key.key, signal);
+    if (!names.length) return 'skipped'; // an empty or odd reply proves nothing: never wipe the chain on it
+    const listed = new Set(names);
+    update(s => {
+      s.chain = s.chain.filter(c => c.provider !== 'gemini' || c.verified !== false || listed.has(c.model));
+      for (const c of s.chain) if (c.provider === 'gemini' && listed.has(c.model)) c.verified = true;
+    });
+    if (!loadState().chain.some(c => c.provider === 'gemini')) addModels(defaultPick([...listed]));
+    return 'verified';
+  } catch { return 'skipped'; }
 }
 
 /**

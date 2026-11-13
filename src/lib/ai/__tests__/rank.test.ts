@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 vi.mock('@/lib/settings', () => ({ getSettings: () => ({ provider: 'gemini', model: 'gemini-2.0-flash', apiKey: 'AIzaOLD1234', baseUrl: '', proxyUrl: '' }) }));
 import { classify } from '../fallback/classify';
-import { defaultPick, rankModels } from '../fallback/rank';
+import { defaultPick, isRetiredModel, rankModels, verifiedFirst } from '../fallback/rank';
 import { migrate } from '../fallback/store';
 
 describe('rankModels', () => {
@@ -44,9 +44,26 @@ describe('migrate', () => {
     expect(s.chain.map(c => c.model)).not.toContain('gemini-2.0-flash');
     expect(s.chain.length).toBeGreaterThan(3);
   });
+  it('R5: the user\'s own model is kept but unverified; every guessed name is unverified too', () => {
+    const s = migrate({ provider: 'gemini', model: 'gemini-2.5-flash', apiKey: 'AIzaOLD1234' });
+    expect(s.chain[0]).toMatchObject({ model: 'gemini-2.5-flash', verified: false });
+    expect(s.chain.every(c => c.verified === false)).toBe(true);
+  });
   it('gives a new user an empty key pool and a suggested chain', () => {
     const s = migrate({ provider: 'anthropic', model: 'x', apiKey: '' });
     expect(s.keys).toHaveLength(0);
     expect(s.chain.every(c => c.provider === 'gemini')).toBe(true);
+  });
+});
+
+describe('R5 verified before guessed', () => {
+  it('verifiedFirst puts unverified last and keeps each group in order', () => {
+    const r = verifiedFirst([{ m: 'g1', verified: false }, { m: 'v1' }, { m: 'g2', verified: false }, { m: 'v2', verified: true }]);
+    expect(r.map(x => x.m)).toEqual(['v1', 'v2', 'g1', 'g2']);
+  });
+  it('knows which names Google retired', () => {
+    expect(isRetiredModel('gemini-2.0-flash')).toBe(true);
+    expect(isRetiredModel('gemini-1.5-pro')).toBe(true);
+    expect(isRetiredModel('gemini-2.5-flash')).toBe(false);
   });
 });

@@ -42,7 +42,8 @@ async function geminiCall(k: KeyEntry, model: string, req: CompletionRequest): P
     }
     const reason = json.candidates?.[0]?.finishReason;
     // Empty, or stopped early (MAX_TOKENS, RECITATION, OTHER...): never save it as an answer.
-    if (!text.trim() || (reason && reason !== 'STOP')) throw new SlotFailure({ kind: 'incomplete' });
+    if (!text.trim()) throw new SlotFailure({ kind: 'incomplete', reason: 'empty' });
+    if (reason && reason !== 'STOP') throw new SlotFailure({ kind: 'incomplete', reason: 'cut_off' });
     return text;
   } catch (e) {
     if (e instanceof SlotFailure) throw e;

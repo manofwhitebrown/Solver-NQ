@@ -22,8 +22,18 @@ export async function transformText(kind: TransformKind, text: string, opts: Tra
   ].filter(Boolean).join(' ');
   const { text: out } = await runModel(`${PROMPTS[kind]} ${extra}`, [{ role: 'user', content: body }], { signal, light: kind !== 'qa-from-text' });
   const md = out.trim();
-  if (!md) throw new AiError('unknown');
+  if (!md) throw new AiError('empty');
   return md;
+}
+
+const REFUSAL_START = /^\s*(?:["'“‘(*_\s]*)(?:i['’]m sorry|i am sorry|sorry,|i apologi[sz]e|i can['’]?t|i cannot|i can not|i['’]m unable|i am unable|i['’]m not able|as an ai\b|as a language model)/i;
+// Digits or maths symbols mean it is a real question that happens to start with these words.
+const LOOKS_LIKE_MATHS = /[0-9=+^\\$∑∫√×÷≤≥<>%]/;
+
+/** True when a vision reply is the model declining ("I'm sorry, I can't help with that"), not a transcription. */
+export function isRefusal(text: string): boolean {
+  const t = text.trim();
+  return REFUSAL_START.test(t) && !LOOKS_LIKE_MATHS.test(t);
 }
 
 /** Reads the text in a photo (handwriting, formulas). Only vision-capable models are used. Formulas come back as LaTeX in $...$. */
@@ -31,6 +41,8 @@ export async function transcribeImage(imageDataUrl: string, signal?: AbortSignal
   if (!imageDataUrl.startsWith('data:image/')) throw new AiError('bad_request');
   const system = 'Transcribe all text in the image exactly as written, including handwriting. Write formulas in LaTeX between $ signs. Output only the transcription, nothing else.';
   const { text } = await runModel(system, [{ role: 'user', content: 'Transcribe this image.' }], { imageDataUrl, signal, requireImage: true });
-  if (!text.trim()) throw new AiError('unknown');
-  return text.trim();
+  const out = text.trim();
+  if (!out) throw new AiError('empty');
+  if (isRefusal(out)) throw new AiError('image_refused');
+  return out;
 }

@@ -27,3 +27,11 @@ Tokens: `src/components/ui/tokens.css`. Contrast is enforced by `tokens.contrast
   <Section><Stack><Card>...</Card></Stack></Section>
 </>
 ```
+
+## TwoPane (tablet layout primitive, AI-1)
+`import { TwoPane } from '@/components/ui'`, used inside `<Page wide>`.
+`<TwoPane primary={...} secondary={...} primaryLabel="Answer" secondaryLabel="Follow-up" />`
+- Under 768 px it is a plain vertical stack in DOM order (primary, then secondary): phones are unchanged.
+- From 768 px: main column plus a side pane (`secondaryWidth` `md` = 22 rem default, `sm` = 18 rem; never wider than 40% of the row, so large text cannot squeeze the main pane to nothing). The side pane is sticky and scrolls inside itself (`stickySecondary={false}` turns that off).
+- Both panes are labelled regions (not a second `<main>`) and have `min-w-0`; wide children (equations, tables) must scroll inside their own box.
+- From 1024 px the sidebar appears and the content column narrows; check your screen at 768, 820, 1024 and 1280.

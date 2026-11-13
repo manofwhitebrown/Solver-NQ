@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   BottomSheet, Button, Card, Checkbox, Chip, Cluster, Dialog, EmptyState, Field, Input, Select, Skeleton,
-  Spinner, Stack, Tabs, Textarea, Toolbar, toast,
+  Spinner, Stack, Tabs, Textarea, Toolbar, TwoPane, toast,
 } from '@/components/ui';
 
 export function Components() {
@@ -35,6 +35,14 @@ export function Components() {
       </Card>
       <Card interactive><p className="font-semibold">Interactive card</p><p className="text-sm text-muted">Hover or tap: border and shadow lift.</p></Card>
       <Card><EmptyState title="Nothing here yet" text="Friendly empty states get a small illustration." /></Card>
+      <Card>
+        <p className="mb-3 font-semibold">TwoPane (stacks under 768 px, side by side from 768 px)</p>
+        <TwoPane
+          primaryLabel="Demo main pane" secondaryLabel="Demo side pane" secondaryWidth="sm" stickySecondary={false}
+          primary={<Stack gap={3}><Skeleton className="h-4 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-2/3" /></Stack>}
+          secondary={<div className="rounded-md bg-accent-soft p-4 text-sm text-ink-2">Side pane: follow-up chat, details or a preview.</div>}
+        />
+      </Card>
       <Dialog open={dlg} title="Dialog" onClose={() => setDlg(false)} actions={<Button onClick={() => setDlg(false)}>Close</Button>}>Calm, centered, elevated.</Dialog>
       <BottomSheet open={sheet} title="Bottom sheet" onClose={() => setSheet(false)}><p className="pb-4 text-ink-2">Slides up on phones.</p></BottomSheet>
     </Stack>

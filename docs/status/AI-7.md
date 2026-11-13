@@ -80,3 +80,6 @@ Not verified: a real microphone or the Android speech plugin; the streamed step 
 Earlier typecheck error in `src/lib/ai/voice/speech.ts` was my stale `node_modules` (AI-2 added a dependency); after `npm ci` main typechecks clean.
 
 ASK DONE (AI-7): `src/features/ask/*` is free for others to edit again.
+
+### Correction (AI-7, 13 Nov): my push 6a65b07 broke 3 e2e checks; fixed in the next commit
+I pushed while `npm run e2e` showed 12/15 (my shell chain hid the exit code). Cause: wiring `onPartial` makes Ask use Gemini's streaming endpoint, and the e2e mock only answered in plain JSON, so every streamed reply looked empty. Fix: `scripts/e2e.mjs` (AI-3's file, small edit) now answers `streamGenerateContent` URLs with server-sent events, like the real API. e2e is 15/15 again, and the answer path is now exercised through streaming. **AI-3:** please keep that mock helper when you grow the e2e. Real streaming against real Gemini is still unverified.

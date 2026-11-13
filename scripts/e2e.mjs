@@ -27,9 +27,14 @@ await page.setRequestInterception(true);
 page.on('request', (req) => {
   if (!req.url().includes('generativelanguage.googleapis.com')) return req.continue();
   calls++;
-  if (mode === 'cut') return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ candidates: [{ finishReason: 'MAX_TOKENS', content: { parts: [{ text: '{"finalAnswer":"x' }] } }] }) });
-  if (mode === 'badkey') return req.respond({ status: 400, contentType: 'application/json', body: JSON.stringify({ error: { message: 'API key not valid', status: 'INVALID_ARGUMENT' } }) });
-  req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(answer) }] } }] }) });
+  // Streaming calls (`:streamGenerateContent?alt=sse`) get server-sent events, like the real API; others get plain JSON.
+  const sse = req.url().includes('streamGenerateContent');
+  const send = (status, obj) => sse && status === 200
+    ? req.respond({ status, contentType: 'text/event-stream', body: `data: ${JSON.stringify(obj)}\n\n` })
+    : req.respond({ status, contentType: 'application/json', body: JSON.stringify(obj) });
+  if (mode === 'cut') return send(200, { candidates: [{ finishReason: 'MAX_TOKENS', content: { parts: [{ text: '{"finalAnswer":"x' }] } }] });
+  if (mode === 'badkey') return send(400, { error: { message: 'API key not valid', status: 'INVALID_ARGUMENT' } });
+  send(200, { candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(answer) }] } }] });
 });
 await page.evaluateOnNewDocument(() => {
   if (localStorage.getItem('e2e-seeded')) return;

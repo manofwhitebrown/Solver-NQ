@@ -25,9 +25,11 @@ jobs:
       - run: npm run lint --if-present
       - run: npm test --if-present
       - run: npm run build
-      - run: node scripts/ci-size.mjs
         env:
-          VITE_BASE: /Solver-NQ/
+          VITE_BASE: /Solver-NQ/   # must be on the BUILD step: without it the page asks for /assets/... at the domain root and is blank
+      - name: Check the build uses the /Solver-NQ/ base
+        run: grep -q 'src="/Solver-NQ/assets/' dist/index.html || { echo "::error::dist/index.html does not use the /Solver-NQ/ base (blank page on GitHub Pages)"; exit 1; }
+      - run: node scripts/ci-size.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

@@ -37,7 +37,7 @@ export function CodeBlock({ code, lang }: { code: string; lang?: string }) {
         <span>{lang ?? 'code'}</span>
         <button type="button" onClick={copy} className="min-h-[44px] px-2 font-medium text-accent">{copied ? 'Copied' : 'Copy'}</button>
       </div>
-      <pre className="hljs-code overflow-x-auto p-3 text-[13.5px] leading-relaxed">
+      <pre className="hljs-code overflow-x-auto p-3 text-[13.5px] leading-relaxed" tabIndex={0} role="region" aria-label={`${lang ?? 'Code'} code`}>
         {html ? <code dangerouslySetInnerHTML={{ __html: html }} /> : <code>{code}</code>}
       </pre>
     </div>

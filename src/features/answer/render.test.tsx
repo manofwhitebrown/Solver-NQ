@@ -70,3 +70,11 @@ describe('VerifyBadge is honest', () => {
     expect(un).not.toContain('role="alert"');
   });
 });
+
+describe('keyboard access to scrolling content', () => {
+  it('makes display equations and code focusable', () => {
+    const math = renderToString(h(Markdown, null, '$$\\frac{a}{b}$$'));
+    expect(math).toMatch(/class="katex-display"[^>]*tabindex="0"|tabindex="0"[^>]*class="katex-display"/);
+    expect(renderToString(h(Markdown, null, '```python\nprint(1)\n```'))).toContain('tabindex="0"');
+  });
+});

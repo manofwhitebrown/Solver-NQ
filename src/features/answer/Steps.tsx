@@ -65,8 +65,8 @@ function StepCard({ step, n, animate }: { step: Step; n?: number; animate?: bool
   return (
     <Card className={animate ? 'step-in' : undefined}>
       <div className="mb-3 flex items-center gap-3">
-        {n && <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-bold text-accent" aria-hidden>{n}</span>}
-        <h3 className="text-lg font-semibold">{n ? <span className="sr-only">Step {n}: </span> : null}{step.title}</h3>
+        {n && <span className="brand-grad flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-accent-ink shadow-soft" aria-hidden>{n}</span>}
+        <h3 className="min-w-0 text-lg font-semibold leading-snug">{n ? <span className="sr-only">Step {n}: </span> : null}{step.title}</h3>
       </div>
       <Markdown>{step.body}</Markdown>
     </Card>

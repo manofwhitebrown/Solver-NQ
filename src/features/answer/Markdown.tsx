@@ -6,6 +6,7 @@ import 'katex/dist/katex.min.css'; // bundled by Vite, fonts included: works off
 import { CodeBlock } from './CodeBlock';
 import './answer.css';
 import { normalizeDisplayMath } from './mathBlocks';
+import { rehypeFocusableMath } from './rehypeFocusableMath';
 
 /** Markdown with $inline$ and $$block$$ LaTeX. Unknown LaTeX renders as red text instead of crashing. */
 const SIZES = {
@@ -16,10 +17,10 @@ const SIZES = {
 
 export const Markdown = memo(function Markdown({ children, size = 'read' }: { children: string; size?: keyof typeof SIZES }) {
   return (
-    <div className={`prose-answer break-words ${SIZES[size]}`}>
+    <div className={`prose-answer break-words ${size === 'final' ? 'prose-final ' : ''}${SIZES[size]}`}>
       <ReactMarkdown
         remarkPlugins={[remarkMath]}
-        rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: 'ignore' }]]}
+        rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: 'ignore' }], rehypeFocusableMath]}
         components={{
           pre: ({ children: c }: { children?: ReactNode }) => <>{c}</>,
           code: ({ className, children: c }: { className?: string; children?: ReactNode }) => {

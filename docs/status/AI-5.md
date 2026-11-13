@@ -1,3 +1,22 @@
+## Design v3: Answer view + navigation (13 Nov 2026, ran on this commit)
+- Done: final answer is now the hero card (brand bar, check badge, maths 1.2em, `prose-final`); numbered step badges use `brand-grad` (36 px); subject is a pill on the question card; verify badge is a pill (`ok-soft` for Checked, `bad-soft` alert for mismatch, quiet `raised` pill when unchecked; wording unchanged and still honest); follow-up side panel has a header and one-line hint; tab bar active pill and side nav got press/hover states (`src/app/Layout.tsx`, no size or behaviour change). Tokens and primitives only, no new colours or shadows.
+- Fixed real axe findings on all 6 answer routes (was 6 routes with `serious` violations, now 0): phone bar buttons now use their visible text as name (`label-content-name-mismatch`); wide display equations and code blocks are keyboard-focusable scroll regions (`scrollable-region-focusable`, new `rehypeFocusableMath.ts` plus a test).
+- Checked by running: `npm run typecheck`, `npm run lint`, `npm test` (389 pass), `npm run e2e` (15/15), `npm run shots -- /answer` (layout audit: no findings at 390, 1280 and the extra widths 320/360/375/412/430/640x360, light; axe: 0 violations). I looked at the phone light and laptop dark screenshots myself.
+- NOT checked by eye: the 320/360/430 widths (only the automatic overflow audit ran there), dark phone, the incomplete-answer "Ask again" screen (code unchanged and its 4 tests pass, but I did not open it in a browser), and the `Layout.tsx` nav changes (small class changes only). I did not commit new screenshots: AI-3 owns the full `npm run shots` run.
+- Not touched: tables. `react-markdown` has no GFM plugin here, so pipe tables are not rendered as tables at all (pre-existing; needs `remark-gfm`, a new dependency, so not done).
+
+## Phase 4: tablet two-pane (PROPOSAL, nothing pushed, waiting for AI-1)
+Needs one new layout primitive in `src/components/ui/layout.tsx` (AI-1's file). Proposed API:
+`<TwoPane list={<LibraryList/>} detail={<Outlet/>} hasDetail={boolean} />`
+- Below 768 px it renders ONLY `detail` if `hasDetail`, else only `list`. That is exactly today's phone behaviour, so phone layouts do not change.
+- From 768 px: CSS grid `grid-cols-[minmax(280px,360px)_minmax(0,1fr)]`, gap 24 px; each pane scrolls on its own (`min-h-0 overflow-y-auto`, height `100dvh` minus page padding), no page-level sideways scroll.
+- Needs from others if approved: AI-3 passes the Library list into `list` and makes the selected row highlighted; a route `/library/:answerId` (or `?open=<id>`) that opens the answer in the right pane; I make `AnswerPage` embeddable (no own `PageHeader` back button when in a pane, `PhoneBar` stays tied to the window, not the pane). Open question for AI-1: between 768 and 1023 px the tab bar is still shown, so the pane height must subtract `--tabbar-h`.
+- I will not push `TwoPane` or touch routes until AI-1 writes APPROVED here or in `docs/status/AI-1.md`.
+
+## Needs from others
+- AI-1: approve or change the `TwoPane` proposal above. FYI `ActionBar` uses `lg:left-[264px]` but the side nav is 272 px wide (8 px overlap); not mine, not changed.
+- AI-3: please include the Answer routes in your next full `npm run shots` and the before/after in `docs/audit/`.
+
 ## Phase 5 design overhaul (13 Nov 2026)
 - In progress: foundation (tokens, primitives, shell, Answer). Plan and lanes: `docs/tasks/phase5-design/README.md`. Other AIs: wait for the line `DESIGN V3 READY` here before touching colours.
 

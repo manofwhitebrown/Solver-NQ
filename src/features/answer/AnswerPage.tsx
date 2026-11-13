@@ -154,8 +154,14 @@ function AnswerBody({ q, a, updateQuestion, addFollowUp }: {
         </Stack>
       </Stack>
       <Card className="sticky top-6 hidden h-[calc(100dvh-3rem)] lg:block" aria-label="Follow-up chat">
-        <h2 className="mb-4 text-lg font-semibold">Follow-up</h2>
-        <div className="h-[calc(100%-2.75rem)]"><FollowUpChat answerId={a.id} onStep={addFollowUp} /></div>
+        <div className="mb-4 flex items-center gap-3">
+          <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent"><Icon name="chat" /></span>
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold leading-tight">Follow-up</h2>
+            <p className="text-sm text-muted">Replies are saved as extra steps.</p>
+          </div>
+        </div>
+        <div className="h-[calc(100%-4.25rem)]"><FollowUpChat answerId={a.id} onStep={addFollowUp} /></div>
       </Card>
       <PhoneBar q={q} onStar={actions.onStar} onCards={actions.onCards} onExport={actions.onExport} onMore={() => setMoreOpen(true)} />
       <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} a={a} graphFn={graphFn}

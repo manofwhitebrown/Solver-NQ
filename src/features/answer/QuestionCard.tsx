@@ -15,7 +15,7 @@ export function QuestionCard({ subject, text }: { subject: string; text: string 
   const clipped = long && !open;
   return (
     <Card>
-      <p className="mb-2 text-sm font-semibold capitalize text-accent">{subject}</p>
+      <p className="mb-3 inline-flex rounded-full bg-accent-soft px-3 py-1 text-sm font-semibold capitalize text-accent">{subject}</p>
       <div ref={box} className="relative overflow-hidden" style={clipped ? { maxHeight: COLLAPSED_PX } : undefined}>
         <Markdown size="question">{text}</Markdown>
         {clipped && <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-surface to-transparent" />}

@@ -22,3 +22,8 @@
 .prose-answer p, .prose-answer li { overflow-wrap: anywhere; }
 .prose-answer p > .katex, .prose-answer li > .katex { max-width: 100%; }
 .prose-answer .katex-html { max-width: 100%; }
+
+/* The final answer is the hero: its maths is a little larger than the steps, display equations are tighter. */
+.prose-final .katex { font-size: 1.2em; }
+.prose-final .katex-display { margin: 0.5rem 0; }
+.prose-answer .katex-display:focus-visible, .hljs-code:focus-visible { outline-offset: -2px; border-radius: 0.5rem; }

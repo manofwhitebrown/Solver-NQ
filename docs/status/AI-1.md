@@ -82,3 +82,15 @@ No request to approve yet. AI-5's status says they are waiting for a `TwoPane` p
 ### TwoPane built (AI-1, 13 Nov, for AI-5 and any other tablet layout)
 `TwoPane` now exists: `import { TwoPane } from '@/components/ui'` (`src/components/ui/TwoPane.tsx`, docs in `docs/DESIGN.md`, demo in the `/#/design` gallery, 4 unit tests). AI-5: you can use it now; **primitive approved** (I wrote it, and the user lifted the design freeze for Design v3). Use `<Page wide>`, give both panes a label, put the follow-up panel in `secondary`. Checked in Chromium at 320/360/390/767/768/820/1023/1024/1280 px, 100% and 200% font: stacked under 768, side by side from 768, no sideways scroll, one `<main>`. Found and fixed while testing: the side pane could squeeze the main pane at 200% on 1024 px, so it is capped at 40% of the row.
 Conditions for AI-5's Answer layout (I will review it when you post it): phone layout unchanged under 768 px, wide equations scroll inside their own box, 44 px targets, test at 768/820/1024 and 200%. Not verified: the real Answer screen inside `TwoPane` (I only tested the gallery demo).
+
+## 13 Nov 2026: whole-app walkthrough and fixes (AI-1, user said fix everything and just inform)
+Method: real headless Chromium, mocked Gemini, phone 390 px and laptop 1280 px, light and dark, looked at every screen. Not tested: camera, ML Kit OCR, real Gemini answers.
+**Fixed by AI-1 in other owners' files (please pull; no action needed unless you disagree):**
+- AI-2 `src/features/ask/SubjectChips.tsx`, `AskPage.tsx`: selected "Math" chip was cut off by the edge fade (scroll-snap pushed it under it): added scroll padding. Ask textarea no longer shows a resize handle on phones (`Textarea` skips `resize-y` when the caller passes `resize-none`).
+- AI-3 `src/features/library/SubjectRail.tsx`: same scroll padding; first chip now starts at the 20 px gutter.
+- AI-4/AI-7 `src/features/graph/GraphCanvas.tsx` (AI-5 folder): x-axis numbers sit 7 px lower so the hollow zero dots no longer cover -2 and 2.
+- AI-5 `src/features/answer/AnswerPage.tsx`: laptop follow-up panel was 100% of the window height but starts under the header, so its input and Send button were below the visible window until you scrolled. Now `100dvh - 8.5rem`; the input is visible on first view at 1280x800.
+- AI-6 `src/features/plan/PlanPage.tsx`: "Settings" button next to Add exam renamed "Plan settings" (it looked like the app Settings tab).
+- AI-8 `src/sw/UpdatePrompt.tsx`: "Ready to work offline" is now a normal toast at the bottom; it used to be a dark bar over the top of the first-run welcome screen. The "A new version is available" bar with Update is unchanged.
+**Looked at and left alone on purpose:** Learn mode shows the final answer only after the learner taps Reveal answer (intended, not a bug). Notes is reachable from the Learn hub and Scan from the Ask "Scan" button, so there is no missing route; the bottom bar stays at 4 tabs.
+**Liked:** Learn-mode try-first steps, Checked badge and "Answered by" line, calm teal Design v3 in light and dark, helpful empty states, scan step guide, graph.

@@ -153,7 +153,7 @@ function AnswerBody({ q, a, updateQuestion, addFollowUp }: {
           {q.tags.length > 0 && <p className="text-base text-ink-2">Tags: {q.tags.join(', ')}</p>}
         </Stack>
       </Stack>
-      <Card className="sticky top-6 hidden h-[calc(100dvh-3rem)] lg:block" aria-label="Follow-up chat">
+      <Card className="sticky top-6 hidden h-[calc(100dvh-8.5rem)] lg:block" aria-label="Follow-up chat">
         <div className="mb-4 flex items-center gap-3">
           <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent"><Icon name="chat" /></span>
           <div className="min-w-0">

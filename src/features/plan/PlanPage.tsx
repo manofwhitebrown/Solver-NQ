@@ -31,7 +31,7 @@ export default function PlanPage() {
       <PageHeader title={tr('plan.title')} subtitle="A calm plan, one day at a time." />
       <Cluster gap={3} className="-mt-4 mb-8">
         <Button size="md" onClick={() => setAdding(true)}>{tr('plan.addExam')}</Button>
-        <Button variant="secondary" size="md" onClick={() => setSettings(true)}>Settings</Button>
+        <Button variant="secondary" size="md" onClick={() => setSettings(true)}>Plan settings</Button>
       </Cluster>
       {!upcoming.length ? (
         <EmptyState title="Plan your exams"

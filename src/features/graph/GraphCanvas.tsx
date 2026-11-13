@@ -74,7 +74,7 @@ export function GraphCanvas({ fns, view, onView, marks }: Props) {
         <line x1={0} x2={w} y1={sy(0)} y2={sy(0)} stroke="rgb(var(--muted))" strokeWidth={1.5} />
         <line y1={0} y2={h} x1={sx(0)} x2={sx(0)} stroke="rgb(var(--muted))" strokeWidth={1.5} />
         {ticks(b.xmin, b.xmax).filter((t) => t !== 0).map((t) => (
-          <text key={`tx${t}`} x={sx(t)} y={axisX + 14} textAnchor="middle" fontSize={12} fill="rgb(var(--ink-2))">{formatTick(t)}</text>))}
+          <text key={`tx${t}`} x={sx(t)} y={axisX + 21} textAnchor="middle" fontSize={12} fill="rgb(var(--ink-2))">{formatTick(t)}</text>))}
         {ticks(b.ymin, b.ymax).filter((t) => t !== 0).map((t) => (
           <text key={`ty${t}`} x={axisY + 4} y={sy(t) - 3} fontSize={12} fill="rgb(var(--ink-2))">{formatTick(t)}</text>))}
         {paths.map((d, i) => d && <path key={i} d={d} fill="none" stroke={COLORS[i % COLORS.length]} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" strokeDasharray={DASHES[i % DASHES.length] || undefined} />)}

@@ -14,7 +14,7 @@ Every push to `main` builds a debug APK in the `Android APK` workflow (Actions, 
 3. Wait about a minute until the run has a green tick. Open the run and scroll to **Artifacts** at the bottom.
 4. Click **solver-nq-keystore** to download a zip. Unzip it. You get two files: `SECRETS.txt` and `release.jks`.
 
-> **Do this promptly.** Anyone who can see this repo can download that artifact until it is deleted (it also deletes itself after 1 day). Finish steps 5 to 7 in one sitting.
+> **Do this promptly.** This repository is public, so anyone signed in to GitHub could download that artifact while it exists (it also deletes itself after 1 day). Do not start until you have 10 free minutes, and finish steps 5 to 7 in one sitting. Nothing secret appears in the run's log; only the download holds the key.
 
 ## Put the four values into GitHub
 

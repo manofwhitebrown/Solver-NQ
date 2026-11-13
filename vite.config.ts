@@ -36,19 +36,19 @@ export default defineConfig({
     process.env.ANALYZE ? visualizer({ filename: 'stats.json', template: 'raw-data' }) : null,
     VitePWA({
       registerType: 'autoUpdate', // new versions install and apply on their own (no stale cached app after a deploy)
-      includeAssets: ['icons/*.png'],
+      includeAssets: ['icons/*.png', 'favicon.svg', 'favicon.ico', 'apple-touch-icon.png'],
       manifest: {
         name: 'Solver-NQ',
         short_name: 'Solver-NQ',
         description: 'Scan or type a question, get a step-by-step answer.',
-        theme_color: '#1f2a44',
-        background_color: '#f7f6f3',
+        theme_color: '#0d7068',
+        background_color: '#f1f6f6',
         display: 'standalone',
         start_url: base,
         scope: base,
         icons: [
-          { src: `${base}icons/pwa-192.png`, sizes: '192x192', type: 'image/png' },
-          { src: `${base}icons/pwa-512.png`, sizes: '512x512', type: 'image/png' },
+          { src: `${base}icons/pwa-192.png`, sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: `${base}icons/pwa-512.png`, sizes: '512x512', type: 'image/png', purpose: 'any' },
           { src: `${base}icons/maskable-512.png`, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },

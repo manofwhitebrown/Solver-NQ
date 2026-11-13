@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .a{stop-color:#0D7068}.b{stop-color:#156280}.c{stroke:#fff}
+    @media (prefers-color-scheme:dark){.a{stop-color:#5ECFC2}.b{stop-color:#7DBEEE}.c{stroke:#041E1C}}
+  </style>
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop class="a" offset="0"/><stop class="b" offset="1"/></linearGradient></defs>
+  <rect width="32" height="32" rx="8" fill="url(#g)"/>
+  <path class="c" d="M8.5 16.5l5.2 5.2L23.5 10.5" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

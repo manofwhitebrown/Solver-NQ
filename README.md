@@ -75,4 +75,4 @@ android/         Capacitor Android project
 docs/            architecture, security, offline, per-AI status
 ```
 
-More: [USER-GUIDE](docs/USER-GUIDE.md), [RELEASE](docs/RELEASE.md), [DEVICE-TEST](docs/DEVICE-TEST.md), [ARCHITECTURE](docs/ARCHITECTURE.md), [SECURITY](docs/SECURITY.md), [CONTRIBUTING-AI](docs/CONTRIBUTING-AI.md).
+More: [USER-GUIDE](docs/USER-GUIDE.md), [RELEASE](docs/RELEASE.md), [DEVICE-TEST](docs/DEVICE-TEST.md), [ICONS](docs/ICONS.md), [ARCHITECTURE](docs/ARCHITECTURE.md), [SECURITY](docs/SECURITY.md), [CONTRIBUTING-AI](docs/CONTRIBUTING-AI.md).

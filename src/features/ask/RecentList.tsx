@@ -10,14 +10,22 @@ const label = (v: string) => SUBJECTS.find(s => s.value === v)?.label ?? v;
 
 export function RecentList() {
   const [items, setItems] = useState<LibraryEntry[]>([]);
+  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     let alive = true;
     listLibrary({})
-      .then(all => { if (alive) setItems(all.filter(e => e.a).sort((x, y) => y.q.createdAt - x.q.createdAt).slice(0, 5)); })
+      .then(all => { if (alive) { setItems(all.filter(e => e.a).sort((x, y) => y.q.createdAt - x.q.createdAt).slice(0, 5)); setLoaded(true); } })
       .catch(() => { /* library not ready: just show nothing */ });
     return () => { alive = false; };
   }, []);
-  if (!items.length) return null;
+  if (!loaded) return null;
+  if (!items.length) {
+    return (
+      <Section title="Recent questions">
+        <p className="rounded-lg border border-dashed border-line-strong px-5 py-6 text-center text-base text-muted">Questions you ask will show up here.</p>
+      </Section>
+    );
+  }
   return (
     <Section title="Recent questions">
       <ul className="elev-1 divide-y divide-line overflow-hidden rounded-lg">

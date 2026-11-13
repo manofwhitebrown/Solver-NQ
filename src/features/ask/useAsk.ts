@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AiError, askQuestion } from '@/lib/ai';
+import type { AiErrorCode } from '@/lib/ai/errors';
 import type { Mode, Subject } from '@/types';
 
 export type AskStatus = 'idle' | 'busy' | 'queued';
 
-/** Submit/cancel logic for the Ask screen. */
+/** Submit/cancel logic for the Ask screen. `errorCode` lets the screen pick the right action button. */
 export function useAsk() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<AskStatus>('idle');
   const [retryAt, setRetryAt] = useState<number | undefined>();
   const [error, setError] = useState('');
+  const [errorCode, setErrorCode] = useState<AiErrorCode | undefined>();
   const ctrl = useRef<AbortController | null>(null);
 
   useEffect(() => () => ctrl.current?.abort(), []);
@@ -20,6 +22,7 @@ export function useAsk() {
     const c = new AbortController();
     ctrl.current = c;
     setError('');
+    setErrorCode(undefined);
     setStatus('busy');
     try {
       const r = await askQuestion(input, c.signal);
@@ -30,12 +33,14 @@ export function useAsk() {
       setStatus('idle');
       if (!(e instanceof AiError && e.code === 'cancelled')) {
         setError(e instanceof AiError ? e.message : 'Something went wrong. Please try again.');
+        setErrorCode(e instanceof AiError ? e.code : 'unknown');
       }
       return false;
     }
   }, [navigate]);
 
   const cancel = useCallback(() => ctrl.current?.abort(), []);
-  const reset = useCallback(() => { setStatus('idle'); setError(''); }, []);
-  return { status, error, submit, cancel, reset, retryAt };
+  const reset = useCallback(() => { setStatus('idle'); setError(''); setErrorCode(undefined); }, []);
+  const clearError = useCallback(() => { setError(''); setErrorCode(undefined); }, []);
+  return { status, error, errorCode, submit, cancel, reset, clearError, retryAt };
 }

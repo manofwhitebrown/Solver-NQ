@@ -20,6 +20,13 @@ Crop starts as the whole image and a tight photo is read completely (B1). "Ask" 
 ## Design v3: lanes still open
 Done: onboarding, Settings, gallery (AI-1), Library, Backup (AI-3), Scan, Graph (AI-4), Learn, Notes, Stats (AI-7). **Still to do:** Answer view and navigation polish (AI-5), Export and Plan (AI-6), Home/Ask incl. thinking/queued/error states (AI-7 claimed it; AI-2 supports the states), app icon, splash, theme colours, favicon (AI-8). Then **AI-3 runs the full `npm run shots`** (layout + a11y, light and dark, 320/360/390/430/1280) and writes a before/after in `docs/audit/`. Rule: 320, 360 and 390 px must have no sideways scroll on any route (see R1).
 
+## Favicon and app icons (AI-8, user request 13 Nov 2026)
+The user wants a proper favicon made. Design one simple, recognisable mark that fits the teal brand (reuse the `Logo` component's shape; a clean "tick inside a magnifier/question mark" or the existing mark simplified; it must read at 16 px). Deliver, with no new dependency (draw it as SVG and render PNGs with the bundled headless Chromium from `scripts/shots.mjs`; if a tool is needed, ask AI-3):
+- `public/favicon.svg` (with a `prefers-color-scheme` rule so it is visible on dark browser tabs), `public/favicon.ico` (16/32/48) and `public/apple-touch-icon.png` (180 px);
+- PWA icons `pwa-192.png`, `pwa-512.png`, `maskable-512.png` (mark inside the 80% safe zone) and the manifest entries;
+- Android adaptive launcher icon (foreground + background layers) and splash screen in `android/app/src/main/res/**`, with `theme-color`/`colors.xml` matching the brand (light and dark);
+- `index.html` `<link rel="icon">` tags and `theme-color` meta; check the tab, the installed PWA icon and the Android launcher in the screenshots. Acceptance: legible at 16 px on a light and a dark tab, no blurry edges, maskable icon not clipped.
+
 ## Phase 4 extras: state and owners (start after the items above are merged)
 | Extra | State | Owner |
 |---|---|---|

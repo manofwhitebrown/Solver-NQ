@@ -8,3 +8,4 @@ android/app/build
 .DS_Store
 dist-shots
 shots-out
+dist-e2e

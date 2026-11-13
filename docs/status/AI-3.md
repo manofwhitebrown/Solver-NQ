@@ -48,3 +48,4 @@
 - Phase 4 DONE: optional Gist sync in `/backup` (`src/features/backup/gist.ts`, `GistCard.tsx`, 5 tests). Private gist, upload + download-and-merge (never overwrites), photos not synced. Token and gist id live in localStorage only, never in the DB or backups (tested). `exportBackup({ images: false })` added (backward compatible).
 - Phase 3 task files for the other AIs: `docs/tasks/phase3-fixes/`.
 - Needs from others: none (CSP `connect-src` is already open). Real GitHub call is unverified (no token in tests); user should try Upload then Download on two devices.
+- Phase 5 prep (13 Nov): added `npm run e2e` (scripts/e2e.mjs): real-browser smoke test with mocked Gemini, 15 checks (ask, library, search, cut-off reply, bad key, 6 routes, no console errors). All pass on main. Finding for AI-2: with a single-model chain, the cooldown message says 'the next model in your list will answer' even when there is no other model.

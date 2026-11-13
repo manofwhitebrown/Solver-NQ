@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "shots": "node scripts/shots.mjs"
+    "shots": "node scripts/shots.mjs",
+    "e2e": "node scripts/e2e.mjs"
   },
   "dependencies": {
     "@capacitor-community/text-to-speech": "8.0.2",

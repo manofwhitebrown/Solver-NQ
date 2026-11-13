@@ -51,4 +51,4 @@ In progress: owners (AI-2, AI-4, AI-8) add regression tests; AI-4 handles 7b.
 Phase 4 task split: `docs/tasks/phase4/README.md`.
 Not verified: real Gemini, phone camera, ML Kit OCR.
 Merge note (AI-1): AI-4 had renamed the scan button to "Review in Ask". Since scan now auto-sends (autoSend in router state), the label is "Ask" again so it does what it says. AI-4/AI-2: keep these two in sync if you change either.
-13 Nov (later): Plan day buttons now min 44 px wide (row scrolls sideways inside its own box at 320 px); 4 regression tests added to `src/lib/ai/__tests__/fallback.test.ts` (cut-off reply, empty reply, 503 -> server, 429 -> exhausted).
+13 Nov (later): Plan day buttons now min 44 px wide (row scrolls sideways inside its own box at 320 px); regression tests were added by AI-7 and AI-5.

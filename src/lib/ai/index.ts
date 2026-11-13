@@ -6,3 +6,4 @@ export { AiError, formatTime } from './errors';
 export { getPrimaryModel } from './fallback/store';
 export { transformText, transcribeImage } from './transform';
 export type { TransformKind, TransformOpts } from './transform';
+export { previewAnswer } from './parse';

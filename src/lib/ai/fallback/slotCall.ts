@@ -8,6 +8,54 @@ import type { Failure, KeyEntry } from './types';
 const TIMEOUT_MS = 60_000;
 const GEMINI = 'https://generativelanguage.googleapis.com/v1beta';
 
+interface GeminiChunk {
+  candidates?: Array<{ finishReason?: string; content?: { parts?: Array<{ text?: string }> } }>;
+  promptFeedback?: { blockReason?: string };
+}
+
+/** Same checks for a whole reply and for a finished stream: blocked, empty and cut-off replies are never answers. */
+function checkReply(text: string, reason: string | undefined, blocked: boolean): string {
+  if (!text && (blocked || reason === 'SAFETY')) throw new SlotFailure({ kind: 'safety' });
+  if (!text.trim()) throw new SlotFailure({ kind: 'incomplete', reason: 'empty' });
+  if (reason && reason !== 'STOP') throw new SlotFailure({ kind: 'incomplete', reason: 'cut_off' });
+  return text;
+}
+
+/** Read a server-sent-events body (`data: {json}` lines). Reports the growing text; returns the checked final text. */
+export async function readGeminiStream(res: Response, onPartial: (t: string) => void): Promise<string> {
+  let text = '', reason: string | undefined, blocked = false, buf = '';
+  const eat = (line: string) => {
+    if (!line.startsWith('data:')) return;
+    let c: GeminiChunk;
+    try { c = JSON.parse(line.slice(5).trim()) as GeminiChunk; } catch { return; } // keep-alive or half line: skip
+    if (c.promptFeedback?.blockReason) blocked = true;
+    const cand = c.candidates?.[0];
+    if (cand?.finishReason) reason = cand.finishReason;
+    const add = (cand?.content?.parts ?? []).map(p => p.text ?? '').join('');
+    if (add) { text += add; onPartial(text); }
+  };
+  const drain = (final: boolean) => {
+    const lines = buf.split(/\r?\n/);
+    buf = final ? '' : (lines.pop() ?? '');
+    for (const l of lines) eat(l);
+  };
+  onPartial('');
+  if (res.body) {
+    const reader = res.body.getReader(), dec = new TextDecoder();
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      drain(false);
+    }
+    buf += dec.decode();
+  } else {
+    buf = await res.text();
+  }
+  drain(true);
+  return checkReply(text, reason, blocked);
+}
+
 /** A failed attempt. Carries only a classification: never the key, URL or request. */
 export class SlotFailure extends Error {
   constructor(public failure: Failure) { super(failure.kind); this.name = 'SlotFailure'; }
@@ -26,25 +74,17 @@ async function geminiCall(k: KeyEntry, model: string, req: CompletionRequest): P
       if (i === 0 && img && m.role === 'user') parts.push({ inlineData: { mimeType: img.mime, data: img.data } });
       return { role: m.role === 'assistant' ? 'model' : 'user', parts };
     });
-    const res = await fetch(`${GEMINI}/models/${encodeURIComponent(model)}:generateContent`, {
+    const stream = !!req.onPartial;
+    const res = await fetch(`${GEMINI}/models/${encodeURIComponent(model)}:${stream ? 'streamGenerateContent?alt=sse' : 'generateContent'}`, {
       method: 'POST', signal: ctrl.signal,
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': k.key },
       body: JSON.stringify({ systemInstruction: { parts: [{ text: req.system }] }, contents }),
     });
     if (!res.ok) throw new SlotFailure(classify(res.status, await res.text().catch(() => '')));
-    const json = (await res.json()) as {
-      candidates?: Array<{ finishReason?: string; content?: { parts?: Array<{ text?: string }> } }>;
-      promptFeedback?: { blockReason?: string };
-    };
+    if (stream && req.onPartial) return await readGeminiStream(res, req.onPartial);
+    const json = (await res.json()) as GeminiChunk;
     const text = (json.candidates?.[0]?.content?.parts ?? []).map(p => p.text ?? '').join('');
-    if (!text && (json.promptFeedback?.blockReason || json.candidates?.[0]?.finishReason === 'SAFETY')) {
-      throw new SlotFailure({ kind: 'safety' });
-    }
-    const reason = json.candidates?.[0]?.finishReason;
-    // Empty, or stopped early (MAX_TOKENS, RECITATION, OTHER...): never save it as an answer.
-    if (!text.trim()) throw new SlotFailure({ kind: 'incomplete', reason: 'empty' });
-    if (reason && reason !== 'STOP') throw new SlotFailure({ kind: 'incomplete', reason: 'cut_off' });
-    return text;
+    return checkReply(text, json.candidates?.[0]?.finishReason, !!json.promptFeedback?.blockReason);
   } catch (e) {
     if (e instanceof SlotFailure) throw e;
     if (timedOut) throw new SlotFailure({ kind: 'transient' });

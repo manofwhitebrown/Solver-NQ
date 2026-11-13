@@ -18,7 +18,7 @@ const isOnline = () => typeof navigator === 'undefined' || navigator.onLine;
 
 /** Call the AI, parse, save question + answer, fill the cache. Throws AiError on failure. */
 export async function answerNow(
-  input: AskInput, signal?: AbortSignal, opts: { offline?: boolean; skipCache?: boolean } = {},
+  input: AskInput, signal?: AbortSignal, opts: { offline?: boolean; skipCache?: boolean; onPartial?: (textSoFar: string) => void } = {},
 ): Promise<{ answerId: string }> {
   const { text, subject, mode, imageDataUrl } = input;
   const hash = questionHash(text, subject, mode);
@@ -38,7 +38,7 @@ export async function answerNow(
   // Offline: the cache was our only chance. Don't wait on a network that isn't there.
   if (opts.offline) { assertCanCall(); throw new AiError('offline'); }
 
-  const { text: raw, model } = await runModel(buildSystemPrompt(subject, mode), [{ role: 'user', content: text }], { imageDataUrl, signal });
+  const { text: raw, model } = await runModel(buildSystemPrompt(subject, mode), [{ role: 'user', content: text }], { imageDataUrl, signal, onPartial: opts.onPartial });
   const parsed = parseAnswer(raw);
   // Unparseable text that still looks like cut-off JSON, or nothing at all: don't save it as an answer.
   const looksCut = !parsed.finalAnswer && /^\s*(```(json)?\s*)?[{[]/.test(raw);
@@ -64,7 +64,7 @@ async function queue(input: AskInput, retryAt?: number): Promise<{ queued: true;
   return { queued: true, retryAt };
 }
 
-export async function askQuestion(input: AskInput, signal?: AbortSignal, opts: { skipCache?: boolean } = {}): Promise<{ answerId: string } | { queued: true; retryAt?: number }> {
+export async function askQuestion(input: AskInput, signal?: AbortSignal, opts: { skipCache?: boolean; onPartial?: (textSoFar: string) => void } = {}): Promise<{ answerId: string } | { queued: true; retryAt?: number }> {
   const text = input.text.trim();
   if (!text && !input.imageDataUrl) throw new AiError('bad_request');
   const clean = { ...input, text: text || IMAGE_ONLY_TEXT };

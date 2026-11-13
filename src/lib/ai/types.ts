@@ -16,6 +16,8 @@ export interface CompletionRequest {
   messages: ChatMessage[];
   imageDataUrl?: string; // attached to the first user message
   signal?: AbortSignal;
+  /** Gemini only: ask for a streamed reply. Called with the whole text so far (and with '' when an attempt starts over). */
+  onPartial?: (textSoFar: string) => void;
 }
 
 export interface Provider {

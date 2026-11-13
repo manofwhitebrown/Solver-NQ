@@ -25,7 +25,7 @@ function verifyOnce(): Promise<unknown> {
 }
 export const resetVerify = () => { verified = null; }; // tests
 
-export interface RunOpts { imageDataUrl?: string; signal?: AbortSignal; light?: boolean; requireImage?: boolean }
+export interface RunOpts { imageDataUrl?: string; signal?: AbortSignal; light?: boolean; requireImage?: boolean; onPartial?: (textSoFar: string) => void }
 
 /** One call to the AI. Goes through the free-tier fallback chain (or the proxy if one is set). */
 export async function runModel(
@@ -37,7 +37,7 @@ export async function runModel(
   return dedupe(key, async () => {
     await acquire(loadState().perMinute);
     await verifyOnce();
-    return callWithFallback({ system, messages, imageDataUrl: opts.imageDataUrl, signal: opts.signal }, { light: opts.light, requireImage: opts.requireImage });
+    return callWithFallback({ system, messages, imageDataUrl: opts.imageDataUrl, signal: opts.signal, onPartial: opts.onPartial }, { light: opts.light, requireImage: opts.requireImage });
   });
 }
 

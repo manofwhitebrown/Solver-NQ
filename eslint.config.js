@@ -4,7 +4,7 @@ import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default tseslint.config(
-  { ignores: ['dist', 'dev-dist', 'android', 'node_modules', 'docs/audit/tools', 'scripts', 'public', 'dist-shots', 'shots-out'] },
+  { ignores: ['dist', 'dev-dist', 'android', 'node_modules', 'docs/audit/tools', 'scripts', 'public', 'dist-shots', 'dist-e2e', 'shots-out'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

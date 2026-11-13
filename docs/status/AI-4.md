@@ -69,3 +69,4 @@
 
 ## Design v3, Scan lane (13 Nov 2026)
 - Dropped my own foundation attempt (AI-1's teal Design v3 was already on main). Scan capture: camera-style `Viewfinder` panel with animated scan line, one-line tip, stacked actions, red inline file error; connected `StepIndicator` (tick for done steps, brand gradient for current). One keyframe (`scan-line`) appended to `src/app/index.css`. Typecheck, lint, 385 tests, 0 layout and 0 axe findings on /scan. Graph and crop/result chrome still to do.
+- Graph: controls grouped in a Card, plot on an elevated rounded panel with thicker curves, "Zeros and intersections" checkbox now a 44 px hit area (it was the last tap-target finding on /graph). 385 tests, 0 layout findings.

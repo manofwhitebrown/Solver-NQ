@@ -65,7 +65,7 @@ export function GraphCanvas({ fns, view, onView, marks }: Props) {
   };
 
   return (
-    <div ref={ref} className="relative h-full min-h-[320px] w-full select-none overflow-hidden rounded-lg border border-line-strong bg-surface"
+    <div ref={ref} className="relative h-full min-h-[320px] w-full select-none overflow-hidden rounded-xl bg-surface"
       style={{ touchAction: 'none' }} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp}
       onPointerCancel={onUp} onWheel={onWheel}>
       <svg width={w} height={h} role="img" aria-label="Function graph">
@@ -77,7 +77,7 @@ export function GraphCanvas({ fns, view, onView, marks }: Props) {
           <text key={`tx${t}`} x={sx(t)} y={axisX + 14} textAnchor="middle" fontSize={12} fill="rgb(var(--ink-2))">{formatTick(t)}</text>))}
         {ticks(b.ymin, b.ymax).filter((t) => t !== 0).map((t) => (
           <text key={`ty${t}`} x={axisY + 4} y={sy(t) - 3} fontSize={12} fill="rgb(var(--ink-2))">{formatTick(t)}</text>))}
-        {paths.map((d, i) => d && <path key={i} d={d} fill="none" stroke={COLORS[i % COLORS.length]} strokeWidth={2.5} strokeLinejoin="round" strokeDasharray={DASHES[i % DASHES.length] || undefined} />)}
+        {paths.map((d, i) => d && <path key={i} d={d} fill="none" stroke={COLORS[i % COLORS.length]} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" strokeDasharray={DASHES[i % DASHES.length] || undefined} />)}
         {marks.map((m, i) => (
           <circle key={i} cx={sx(m.x)} cy={sy(m.y)} r={5} fill={m.kind === 'zero' ? 'rgb(var(--surface))' : 'rgb(var(--ink))'}
             stroke="rgb(var(--ink))" strokeWidth={2}><title>{`(${formatTick(+m.x.toPrecision(6))}, ${formatTick(+m.y.toPrecision(6))})`}</title></circle>))}

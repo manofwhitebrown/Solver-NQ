@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Button, Cluster, IconButton, Input, PageHeader, Stack } from '@/components/ui';
+import { Button, Card, Cluster, IconButton, Input, PageHeader, Stack } from '@/components/ui';
 import { GraphCanvas } from './GraphCanvas';
 import { COLORS, DASHES, DEFAULT_VIEW, compileFn, findMarks, viewBounds, type Fn, type View } from './plot';
 
@@ -31,6 +31,8 @@ export function GraphPage() {
     <>
       <PageHeader title="Graph" subtitle="Type a function of x. Drag to pan, pinch or scroll to zoom." />
       <Stack gap={6}>
+        <Card>
+        <Stack gap={4}>
         <Stack gap={3}>
           {texts.map((t, i) => {
             const c = compiled[i];
@@ -52,11 +54,15 @@ export function GraphPage() {
           {texts.length < MAX_FNS && <Button variant="secondary" onClick={() => setTexts((t) => [...t, ''])}>Add function</Button>}
           <Button variant="ghost" onClick={() => setView(DEFAULT_VIEW)}>Reset view</Button>
         </Cluster>
-        <label className="flex min-h-[44px] w-full cursor-pointer items-center gap-3 rounded-md border border-line bg-surface px-4 text-base">
-          <input type="checkbox" checked={showMarks} onChange={(e) => setShowMarks(e.target.checked)} className="h-5 w-5 accent-[rgb(var(--accent))]" />
+        <label className="relative flex min-h-[44px] w-full cursor-pointer items-center gap-3 rounded-md bg-raised px-4 text-base">
+          <input type="checkbox" checked={showMarks} onChange={(e) => setShowMarks(e.target.checked)}
+            className="peer absolute inset-0 h-full w-full cursor-pointer opacity-0" />
+          <span aria-hidden className="flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 border-line-strong bg-surface text-caption font-bold leading-none text-transparent peer-checked:border-accent peer-checked:bg-accent peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-accent">✓</span>
           Zeros and intersections
         </label>
-        <div className="h-[55dvh] min-h-[320px] lg:h-[520px]"><GraphCanvas fns={fns} view={view} onView={setView} marks={marks} /></div>
+        </Stack>
+        </Card>
+        <div className="elev-2 h-[55dvh] min-h-[320px] overflow-hidden rounded-xl lg:h-[520px]"><GraphCanvas fns={fns} view={view} onView={setView} marks={marks} /></div>
         <p className="text-sm text-ink-2">Hollow dots are zeros, solid dots are intersections.</p>
       </Stack>
     </>

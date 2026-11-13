@@ -54,3 +54,4 @@
 - Library redesigned on the teal foundation: sticky glass search + Filters button, one-tap subject rail (44 px chips), stats tiles (Saved / Starred / This week), rows grouped under Today / Yesterday / This week / month headings, rounder cards, lucide star, skeleton rows while loading, branded empty state. New: grouping.ts (+3 tests), LibraryStats, SubjectRail, RowSkeleton.
 - Verified: typecheck, lint, 388 tests, e2e 15/15, `npm run shots -- /library` 0 layout findings, 0 axe violations (phone, laptop, light, dark, 320-430 px). Library screenshots refreshed.
 - Backup screen visuals belong to AI-1's lane in phase5-design; I did not touch them.
+- Design v3 (cont.): selection bar and Backup polished (lucide icons, gradient storage bar, icon-badged cards, Export icon-only under 440 px so nothing overflows at 320). 0 layout findings, 0 axe violations on /library and /backup; 388 tests, e2e 15/15.

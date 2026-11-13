@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CloudUpload } from 'lucide-react';
 import { Button, Card, Cluster, Stack } from '@/components/ui';
 import { disconnectGist, gistId, gistToken, pullFromGist, pushToGist, setGistId, setGistToken } from './gist';
 
@@ -19,7 +20,7 @@ export function GistCard() {
   return (
     <Card aria-labelledby="gist-title">
       <Stack gap={3}>
-        <h2 id="gist-title" className="text-lg font-bold">Sync between devices (optional)</h2>
+        <h2 id="gist-title" className="flex items-center gap-3 text-lg font-bold"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent"><CloudUpload size={20} aria-hidden /></span>Sync between devices (optional)</h2>
         <p className="text-sm text-ink-2">
           Uses a private GitHub gist you own. Create a token at github.com/settings/tokens with only the &quot;gist&quot; permission. The token stays on this device and is never put in backups. Photos are not synced.
         </p>

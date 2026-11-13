@@ -104,7 +104,7 @@ export default function LibraryPage() {
           onTag={() => setSheet('add')} onStar={() => void lib.star(true)} onDelete={() => void lib.remove()} />
       )}
       {lib.undo && (
-        <div role="status" className="elev-4 fixed inset-x-5 bottom-[calc(var(--tabbar-h)+var(--sab)+1rem)] z-50 mx-auto flex max-w-md items-center justify-between rounded-lg bg-ink px-5 py-1 text-surface lg:left-[264px]">
+        <div role="status" className="elev-4 fixed inset-x-5 bottom-[calc(var(--tabbar-h)+var(--sab)+1rem)] z-50 mx-auto flex max-w-md items-center justify-between rounded-2xl bg-ink px-5 py-1 text-surface lg:left-[264px]">
           <span>{lib.undo.questions.length} deleted</span>
           <button type="button" className="min-h-[44px] px-3 font-semibold underline" onClick={() => void lib.doUndo()}>Undo</button>
         </div>

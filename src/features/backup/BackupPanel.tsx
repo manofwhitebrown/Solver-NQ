@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { DatabaseBackup, HardDrive, RotateCcw } from 'lucide-react';
 import { Button, Card, Cluster, Section, Stack } from '@/components/ui';
 import { db, exportBackup, importBackup, kvGet, kvSet, requestPersistence, storageUsage } from '@/lib/db';
 import { saveFile } from '@/lib/export';
@@ -52,11 +53,11 @@ export function BackupPanel() {
       <Stack gap={4}>
         <Card aria-labelledby="storage-title">
           <Stack gap={3}>
-            <h2 id="storage-title" className="text-lg font-bold">Storage</h2>
+            <h2 id="storage-title" className="flex items-center gap-3 text-lg font-bold"><span className="brand-grad flex h-10 w-10 items-center justify-center rounded-xl text-accent-ink shadow-glow"><HardDrive size={20} aria-hidden /></span>Storage</h2>
             {usage && <p className="text-base">{usageText(usage.used, usage.quota)}</p>}
             {usage && usage.quota > 0 && (
-              <div role="progressbar" aria-label="Storage used" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} className="h-2 overflow-hidden rounded-full bg-raised">
-                <div className="h-full rounded-full bg-accent" style={{ width: `${Math.min(100, pct)}%` }} />
+              <div role="progressbar" aria-label="Storage used" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} className="h-3 overflow-hidden rounded-full bg-raised">
+                <div className="brand-grad h-full rounded-full" style={{ width: `${Math.min(100, pct)}%` }} />
               </div>
             )}
             <p className="text-sm text-ink-2">{lastBackupText(lastAt)}</p>
@@ -68,11 +69,11 @@ export function BackupPanel() {
 
         <Card aria-labelledby="backup-title">
           <Stack gap={3}>
-            <h2 id="backup-title" className="text-lg font-bold">Back up and restore</h2>
+            <h2 id="backup-title" className="flex items-center gap-3 text-lg font-bold"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent"><DatabaseBackup size={20} aria-hidden /></span>Back up and restore</h2>
             <p className="text-sm text-ink-2">Your library lives only on this device. Restoring adds to what you have and never overwrites it.</p>
             <Cluster gap={3}>
               <Button size="lg" disabled={busy} onClick={() => void download()}>Back up now</Button>
-              <Button variant="secondary" disabled={busy} onClick={() => file.current?.click()}>Restore from file</Button>
+              <Button variant="secondary" className="gap-2" disabled={busy} onClick={() => file.current?.click()}><RotateCcw size={16} aria-hidden />Restore from file</Button>
               <input ref={file} type="file" accept="application/json,.json" hidden onChange={e => void restore(e.target.files?.[0])} />
             </Cluster>
             {message && <p role="status" className="text-sm font-semibold">{message}</p>}

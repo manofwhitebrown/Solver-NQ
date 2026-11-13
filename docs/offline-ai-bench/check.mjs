@@ -1,3 +1,4 @@
+/* global console */
 // node docs/offline-ai-bench/check.mjs : tests the grader and the question list (no model needed).
 import assert from 'node:assert/strict';
 import { extractNumber, isCorrect } from './grade.mjs';

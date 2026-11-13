@@ -26,14 +26,14 @@ function Links({ side }: { side: boolean }) {
                 'flex items-center transition',
                 side
                   ? 'min-h-[48px] gap-3 rounded-full px-4 text-[15px] font-semibold'
-                  : 'min-h-[var(--tabbar-h)] flex-1 flex-col justify-center gap-0.5 text-[12px] font-semibold',
+                  : 'min-h-[var(--tabbar-h)] min-w-0 flex-1 flex-col justify-center gap-0.5 text-[12px] font-semibold',
                 isActive ? 'text-accent' : 'text-ink-2 hover:text-ink',
                 side && isActive && 'bg-accent-soft shadow-soft',
               )
             }
           >
             {side ? <Icon size={20} /> : (
-              <span className="flex h-8 w-14 items-center justify-center rounded-full transition [[aria-current=page]_&]:bg-accent-soft"><Icon size={22} /></span>
+              <span className="flex h-8 w-14 max-w-full items-center justify-center rounded-full transition [[aria-current=page]_&]:bg-accent-soft"><Icon size={22} /></span>
             )}
             {label}
           </NavLink>

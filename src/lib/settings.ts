@@ -20,7 +20,8 @@ export interface Settings {
 export const SUGGESTED_MODELS: Record<Provider, string> = {
   anthropic: 'claude-sonnet-4-5',
   openai: 'gpt-4o-mini',
-  gemini: 'gemini-2.0-flash',
+  // Empty on purpose: Google retires model names, so the model chain (Fetch available models) picks one.
+  gemini: '',
 };
 
 export const DEFAULT_SETTINGS: Settings = {

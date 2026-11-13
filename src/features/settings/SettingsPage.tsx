@@ -49,7 +49,7 @@ export function SettingsPage() {
         <Field label="Provider" htmlFor="provider">
           <Select id="provider" value={s.provider} options={PROVIDERS} onChange={(e) => changeProvider(e.target.value as Provider)} />
         </Field>
-        <Field label="Model" htmlFor="model" hint={`Suggested: ${SUGGESTED_MODELS[s.provider]}`}>
+        <Field label="Model" htmlFor="model" hint={SUGGESTED_MODELS[s.provider] ? `Suggested: ${SUGGESTED_MODELS[s.provider]}` : 'Leave empty: the model chain above picks the model.'}>
           <Input id="model" value={s.model} onChange={(e) => updateSettings({ model: e.target.value })} autoCapitalize="off" spellCheck={false} />
         </Field>
         <ApiKeyField value={s.apiKey} onChange={(apiKey) => updateSettings({ apiKey })} />

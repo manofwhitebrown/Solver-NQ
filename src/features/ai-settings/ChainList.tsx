@@ -22,10 +22,10 @@ function Row({ state, slot, first, last, rank }: { state: FallbackState; slot: M
         </div>
         <p className={`w-fit rounded-full px-3 py-1 text-caption font-semibold ${TONE[info.status]}`} role="status">{text}</p>
         <div className="flex flex-wrap gap-2">
-          <Button size="sm" variant="secondary" disabled={first} onClick={() => moveSlot(slot.id, -1)} aria-label={`Move ${slot.model} up`}>Up</Button>
-          <Button size="sm" variant="secondary" disabled={last} onClick={() => moveSlot(slot.id, 1)} aria-label={`Move ${slot.model} down`}>Down</Button>
-          <Button size="sm" variant="secondary" loading={busy} onClick={test}>Test</Button>
-          <Button size="sm" variant="ghost" onClick={() => removeSlot(slot.id)} aria-label={`Remove ${slot.model}`}>Remove</Button>
+          <Button size="md" variant="secondary" disabled={first} onClick={() => moveSlot(slot.id, -1)} aria-label={`Move ${slot.model} up`}>Up</Button>
+          <Button size="md" variant="secondary" disabled={last} onClick={() => moveSlot(slot.id, 1)} aria-label={`Move ${slot.model} down`}>Down</Button>
+          <Button size="md" variant="secondary" loading={busy} onClick={test}>Test</Button>
+          <Button size="md" variant="ghost" onClick={() => removeSlot(slot.id)} aria-label={`Remove ${slot.model}`}>Remove</Button>
         </div>
       </Stack>
     </Card>

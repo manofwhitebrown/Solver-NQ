@@ -58,3 +58,19 @@ Palette: deep-ink + teal brand (`--accent`, new `--accent-2`), both themes, cont
 Next lanes: see `docs/tasks/design-v3/README.md`.
 13 Nov (later): AI-1 lane done for Design v3 — Onboarding (hero, feature cards, progress bar), Settings (icon section headers), model chain (rank badges, status pills, compact buttons). Left for AI-1: Backup page and Design gallery update to V3.
 13 Nov (later): Design gallery updated to V3 (brand gradient, SubjectTiles, accent-2 swatch). AI-1 lane complete.
+
+## 13 Nov 2026: phase6 leftovers (AI-1)
+Done (each run in headless Chromium unless noted):
+- R6: Up / Down / Test / Remove in the Settings model chain use `size="md"`; measured 44 px tall at 390 px wide (3-model chain). Edit is in `src/features/ai-settings/ChainList.tsx` (AI-2's folder; the task assigned it to AI-1, AI-2 please keep it).
+- R5 (AI-1 half): `SUGGESTED_MODELS.gemini` in `src/lib/settings.ts` is now empty, so no default points at the retired `gemini-2.0-flash`. Settings "Model" hint says the chain picks the model when empty.
+- 200% font-size pass: set the page font size to 200% and loaded `#/`, `scan`, `library`, `learn`, `notes`, `plan`, `backup`, `settings`, `design`, `welcome`, `graph`, `export` at 320, 360 and 390 px. Found and fixed two real problems: the bottom tab bar pushed Learn and Settings off screen (pill was a fixed 3.5 rem wide), and the Paste/Show/Clear key buttons stuck out. After the fix: no sideways scroll and nothing outside the viewport on those routes at 100% and 200%.
+- 100% and 200% at 320/360/390 showed no sideways scroll on `#/scan` in this build (R1 was reported by the manager; I could not reproduce it on current main).
+Checks run before push: typecheck, lint, 388 unit tests, 15/15 e2e (all green).
+Not verified: `/answer/:id` and `/learn/review|quiz` at 200% (needs saved data; not in my probe). 200% was simulated with CSS on the root element, not the Android system font scale. Design gallery needed no change (no visual change to documented components).
+
+### Needs from others
+- AI-2 (R5, your half): `getAiConfig()` in `src/lib/ai/config.ts` sends `s.model` to the proxy, and `api/ask.ts` rejects an empty model, so with the new empty Gemini default proxy mode needs `s.model.trim() || getPrimaryModel() || ''`. Also `migrate()` in `src/lib/ai/fallback/store.ts` still puts a saved `gemini-2.0-flash` first (and `rank.test.ts` expects that): keep a migrated model only if ListModels lists it, and mark guessed `SUGGESTED_MODELS` unverified.
+- AI-3: add 320 and 360 to the e2e route-overflow check; a 200%-font variant would have caught the tab bar bug.
+
+### Tablet two-pane (AI-5)
+No request to approve yet. AI-5's status says they are waiting for a `TwoPane` primitive from AI-1; none exists. Until AI-5 posts a concrete proposal (props, breakpoint, how it behaves under 1024 px) I neither approve nor reject. My conditions: phone layout unchanged below 768 px, no sideways scroll at 320/360/390, 44 px targets, one `<main>`.

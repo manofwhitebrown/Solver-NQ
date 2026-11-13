@@ -8,7 +8,7 @@ export function FallbackNote() {
   const first = state.chain.find(c => c.enabled);
   if (!first || !state.keys.length) return null;
   const info = slotInfo(state, first);
-  if (info.status === 'ready') return null;
+  if (info.status === 'ready' || info.status === 'key-invalid') return null; // a rejected key has its own message
   const why = info.status === 'cooling' && info.until ? `cooling down until ${formatTime(info.until)}` : 'not available right now';
   return <p role="status" className="text-sm text-muted">{first.model} is {why}. The next model in your list will answer.</p>;
 }

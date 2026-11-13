@@ -49,7 +49,7 @@ export function LearnHome() {
       <Section title="Decks">
         {cards.length === 0 ? (
           <EmptyState title="No cards yet" text="Open a saved answer or a note and make flashcards from it, or import a deck."
-            action={<Link to="/library"><Button variant="secondary">Go to library</Button></Link>} />
+            action={<Link to="/library" className="inline-flex"><Button variant="secondary">Go to library</Button></Link>} />
         ) : (
           <ul className="flex flex-col gap-4">
             {[...decks.entries()].map(([subject, d]) => (

@@ -36,7 +36,7 @@ export function ResultCard({ item, onText, onAsk, onImageOnly, onRemove, onRotat
         Read with AI (better for handwriting and formulas)
       </Button>
       <Cluster gap={3}>
-        <Button onClick={onAsk} disabled={item.busy || !item.text.trim()}>Review in Ask</Button>
+        <Button onClick={onAsk} disabled={item.busy || !item.text.trim()}>Ask</Button>
         <Button variant="secondary" onClick={onImageOnly} disabled={item.busy}>Send image only</Button>
         <Button variant="ghost" onClick={onRemove}>Remove</Button>
       </Cluster>

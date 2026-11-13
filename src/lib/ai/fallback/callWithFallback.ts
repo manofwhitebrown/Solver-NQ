@@ -39,7 +39,7 @@ export async function callWithFallback(req: CompletionRequest, opts: FallbackOpt
   const slots = opts.light || state.saveQuota ? liteFirst(enabled) : enabled;
   const first = enabled[0]?.model;
 
-  let sawBadKey = false, sawUnavailable = false, tried = false;
+  let sawBadKey = false, sawUnavailable = false, sawQuota = false, sawServer = false, tried = false;
   for (const slot of slots) {
     for (const k of keysFor(slot, loadState().keys)) {
       if (loadState().invalidKeys.includes(k.id)) { sawBadKey = true; continue; }
@@ -59,13 +59,13 @@ export async function callWithFallback(req: CompletionRequest, opts: FallbackOpt
             if (req2.imageDataUrl) { req2 = { ...req2, imageDataUrl: undefined }; continue; } // model may not accept images
             throw new AiError('bad_request');
           }
-          if (f.kind === 'transient' && attempt === 0) {
+          if ((f.kind === 'transient' || f.kind === 'incomplete') && attempt === 0) {
             attempt++;
             await sleep(400 + Math.random() * 600);
             continue;
           }
-          if (f.kind === 'quota') setCooldown(k, slot.model, cooldownUntil(f, now()), 'cooldown');
-          else if (f.kind === 'transient') setCooldown(k, slot.model, now() + 30_000, 'cooldown');
+          if (f.kind === 'quota') { sawQuota = true; setCooldown(k, slot.model, cooldownUntil(f, now()), 'cooldown'); }
+          else if (f.kind === 'transient' || f.kind === 'incomplete') { sawServer = true; setCooldown(k, slot.model, now() + 30_000, 'cooldown'); }
           else if (f.kind === 'unavailable') { setCooldown(k, slot.model, now() + UNAVAILABLE_MS, 'unavailable'); sawUnavailable = true; }
           else if (f.kind === 'badkey') { update(s => { if (!s.invalidKeys.includes(k.id)) s.invalidKeys.push(k.id); }); sawBadKey = true; }
           break; // next key / next slot
@@ -75,6 +75,8 @@ export async function callWithFallback(req: CompletionRequest, opts: FallbackOpt
   }
   if (sawBadKey && !earliestRetry(now())) throw new AiError('bad_key');
   const retryAt = earliestRetry(now());
+  // Only say "limits used up" when something was actually over quota; otherwise it was a server/network problem.
+  if (sawServer && !sawQuota && !sawUnavailable) throw new AiError('server');
   if (retryAt) throw new AiError('exhausted', retryAt);
   if (sawUnavailable || !tried) throw new AiError('no_model');
   throw new AiError('exhausted', nextPacificMidnight(now()));

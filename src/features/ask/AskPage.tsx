@@ -31,12 +31,21 @@ export function AskPage() {
 
   // /scan hands back { text, imageDataUrl } through router state. Take it once, then clear it.
   useEffect(() => {
-    const s = location.state as { text?: unknown; imageDataUrl?: unknown } | null;
+    const s = location.state as { text?: unknown; imageDataUrl?: unknown; autoSend?: unknown } | null;
     if (!s || typeof s.text !== 'string') return;
-    setText(s.text);
-    setImage(typeof s.imageDataUrl === 'string' ? s.imageDataUrl : undefined);
+    const t = s.text;
+    const img = typeof s.imageDataUrl === 'string' ? s.imageDataUrl : undefined;
     navigate('.', { replace: true, state: null });
-  }, [location.state, navigate]);
+    // The scan screen's "Ask" button means ask: send now. Without a key, just fill the box so NoKeyCard shows.
+    if (s.autoSend === true && !noKey && (t.trim() || img)) {
+      void submit({ text: t.trim() || IMAGE_ONLY_TEXT, subject, mode, imageDataUrl: img })
+        .then(ok => { if (!ok) { setText(t); setImage(img); } }); // keep the question if it failed
+      return;
+    }
+    setText(t);
+    setImage(img);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state]);
 
   // /?text=... (e.g. "Solve it" on a practice problem) fills the box once; the user still presses Send.
   useEffect(() => {

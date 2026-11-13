@@ -32,7 +32,7 @@ export default function AnswerPage() {
   if (state.status === 'queued') return (
     <Shell><EmptyState icon={<Spinner label="Waiting" />} title="Saved - will answer when it can"
       text="Your question is safe. It will be answered when you're back online or the free quota resets, and the answer will appear here and in your library."
-      action={<Link to="/library" className="text-accent underline">Go to library</Link>} /></Shell>
+      action={<Link to="/library" className="inline-flex min-h-[44px] items-center text-accent underline">Go to library</Link>} /></Shell>
   );
   if (state.status === 'missing') return (
     <Shell><EmptyState title="Answer not found" text="It may have been deleted."

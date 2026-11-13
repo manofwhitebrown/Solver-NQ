@@ -130,7 +130,7 @@ export function ScanPage() {
   // Ask for one crop; the rest stay queued and are restored when the user comes back to /scan.
   const send = (id: string, text: string, dataUrl: string) => {
     saveQueue(items.filter(x => x.id !== id));
-    const state: ScanResult = { text, imageDataUrl: dataUrl };
+    const state: ScanResult = { text, imageDataUrl: dataUrl, autoSend: true };
     nav('/', { state });
   };
 

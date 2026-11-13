@@ -31,5 +31,6 @@ export async function transcribeImage(imageDataUrl: string, signal?: AbortSignal
   if (!imageDataUrl.startsWith('data:image/')) throw new AiError('bad_request');
   const system = 'Transcribe all text in the image exactly as written, including handwriting. Write formulas in LaTeX between $ signs. Output only the transcription, nothing else.';
   const { text } = await runModel(system, [{ role: 'user', content: 'Transcribe this image.' }], { imageDataUrl, signal, requireImage: true });
+  if (!text.trim()) throw new AiError('unknown');
   return text.trim();
 }

@@ -40,6 +40,9 @@ async function geminiCall(k: KeyEntry, model: string, req: CompletionRequest): P
     if (!text && (json.promptFeedback?.blockReason || json.candidates?.[0]?.finishReason === 'SAFETY')) {
       throw new SlotFailure({ kind: 'safety' });
     }
+    const reason = json.candidates?.[0]?.finishReason;
+    // Empty, or stopped early (MAX_TOKENS, RECITATION, OTHER...): never save it as an answer.
+    if (!text.trim() || (reason && reason !== 'STOP')) throw new SlotFailure({ kind: 'incomplete' });
     return text;
   } catch (e) {
     if (e instanceof SlotFailure) throw e;

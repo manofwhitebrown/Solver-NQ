@@ -28,7 +28,7 @@ export function NewCardsPage() {
 
   if (failed) {
     return <EmptyState title="Could not make cards" text="That answer or note was not found. Open it from your library or notes and try again."
-      action={<Link to="/library"><Button variant="secondary">Go to library</Button></Link>} />;
+      action={<Link to="/library" className="inline-flex"><Button variant="secondary">Go to library</Button></Link>} />;
   }
   if (!cards) return <Skeleton className="h-48 w-full" />;
   if (cards.length === 0) {

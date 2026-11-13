@@ -27,7 +27,7 @@ export interface FallbackState {
   legacySeen?: string; // fingerprint of the old Settings key that was already imported
 }
 
-export type FailKind = 'quota' | 'transient' | 'unavailable' | 'badkey' | 'safety' | 'badrequest';
+export type FailKind = 'quota' | 'transient' | 'unavailable' | 'badkey' | 'safety' | 'badrequest' | 'incomplete';
 export interface Failure { kind: FailKind; retryAfterMs?: number; daily?: boolean }
 
 export type SlotStatus = 'ready' | 'cooling' | 'unavailable' | 'key-invalid';

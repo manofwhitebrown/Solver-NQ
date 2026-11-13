@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 // Shows a small bar when a new version is ready. Needs `registerType: 'prompt'` in the PWA config.
@@ -7,6 +8,13 @@ export function UpdatePrompt() {
     offlineReady: [offlineReady, setOfflineReady],
     updateServiceWorker,
   } = useRegisterSW();
+
+  // "Ready to work offline" is only FYI: never leave it sitting over the buttons.
+  useEffect(() => {
+    if (!offlineReady || needRefresh) return;
+    const t = setTimeout(() => setOfflineReady(false), 4000);
+    return () => clearTimeout(t);
+  }, [offlineReady, needRefresh, setOfflineReady]);
 
   if (!needRefresh && !offlineReady) return null;
   const close = () => {
@@ -18,7 +26,7 @@ export function UpdatePrompt() {
     <div
       role="status"
       className="fixed inset-x-3 z-50 flex items-center justify-between gap-3 rounded-2xl bg-slate-900 p-3 text-sm text-white shadow-lg"
-      style={{ bottom: 'calc(env(safe-area-inset-bottom) + 76px)' }}
+      style={{ top: 'calc(env(safe-area-inset-top) + 12px)' }}
     >
       <span>{needRefresh ? 'A new version is available.' : 'Ready to work offline.'}</span>
       <span className="flex gap-2">

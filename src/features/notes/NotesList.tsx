@@ -25,7 +25,7 @@ export function NotesList() {
         {tags.length > 0 && <Cluster>{tags.map((t) => <Chip key={t} className="min-h-[44px]" selected={tag === t} onClick={() => setTag(tag === t ? undefined : t)}>{t}</Chip>)}</Cluster>}
         {!notes ? <Skeleton className="h-28 w-full" /> : notes.length === 0 ? (
           <EmptyState title={q || tag ? 'No notes match' : 'No notes yet'} text={q || tag ? 'Try a different search.' : 'Paste a page of notes or import a PDF to get a summary and cards.'}
-            action={<Link to="/notes/new"><Button>Add your first note</Button></Link>} />
+            action={<Link to="/notes/new" className="inline-flex"><Button>Add your first note</Button></Link>} />
         ) : notes.map((n) => (
           <Link key={n.id} to={`/notes/${n.id}`} className="block">
             <Card interactive className="min-h-[64px]">

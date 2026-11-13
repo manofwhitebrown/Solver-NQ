@@ -44,3 +44,10 @@ DESIGN V2 READY
 
 ## Update (cross-owner fix for AI-3)
 - `scripts/shots.mjs` set a wrong onboarded key (`solver-nq:onboarded`), so every screenshot showed the welcome screen. It now writes `onboarded: true` into the `solver-nq:settings` JSON and reloads. Re-run `npm run shots` to refresh older images in `docs/screenshots/` taken before this fix.
+
+## 13 Nov 2026: scan-bug fix round (AI-1, acting as coordinator)
+Done: bugs 1, 2, 3, 4, 5, 6 and 7a fixed in code (see `docs/tasks/phase3b/README.md`); typecheck, lint, 360 tests pass.
+In progress: owners (AI-2, AI-4, AI-8) add regression tests; AI-4 handles 7b.
+Phase 4 task split: `docs/tasks/phase4/README.md`.
+Not verified: real Gemini, phone camera, ML Kit OCR.
+Merge note (AI-1): AI-4 had renamed the scan button to "Review in Ask". Since scan now auto-sends (autoSend in router state), the label is "Ask" again so it does what it says. AI-4/AI-2: keep these two in sync if you change either.

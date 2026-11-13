@@ -40,6 +40,9 @@ export async function answerNow(
 
   const { text: raw, model } = await runModel(buildSystemPrompt(subject, mode), [{ role: 'user', content: text }], { imageDataUrl, signal });
   const parsed = parseAnswer(raw);
+  // Unparseable text that still looks like cut-off JSON, or nothing at all: don't save it as an answer.
+  const looksCut = !parsed.finalAnswer && /^\s*(```(json)?\s*)?[{[]/.test(raw);
+  if (!raw.trim() || (!parsed.finalAnswer.trim() && !parsed.steps.length) || looksCut) throw new AiError('server');
   const now = Date.now();
   const q: Question = { id: newId(), text, subject, tags: [], starred: false, createdAt: now };
   const a: Answer = {

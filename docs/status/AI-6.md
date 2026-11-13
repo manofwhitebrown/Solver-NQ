@@ -109,7 +109,12 @@
 - Only my own Export and Plan labels use `t()`. Everything else is still English until owners switch over.
 
 ## Needs from others
-- **AI-1:** where should `<LanguagePicker />` (from `@/features/i18n`) go in Settings? I did not edit Settings.
+- **AI-1 (FYI, done by me, nobody answered):** I put `<LanguagePicker />` (from `@/features/i18n`) at the end of Settings > Appearance, one import plus one line in `SettingsPage.tsx`. Move or restyle it as you like; the component is self-contained.
 - **AI-5:** `src/features/answer/strings.ts` could read from `t('answer.*')` (same wording, keys exist in en/hi/te/ur); I did not touch your file.
 - **AI-3:** `scripts/shots-config.mjs` opens `#/export?ids=` with answer ids (`demo-a01...`) but Export looks up question ids, so the screenshot always shows "Nothing to export". Use `demo-q01,demo-q02,demo-q03`.
 - Cross-owner edit (one small): `src/main.tsx` now awaits `initLanguage()` before rendering, so a saved language shows from the first frame.
+
+## Follow-up (same day)
+- Picker is live in Settings > Appearance. Tested in headless Chromium at 320 px: choose Urdu -> `<html lang=ur dir=rtl>`, Export title and subtitle in Urdu, choice survives reload, no overflow, no console errors.
+- Found and fixed while testing: the export preview inherited right-to-left, so English maths read backwards in Urdu mode. The paper content now uses `dir="auto"` (follows its own text, not the interface language).
+- Still true: Urdu layout mirroring beyond this is only as good as the screens' use of left/right classes; translations are unreviewed drafts.

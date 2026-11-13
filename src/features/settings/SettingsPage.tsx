@@ -5,6 +5,7 @@ import { SUGGESTED_MODELS, updateSettings, useSettings, type Provider, type Them
 import type { Mode, Subject } from '@/types';
 import { DataIcon, InfoIcon, PaletteIcon, SlidersIcon, SparklesIcon } from '@/components/ui/icons';
 import { AiSettingsPanel } from '@/features/ai-settings';
+import { LanguagePicker } from '@/features/i18n';
 import { ApiKeyField } from './ApiKeyField';
 import { clearAllData } from './clearData';
 import { MODES, OCR_LANGS, PROVIDERS, SUBJECTS } from './options';
@@ -38,6 +39,7 @@ export function SettingsPage() {
       <Section title="Appearance" icon={<PaletteIcon size={20} />}>
         <Tabs<ThemePref> label="Theme" value={s.theme} onChange={(theme) => updateSettings({ theme })}
           items={[{ value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]} />
+        <LanguagePicker />
       </Section>
 
       <Section title="AI" icon={<SparklesIcon size={20} />}>

@@ -76,7 +76,7 @@ export default function ExportPage() {
   return (
     <>
       <div data-no-print>
-        <PageHeader title={isPack ? t('export.studyPack') : t('export.title')} subtitle={`${count}${isPack ? ' · cover, contents, answers' : ''} · works offline`}
+        <PageHeader title={isPack ? t('export.studyPack') : t('export.title')} subtitle={`${count}${isPack ? ` · ${t('export.packParts')}` : ''} · ${t('export.offline')}`}
           actions={<Button variant="secondary" size="md" onClick={() => setSheet(true)}>{t('export.options')}</Button>} />
         {!isPack && (
           <Cluster className="mb-8" role="group" aria-label="Format">

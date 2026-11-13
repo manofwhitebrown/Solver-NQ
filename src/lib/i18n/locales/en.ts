@@ -24,6 +24,8 @@ export const en = {
   'export.preview': 'Preview',
   'export.count': '{n} answers',
   'export.countOne': '1 answer',
+  'export.offline': 'works offline',
+  'export.packParts': 'cover, contents, answers',
   'export.build': 'Export {format}',
   'export.buildPack': 'Build study pack',
   'export.ready': 'Ready',

@@ -25,6 +25,8 @@ export const hi: Dict = {
   'export.preview': 'पूर्वावलोकन',
   'export.count': '{n} उत्तर',
   'export.countOne': '1 उत्तर',
+  'export.offline': 'ऑफ़लाइन भी काम करता है',
+  'export.packParts': 'कवर, विषय-सूची, उत्तर',
   'export.build': '{format} निर्यात करें',
   'export.buildPack': 'स्टडी पैक बनाएँ',
   'export.ready': 'तैयार',

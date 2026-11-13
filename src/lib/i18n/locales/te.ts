@@ -25,6 +25,8 @@ export const te: Dict = {
   'export.preview': 'ప్రివ్యూ',
   'export.count': '{n} సమాధానాలు',
   'export.countOne': '1 సమాధానం',
+  'export.offline': 'ఆఫ్‌లైన్‌లో కూడా పనిచేస్తుంది',
+  'export.packParts': 'కవర్, విషయసూచిక, సమాధానాలు',
   'export.build': '{format} ఎగుమతి చేయండి',
   'export.buildPack': 'స్టడీ ప్యాక్ తయారు చేయండి',
   'export.ready': 'సిద్ధం',

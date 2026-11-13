@@ -42,7 +42,7 @@ export default function Preview({ items, opts }: { items: ExportItem[]; opts: Re
           <div data-no-print className="flex items-center justify-between border-b border-black/10 px-4 py-2 text-caption font-semibold text-black/60 sm:px-6">
             <span>Page {i + 1}</span><span>{items[i]?.q.subject}</span>
           </div>
-          <div className="min-w-0 overflow-x-auto break-words p-4 sm:p-6 lg:p-8 [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mt-4 [&_h3]:font-semibold [&_h4]:mt-3 [&_h4]:font-semibold [&_img]:max-w-full [&_.meta]:text-sm [&_.meta]:text-black/60"
+          <div dir="auto" className="min-w-0 overflow-x-auto break-words p-4 sm:p-6 lg:p-8 [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mt-4 [&_h3]:font-semibold [&_h4]:mt-3 [&_h4]:font-semibold [&_img]:max-w-full [&_.meta]:text-sm [&_.meta]:text-black/60"
             dangerouslySetInnerHTML={{ __html: h }} />
         </article>
       ))}

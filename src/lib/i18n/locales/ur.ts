@@ -25,6 +25,8 @@ export const ur: Dict = {
   'export.preview': 'پیش منظر',
   'export.count': '{n} جوابات',
   'export.countOne': '1 جواب',
+  'export.offline': 'آف لائن بھی کام کرتا ہے',
+  'export.packParts': 'سرورق، فہرست، جوابات',
   'export.build': '{format} برآمد کریں',
   'export.buildPack': 'اسٹڈی پیک بنائیں',
   'export.ready': 'تیار',

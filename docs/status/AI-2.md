@@ -1,3 +1,10 @@
+## Round 2 (13 Nov 2026, phase6-leftovers)
+### Done
+- R7: `scripts/gemini-smoke.mjs` written. Run: `GEMINI_API_KEY=... node scripts/gemini-smoke.mjs` (Node 22). ListModels, then one tiny text and one tiny image call per slot of the app's default chain (override with `GEMINI_MODELS=a,b`), plus a probe with a non-existent model. Prints model, HTTP status, finishReason, latency, characters, token counts (including thinking tokens) and how `classify()` / the app treats each result. The key is read from the environment only and scrubbed from all output.
+- Checked only against a local fake Gemini server (STOP, MAX_TOKENS with empty text, 429 daily quota, 404 all classified as expected; the key appeared 0 times in the output). NOT yet run against the real API: waiting for the user's output.
+### Next
+- R2, R3, R4, R5, then AI-7 states, voice input, streaming. Budgets/parsing get adjusted after the real smoke output is pasted.
+
 ## Phase 2 (AI-2)
 ### Done (P0)
 - `AddKeyForm` (`@/features/ai-settings`): paste Gemini key, Test key, Save key; after the first save it fetches the models Google really offers and pre-fills the chain.

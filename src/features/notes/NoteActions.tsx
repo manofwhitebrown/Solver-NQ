@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Button, Cluster, toast } from '@/components/ui';
+import { Button, toast } from '@/components/ui';
 import { deleteNote } from '@/lib/db';
 import { exportNote } from '@/lib/notes';
 import type { Note } from '@/types';
@@ -13,16 +13,17 @@ export function NoteActions({ note }: { note: Note }) {
   }
   return (
     <div data-no-print className="flex flex-col gap-3">
-      <Cluster gap={3}>
-        <Link to={`/learn/cards/new?note=${note.id}`}><Button>Make flashcards</Button></Link>
-        <Link to={`/learn/quiz?note=${note.id}`}><Button variant="secondary">Quiz me</Button></Link>
-      </Cluster>
-      <Cluster gap={3}>
-        <Button variant="secondary" onClick={() => save('md')}>Save Markdown</Button>
-        <Button variant="secondary" onClick={() => save('txt')}>Save text</Button>
-        <Button variant="secondary" onClick={() => window.print()}>Print or PDF</Button>
-        <Button variant="ghost" onClick={remove}>Delete</Button>
-      </Cluster>
+      <div className="grid grid-cols-2 gap-3">
+        <Link to={`/learn/cards/new?note=${note.id}`}><Button block>Make flashcards</Button></Link>
+        <Link to={`/learn/quiz?note=${note.id}`}><Button block variant="secondary" className="min-h-[48px]">Quiz me</Button></Link>
+      </div>
+      <p className="mt-2 text-caption font-bold uppercase tracking-wide text-muted">Save or share</p>
+      <div className="grid grid-cols-3 gap-2">
+        <Button variant="secondary" size="sm" className="min-h-[44px] px-2" onClick={() => save('md')}>Markdown</Button>
+        <Button variant="secondary" size="sm" className="min-h-[44px] px-2" onClick={() => save('txt')}>Text</Button>
+        <Button variant="secondary" size="sm" className="min-h-[44px] px-2" onClick={() => window.print()}>Print / PDF</Button>
+      </div>
+      <button type="button" onClick={remove} className="mt-2 min-h-[44px] self-start rounded-md px-3 text-base font-semibold text-bad transition hover:bg-bad-soft">Delete note</button>
     </div>
   );
 }

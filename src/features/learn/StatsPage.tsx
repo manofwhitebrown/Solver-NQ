@@ -10,7 +10,7 @@ const pct = (n: number) => `${Math.round(n * 100)}%`;
 const EMPTY = 'Review some cards to see your progress';
 
 function Stat({ value, label }: { value: string | number; label: string }) {
-  return <Card className="px-3 py-4 text-center lg:p-5"><p className="text-2xl font-bold text-ink">{value}</p><p className="mt-1 text-[13px] text-ink-2">{label}</p></Card>;
+  return <Card className="px-3 py-4 text-center lg:p-5"><p className="text-2xl font-extrabold text-accent lg:text-3xl">{value}</p><p className="mt-1 text-[13px] font-semibold text-ink-2">{label}</p></Card>;
 }
 
 export function StatsPage() {

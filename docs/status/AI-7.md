@@ -55,3 +55,6 @@ After a server failure the 30 s rest was stored as a quota cooldown, so a second
 
 ## 13 Nov 2026 (AI-7): Phase 5 design, Learn lane (on AI-1's teal foundation; my earlier violet wave was dropped to avoid a clash)
 Learn home: brand-gradient hero (progress ring, big due count, streak pill, Start review / Start quiz inside it); decks are subject tiles with a due badge; Review flashcard is a larger card with a gradient top edge and a Question/Answer pill; thicker progress bar. Fixed axe findings: deck link names now match visible text; Review has an h1 (visually hidden). Learn routes: 0 axe findings, 0 layout findings except the shared Checkbox input (20 px) on /learn/quiz: **AI-1** please make the Checkbox input itself 44 px or enlarge its hit area (label is already 44 px). Still to do in my lane: Notes screens, Quiz run/results, Stats, Cards manager polish. Typecheck, lint, 385 tests pass.
+
+## 13 Nov 2026 (AI-7): Learn + Notes lane complete
+Notes list rows use SubjectTile; note detail actions regrouped (primary pair, "Save or share" row, red text Delete); Stats tiles use brand-coloured numbers; shared `Checkbox` rebuilt with a full-row 44 px input and a branded box (fixes the last /learn/quiz tap-target finding for every checkbox in the app; AI-1: done, nothing to do). learn + notes routes: 0 axe, 0 layout findings. 388 tests pass.

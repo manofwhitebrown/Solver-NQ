@@ -19,6 +19,7 @@ import { Icon } from './icons';
 import { isIncompleteAnswer } from './incomplete';
 import { ModelLabel } from './ModelLabel';
 import { Steps } from './Steps';
+import { useStrings } from './strings';
 import { TagsSheet } from './TagsSheet';
 import { Toolbar } from './Toolbar';
 import { useAnswer } from './useAnswer';
@@ -27,21 +28,22 @@ import { VerifyBadge } from './VerifyBadge';
 export default function AnswerPage() {
   const { id } = useParams();
   const { state, retry, updateQuestion, addFollowUp } = useAnswer(id);
+  const t = useStrings();
   useEffect(() => () => tts.stop(), [id]);
 
   if (state.status === 'loading') return <Shell><LoadingSkeleton /></Shell>;
   if (state.status === 'queued') return (
-    <Shell><EmptyState icon={<Spinner label="Waiting" />} title="Saved - will answer when it can"
-      text="Your question is safe. It will be answered when you're back online or the free quota resets, and the answer will appear here and in your library."
-      action={<Link to="/library" className="inline-flex min-h-[44px] items-center text-accent underline">Go to library</Link>} /></Shell>
+    <Shell><EmptyState icon={<Spinner label="Waiting" />} title={t.queuedTitle}
+      text={t.queuedText}
+      action={<Link to="/library" className="inline-flex min-h-[44px] items-center text-accent underline">{t.goToLibrary}</Link>} /></Shell>
   );
   if (state.status === 'missing') return (
-    <Shell><EmptyState title="Answer not found" text="It may have been deleted."
-      action={<Link to="/" className="text-accent underline">Ask a new question</Link>} /></Shell>
+    <Shell><EmptyState title={t.missingTitle} text={t.missingText}
+      action={<Link to="/" className="inline-flex min-h-[44px] items-center text-accent underline">{t.askNew}</Link>} /></Shell>
   );
   if (state.status === 'error') return (
-    <Shell><EmptyState title="Could not open this answer" text={state.message}
-      action={<Button onClick={retry}>Retry</Button>} /></Shell>
+    <Shell><EmptyState title={t.errorTitle} text={state.message}
+      action={<Button onClick={retry}>{t.retry}</Button>} /></Shell>
   );
   if (isIncompleteAnswer(state.a)) return (
     <Shell><IncompleteState q={state.q} /></Shell>
@@ -66,6 +68,7 @@ const Shell = ({ children }: { children: React.ReactNode }) => (
 
 /** A saved answer with nothing readable (blank, or the model's raw cut-off JSON): never render it, offer to ask again. */
 function IncompleteState({ q }: { q: Question }) {
+  const t = useStrings();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const askAgain = async () => {
@@ -79,8 +82,8 @@ function IncompleteState({ q }: { q: Question }) {
   return (
     <Stack gap={4}>
       <QuestionCard subject={q.subject} text={q.text} />
-      <EmptyState title="This answer is incomplete" text="The AI stopped before it finished. Nothing useful was saved, so ask again."
-        action={<Button onClick={() => void askAgain()} disabled={busy}>{busy ? 'Asking...' : 'Ask again'}</Button>} />
+      <EmptyState title={t.incompleteTitle} text={t.incompleteText}
+        action={<Button onClick={() => void askAgain()} disabled={busy}>{busy ? t.asking : t.askAgain}</Button>} />
     </Stack>
   );
 }

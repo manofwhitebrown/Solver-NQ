@@ -1,7 +1,7 @@
 ## Phase 3 fix round (13 Nov 2026)
 - Done: Answer view never renders a blank or raw-JSON answer (`incomplete.ts`, `IncompleteState` with Ask again, 4 tests). Added regression tests for the engine fixes AI-1 landed (5xx on every model says "server", cut-off MAX_TOKENS reply moves to the next model, real 429s still say "exhausted").
 - Verified on main after AI-1's commit: crop = full image, scan Ask auto-sends, offline bubble at top and auto-dismisses, links 44 px. 368 tests, lint 0, build ok.
-- Next (Phase 4): tablet two-pane Answer layout once AI-1 ships a `TwoPane` primitive; i18n string file for the Answer screen.
+- Done (Phase 4): Answer-screen strings scaffold (`strings.ts`, English only, falls back safely; Hindi/Telugu/Urdu need native review). Waiting: tablet two-pane Answer layout needs AI-1's `TwoPane` primitive and manager approval (design freeze).
 - Note for the manager: several AIs fixed the same QA bugs at once; `docs/tasks/phase3b/README.md` is the source of truth for bug state.
 
 ## Done (Phase 2)

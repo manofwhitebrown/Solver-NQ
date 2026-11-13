@@ -6,6 +6,7 @@ import { defaultOptions } from '../options';
 import { itemToMarkdown } from '../markdown';
 import { buildPackPdf } from '../studyPack';
 import { PDFDocument } from 'pdf-lib';
+import { inflateRawSync } from 'node:zlib';
 
 const q = (i: number): Question => ({ id: `q${i}`, text: `Q${i} solve $x+${i}=9$`, subject: 'math', tags: [], starred: false, createdAt: 0 });
 const ans = (i: number, p: Partial<Answer>): Answer => ({ id: `a${i}`, questionId: `q${i}`, mode: 'answer', finalAnswer: 'x=1', steps: [{ id: 's', title: 'T', body: 'b' }], verified: 'unchecked', model: 'm', createdAt: 0, ...p });
@@ -44,4 +45,37 @@ describe('study pack at scale (text pages, no browser)', () => {
     expect(pdf.getPageCount()).toBeGreaterThan(150); // 600 answers, about 3 per page
     expect(ms).toBeLessThan(60_000);
   }, 90_000);
+});
+
+/** Tiny zip reader (central directory + raw deflate) so the test needs no extra dependency. */
+function readZip(buf: Buffer): Record<string, string> {
+  const out: Record<string, string> = {};
+  let eocd = buf.length - 22;
+  while (buf.readUInt32LE(eocd) !== 0x06054b50) eocd--;
+  let p = buf.readUInt32LE(eocd + 16);
+  const n = buf.readUInt16LE(eocd + 10);
+  for (let i = 0; i < n; i++) {
+    const method = buf.readUInt16LE(p + 10), csize = buf.readUInt32LE(p + 20);
+    const nameLen = buf.readUInt16LE(p + 28), extraLen = buf.readUInt16LE(p + 30), commLen = buf.readUInt16LE(p + 32);
+    const off = buf.readUInt32LE(p + 42), name = buf.toString('utf8', p + 46, p + 46 + nameLen);
+    const dataStart = off + 30 + buf.readUInt16LE(off + 26) + buf.readUInt16LE(off + 28);
+    const raw = buf.subarray(dataStart, dataStart + csize);
+    out[name] = (method === 8 ? inflateRawSync(raw) : raw).toString('utf8');
+    p += 46 + nameLen + extraLen + commLen;
+  }
+  return out;
+}
+
+describe('DOCX polish', () => {
+  it('has page numbers, numbered headings and page breaks, and stays a valid package', async () => {
+    const { buildDocx } = await import('../docx');
+    const items = [1, 2, 3].map((i) => ({ q: q(i), a: ans(i, {}) }));
+    const files = readZip(Buffer.from(await (await buildDocx(items, defaultOptions, 'Pack')).arrayBuffer()));
+    const doc = files['word/document.xml'];
+    expect(doc).toContain('2. Q2');
+    expect((doc.match(/pageBreakBefore/g) ?? []).length).toBe(2);
+    const footer = Object.keys(files).find((f) => /word\/footer\d*\.xml/.test(f));
+    expect(footer).toBeTruthy();
+    expect(files[footer!]).toContain('PAGE');
+  });
 });

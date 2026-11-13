@@ -85,7 +85,8 @@
 - Real Android share sheet, DOCX in real Word.
 
 ## Still to do (Phase 4, mine)
-- Word export polish (headings numbering, math as images instead of plain text), UI language pack groundwork if AI-1 wants help.
+- DONE: Word export polish (numbered headings, each answer on its own page, shaded final answer, page X of Y footer, document title/author; test reads the real zip). Not opened in Word.
+- Still open: math as real equations in DOCX (needs OMML conversion, a larger job); UI language pack groundwork if AI-1 wants help.
 
 ## Needs from others
 - AI-2: with `incomplete` now a failure kind, the transient-cooldown edge case: for 30 s after a server failure a retry can still say "limits used up" (cooldown counted by `earliestRetry`). Suggest cooldown kind `transient` that `earliestRetry` ignores; add a test.

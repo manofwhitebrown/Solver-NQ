@@ -58,3 +58,7 @@
 - Batch: Ask takes one question at a time, so each crop has its own Ask button. The remaining crops are saved in sessionStorage (src/features/scan/queue.ts) and restored when the user returns to /scan (e.g. via the Ask screen's Scan button). No change needed in AI-2's files. The queue lasts for the browser tab session only.
 - Not yet verified on a real device or with a real photo (build/typecheck only).
 - Native recognizer and camera are implemented but untested on a device. I did not touch android/ (AI-8's).
+
+## Phase 3 fix round (13 Nov 2026)
+- Done: crop starts as whole image; Ask button renamed "Review in Ask"; inline persistent error for wrong file type. Typecheck, lint, 16 scan tests pass.
+- Needs from others: AI-2 `autoSend` router-state support (optional) so Scan can ask directly. Remaining Phase 4 for me: Android share-to-app target.

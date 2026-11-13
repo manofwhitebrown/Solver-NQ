@@ -28,18 +28,20 @@ export function ScanPage() {
   const [pdf, setPdf] = useState<Blob | null>(null);
   const [loading, setLoading] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [fileError, setFileError] = useState('');
   const cam = useRef<HTMLInputElement>(null);
   const gal = useRef<HTMLInputElement>(null);
 
   const cancelPdf = useCallback(() => setPdf(null), []);
   const open = useCallback(async (blob: Blob) => {
+    setFileError('');
     if (blob.type === 'application/pdf') { setPdf(blob); return; }
-    if (!/^image\/(jpeg|png|webp|gif|bmp|heic|heif)$/.test(blob.type)) { toast(friendlyMessage(new OcrError('unsupported')), 'error'); return; }
+    if (!/^image\/(jpeg|png|webp|gif|bmp|heic|heif)$/.test(blob.type)) { const m = friendlyMessage(new OcrError('unsupported')); setFileError(m); toast(m, 'error'); return; }
     setLoading(true);
     try {
       (await loadBitmap(blob)).close(); // validates size and that it decodes
       setSource(blob); setRect(FULL);
-    } catch (e) { toast(friendlyMessage(e), 'error'); }
+    } catch (e) { const m = friendlyMessage(e); setFileError(m); toast(m, 'error'); }
     setLoading(false);
   }, []);
 
@@ -171,6 +173,7 @@ export function ScanPage() {
                 {!touch && ' You can also paste or drop an image here.'}
               </p>
               <Button variant="ghost" size="sm" className="min-h-[44px]" onClick={() => setLangs(true)}>Scan languages</Button>
+              {fileError && <p role="alert" className="text-base text-bad">{fileError}</p>}
               {loading && <Spinner />}
               <input ref={cam} type="file" accept="image/*" capture="environment" hidden onChange={pick} />
               <input ref={gal} type="file" accept="image/*,application/pdf" hidden onChange={pick} />

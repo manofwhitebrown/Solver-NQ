@@ -1,3 +1,9 @@
+## Phase 3 fix round (13 Nov 2026)
+- Done: Answer view never renders a blank or raw-JSON answer (`incomplete.ts`, `IncompleteState` with Ask again, 4 tests). Added regression tests for the engine fixes AI-1 landed (5xx on every model says "server", cut-off MAX_TOKENS reply moves to the next model, real 429s still say "exhausted").
+- Verified on main after AI-1's commit: crop = full image, scan Ask auto-sends, offline bubble at top and auto-dismisses, links 44 px. 368 tests, lint 0, build ok.
+- Next (Phase 4): tablet two-pane Answer layout once AI-1 ships a `TwoPane` primitive; i18n string file for the Answer screen.
+- Note for the manager: several AIs fixed the same QA bugs at once; `docs/tasks/phase3b/README.md` is the source of truth for bug state.
+
 ## Done (Phase 2)
 - P0: `mathToPlain` in `src/features/answer/plainText.ts`, re-exported from `src/features/answer/index.ts`; 25 unit tests.
 - Seen in a real browser via `npm run shots` (answer learn/answer/wide-math/code/long-word/mismatch, graph) at phone 390 and laptop 1280, light/dark: layout, model chip + Retry, final answer card, step cards, graph legend and zoom buttons all fine. Layout checks: no findings; axe: 0 violations. Screenshots committed in `docs/screenshots/`.

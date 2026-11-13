@@ -212,3 +212,31 @@ describe('cooldown math', () => {
     expect(e.code).toBe('server');
   });
 });
+
+describe('honest failure reporting', () => {
+  it('server errors on every model say "server", not "limits used up"', async () => {
+    seed([['k1', 'A']], ['m-a', 'm-b']);
+    fetchMock.mockResolvedValue(fail(503));
+    await expect(callWithFallback(req, opts)).rejects.toMatchObject({ code: 'server' });
+  });
+
+  it('a reply cut off by the token limit is not accepted; the next model answers', async () => {
+    seed([['k1', 'A']], ['m-a', 'm-b']);
+    const cut = { ok: true, status: 200, text: async () => '', json: async () => ({ candidates: [{ finishReason: 'MAX_TOKENS', content: { parts: [{ text: '{"finalAnswer":"x' }] } }] }) };
+    fetchMock.mockResolvedValueOnce(cut).mockResolvedValueOnce(cut).mockResolvedValueOnce(ok('from b'));
+    const r = await callWithFallback(req, opts);
+    expect(r).toMatchObject({ text: 'from b', model: 'm-b' });
+  });
+
+  it('an empty reply everywhere is reported as a service problem, never as quota', async () => {
+    seed([['k1', 'A']], ['m-a']);
+    fetchMock.mockResolvedValue(ok(''));
+    await expect(callWithFallback(req, opts)).rejects.toMatchObject({ code: 'server' });
+  });
+
+  it('real quota failures still say exhausted', async () => {
+    seed([['k1', 'A']], ['m-a']);
+    fetchMock.mockResolvedValue(fail(429, 'RESOURCE_EXHAUSTED'));
+    await expect(callWithFallback(req, opts)).rejects.toMatchObject({ code: 'exhausted' });
+  });
+});

@@ -16,6 +16,7 @@ import { PhoneBar } from './PhoneBar';
 import { QuestionCard } from './QuestionCard';
 import { findGraphable } from './graphFind';
 import { Icon } from './icons';
+import { isIncompleteAnswer } from './incomplete';
 import { ModelLabel } from './ModelLabel';
 import { Steps } from './Steps';
 import { TagsSheet } from './TagsSheet';
@@ -42,6 +43,9 @@ export default function AnswerPage() {
     <Shell><EmptyState title="Could not open this answer" text={state.message}
       action={<Button onClick={retry}>Retry</Button>} /></Shell>
   );
+  if (isIncompleteAnswer(state.a)) return (
+    <Shell><IncompleteState q={state.q} /></Shell>
+  );
   return (
     <Shell>
       <AnswerBody key={state.a.id} q={state.q} a={state.a} updateQuestion={updateQuestion} addFollowUp={addFollowUp} />
@@ -59,6 +63,27 @@ const Shell = ({ children }: { children: React.ReactNode }) => (
     {children}
   </>
 );
+
+/** A saved answer with nothing readable (blank, or the model's raw cut-off JSON): never render it, offer to ask again. */
+function IncompleteState({ q }: { q: Question }) {
+  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
+  const askAgain = async () => {
+    setBusy(true);
+    try {
+      const r = await ai.askQuestion({ text: q.text, subject: q.subject, mode: 'learn' }, undefined, { skipCache: true });
+      if ('answerId' in r) navigate(`/answer/${r.answerId}`, { replace: true });
+      else toast('Saved. It will be answered as soon as the AI is available.', 'success');
+    } catch (e) { toast(e instanceof Error ? e.message : 'Could not ask again', 'error'); } finally { setBusy(false); }
+  };
+  return (
+    <Stack gap={4}>
+      <QuestionCard subject={q.subject} text={q.text} />
+      <EmptyState title="This answer is incomplete" text="The AI stopped before it finished. Nothing useful was saved, so ask again."
+        action={<Button onClick={() => void askAgain()} disabled={busy}>{busy ? 'Asking...' : 'Ask again'}</Button>} />
+    </Stack>
+  );
+}
 
 function LoadingSkeleton() {
   return (

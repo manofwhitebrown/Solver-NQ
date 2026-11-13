@@ -4,6 +4,7 @@ import { itemsToMarkdown } from './markdown';
 import { markdownToPlain, plainTitle } from './plaintext';
 import { makeFilename } from './filename';
 import { filterItems } from './pack';
+import { dropIncomplete, PRETTY_PACK_LIMIT } from './complete';
 import { loadImage } from './image';
 import { resolveOptions, type ExportConfig, type StudyPackFilter } from './options';
 
@@ -14,7 +15,7 @@ export interface BuildRequest {
   config?: ExportConfig; onProgress?: Progress;
   signal?: AbortSignal; onWarn?: (failed: number) => void;
 }
-export interface BuildResult { blob: Blob; filename: string; ms: number; count: number }
+export interface BuildResult { blob: Blob; filename: string; ms: number; count: number; skipped: number; usedTextMode?: boolean }
 
 const MIME: Record<string, string> = {
   md: 'text/markdown', txt: 'text/plain', json: 'application/json',
@@ -34,14 +35,23 @@ export const titleFor = (items: ExportItem[]): string =>
 /** Builds the file in memory. Saving/sharing is a separate step (saveFile). */
 export async function buildExport(req: BuildRequest): Promise<BuildResult> {
   const t0 = performance.now();
-  const opts = resolveOptions(req.config);
-  const items = req.format === 'pack'
+  let opts = resolveOptions(req.config);
+  const loaded = req.format === 'pack'
     ? filterItems(await listLibrary({}), req.filter ?? {})
     : await loadItems(req.ids ?? []);
+  const { items, skipped } = dropIncomplete(loaded); // cut-off or blank answers are not exported
+  // Very big pack: drawing every answer as an image would take many minutes, so use the fast text pages.
+  let usedTextMode = false;
+  if (req.format === 'pack' && opts.pdfMode === 'pretty' && items.length > PRETTY_PACK_LIMIT) {
+    opts = { ...opts, pdfMode: 'text' }; usedTextMode = true;
+  }
   if (opts.includeImage && ['pdf', 'pack', 'docx'].includes(req.format)) {
     for (const it of items) if (it.q.imageBlobId) it.image = await loadImage(it.q.imageBlobId);
   }
-  if (!items.length) throw new Error(req.format === 'pack' ? 'No answers match this filter' : 'Nothing to export');
+  if (!items.length) {
+    if (skipped) throw new Error(`${skipped === 1 ? 'This answer was' : 'These answers were'} cut off when saved, so there is nothing to export. Ask again, then export.`);
+    throw new Error(req.format === 'pack' ? 'No answers match this filter' : 'Nothing to export');
+  }
 
   const title = req.format === 'pack' ? (req.filter?.subject ? 'Study pack' : 'All subjects') : titleFor(items);
   const subject = req.format === 'pack' ? (req.filter?.subject ?? 'Study pack') : items[0].q.subject;
@@ -65,5 +75,5 @@ export async function buildExport(req: BuildRequest): Promise<BuildResult> {
     const md = itemsToMarkdown(items, opts, title, req.format === 'md'); // front matter for Obsidian, Markdown only
     blob = new Blob([req.format === 'txt' ? markdownToPlain(md) : md], { type: MIME[req.format] });
   }
-  return { blob, filename: makeFilename(subject, title, ext), ms: Math.round(performance.now() - t0), count: items.length };
+  return { blob, filename: makeFilename(subject, title, ext), ms: Math.round(performance.now() - t0), count: items.length, skipped, usedTextMode };
 }

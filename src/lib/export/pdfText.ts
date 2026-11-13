@@ -43,8 +43,10 @@ export async function buildTextPdf(
       y += h + lh;
     }
     if (a) {
-      write('Final answer', opts.fontSize, true);
-      write(markdownToPlain(a.finalAnswer), opts.fontSize);
+      if (a.finalAnswer.trim()) {
+        write('Final answer', opts.fontSize, true);
+        write(markdownToPlain(a.finalAnswer), opts.fontSize);
+      }
       if (opts.stepsMode === 'full') {
         a.steps.forEach((s, n) => {
           write(`Step ${n + 1}: ${s.title}`, opts.fontSize, true);

@@ -4,6 +4,7 @@ import type { ExportConfig, StudyPackFilter } from './options';
 
 export { saveFile } from './saveFile';
 export { buildExport, loadItems } from './build';
+export { answerHealth, dropIncomplete } from './complete';
 export type { ExportFormat, BuildRequest, BuildResult, Progress } from './build';
 export type { ExportConfig, ResolvedOptions, StudyPackFilter } from './options';
 export { defaultOptions, resolveOptions } from './options';

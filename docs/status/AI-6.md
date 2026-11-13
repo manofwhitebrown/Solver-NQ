@@ -71,3 +71,21 @@
 3. Android: export a PDF, tap Save/Share, pick Drive or WhatsApp, confirm the file arrives and opens. Close the share sheet without choosing: no error should appear.
 4. Android: export DOCX and open it from the share sheet in Word/Docs.
 
+
+
+# Phase 3 fix round + Phase 4 start (AI-6, 13 Nov 2026)
+
+## Done
+- Checked the QA bugs: AI-1/AI-3/AI-4 had already fixed B1-B7 in code before I started, so I did not redo them.
+- Export now **skips cut-off or blank answers** (older saves from before the cut-off-reply fix) with a clear note on the result card; if everything is skipped the message says to ask again. No empty "Final answer" heading in Markdown, DOCX, text PDF or pretty PDF. `src/lib/export/complete.ts` + 4 tests.
+- Study pack at scale: measured **600 answers, text pages: 0.56 s, 1.09 MB, 218 pages** (Node, no browser). Pretty mode costs about 1.2 s per answer, so a pack over 120 answers now switches to text pages automatically and says so on the result card.
+
+## Not verified
+- Pretty-mode packs above ~20 answers were not re-measured in a browser; the 120-answer limit comes from the earlier 20-answer timing (23-26 s).
+- Real Android share sheet, DOCX in real Word.
+
+## Still to do (Phase 4, mine)
+- Word export polish (headings numbering, math as images instead of plain text), UI language pack groundwork if AI-1 wants help.
+
+## Needs from others
+- AI-2: with `incomplete` now a failure kind, the transient-cooldown edge case: for 30 s after a server failure a retry can still say "limits used up" (cooldown counted by `earliestRetry`). Suggest cooldown kind `transient` that `earliestRetry` ignores; add a test.

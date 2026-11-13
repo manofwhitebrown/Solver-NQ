@@ -25,7 +25,7 @@ export async function buildDocx(items: ExportItem[], opts: ResolvedOptions, titl
       })] }));
     }
     if (!a) continue;
-    children.push(para('Final answer', true), ...markdownToPlain(a.finalAnswer).split('\n').map((l) => para(l)));
+    if (a.finalAnswer.trim()) children.push(para('Final answer', true), ...markdownToPlain(a.finalAnswer).split('\n').map((l) => para(l)));
     if (opts.stepsMode === 'full') {
       a.steps.forEach((s, i) => {
         children.push(new Paragraph({ text: `Step ${i + 1}: ${s.title}`, heading: HeadingLevel.HEADING_2 }));

@@ -16,7 +16,7 @@ export function itemToMarkdown(item: ExportItem, opts: ResolvedOptions, level = 
   if (opts.includeDate) out.push(`*${q.subject} · ${dateStamp(q.createdAt)}*`);
   out.push(`**Question**\n\n${q.text}`);
   if (!a) return out.join('\n\n');
-  out.push(`**Final answer**\n\n${a.finalAnswer}`);
+  if (a.finalAnswer.trim()) out.push(`**Final answer**\n\n${a.finalAnswer}`);
   if (opts.stepsMode === 'full') {
     a.steps.forEach((s, i) => out.push(`${'#'.repeat(level + 1)} Step ${i + 1}: ${s.title}\n\n${s.body}`));
     if (a.summary) out.push(`**Summary**\n\n${a.summary}`);

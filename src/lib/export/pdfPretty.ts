@@ -15,7 +15,7 @@ async function blocksFor(item: ExportItem, opts: ResolvedOptions): Promise<strin
   out.push(`<h2>${await mdToHtml(q.text.split('\n')[0])}</h2>${meta}${rest ? `<p>${await mdToHtml(rest)}</p>` : ''}` +
     (image ? `<img src="${image.dataUrl}" style="max-width:70%;max-height:280px;margin:.4em 0">` : ''));
   if (!a) return out;
-  out.push(`<h3>Final answer</h3><p>${await mdToHtml(a.finalAnswer)}</p>`);
+  if (a.finalAnswer.trim()) out.push(`<h3>Final answer</h3><p>${await mdToHtml(a.finalAnswer)}</p>`);
   if (opts.stepsMode === 'full') {
     for (const [i, s] of a.steps.entries()) {
       out.push(`<h4>Step ${i + 1}: ${await mdToHtml(s.title)}</h4><p>${await mdToHtml(s.body)}</p>`);

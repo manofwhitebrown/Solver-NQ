@@ -15,6 +15,8 @@ export function ResultCard({ result, onShareError }: { result: BuildResult; onSh
       <p className="text-lg font-semibold text-ink">Ready</p>
       <p className="break-words text-base text-ink">{result.filename}</p>
       <p className="text-sm text-muted">{result.count} answer{result.count === 1 ? '' : 's'} · {fmtSize(result.blob.size)} · made in {(result.ms / 1000).toFixed(1)}s</p>
+      {result.skipped > 0 && <p className="text-sm text-muted">{result.skipped} cut-off answer{result.skipped > 1 ? 's were' : ' was'} skipped. Ask {result.skipped > 1 ? 'them' : 'it'} again to include {result.skipped > 1 ? 'them' : 'it'}.</p>}
+      {result.usedTextMode && <p className="text-sm text-muted">Big pack: made with fast text pages so it finishes in seconds. Formulas appear as plain text.</p>}
       <div className="flex flex-col gap-3 pt-2 sm:flex-row">
         <Button block onClick={() => saveFile(result.blob, result.filename).catch((e) => onShareError(String(e?.message ?? e)))}>
           Save / Share

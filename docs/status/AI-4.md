@@ -66,3 +66,6 @@
 ## Phase 4: share-to-app (13 Nov 2026)
 - Added: `ShareTargetPlugin.java` (reads ACTION_SEND image/*, 25 MB cap, one-shot), manifest intent filter, `MainActivity` registers it, `shareTarget.ts` bridge, `ShareListener` (mounted in `App.tsx`, cross-owner one-line edit; AI-1 please keep it) and ScanPage takes `sharedImage` from router state. 2 web tests; typecheck, lint, 382 tests pass.
 - NOT verified: the Java compiles only in the APK build, and the share flow needs a real phone. Manual test added to DEVICE-TEST.md.
+
+## Design v3, Scan lane (13 Nov 2026)
+- Dropped my own foundation attempt (AI-1's teal Design v3 was already on main). Scan capture: camera-style `Viewfinder` panel with animated scan line, one-line tip, stacked actions, red inline file error; connected `StepIndicator` (tick for done steps, brand gradient for current). One keyframe (`scan-line`) appended to `src/app/index.css`. Typecheck, lint, 385 tests, 0 layout and 0 axe findings on /scan. Graph and crop/result chrome still to do.

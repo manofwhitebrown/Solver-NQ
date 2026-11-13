@@ -8,6 +8,7 @@ import { isNative } from '@/lib/ocr/platform';
 import { CropEditor } from './CropEditor';
 import { LangPacks } from './LangPacks';
 import { StepIndicator } from './StepIndicator';
+import { Viewfinder } from './Viewfinder';
 import { blobToDataUrl, cropBlob, loadBitmap, rotate90 } from './imageTools';
 import type { Rect } from './cropMath';
 import { takeNativePhoto } from './nativeCamera';
@@ -175,15 +176,18 @@ export function ScanPage() {
           <PdfPicker file={pdf} onCancel={cancelPdf} onPage={img => { setPdf(null); void open(img); }} />
         ) : !source ? (
           <Card className={dragging ? 'ring-2 ring-accent' : ''}>
-            <Stack gap={4} className="items-center text-center">
-              <Button size="lg" block onClick={() => (isNative() ? native('camera') : cam.current?.click())}>Take a photo</Button>
-              <Button variant="secondary" block onClick={() => gal.current?.click()}>Choose image or PDF</Button>
-              <p className="text-sm text-ink-2">
-                1. Take a photo. 2. Drag the corners around the question. 3. Check the text and ask.
+            <Stack gap={5} className="items-center text-center">
+              <Viewfinder />
+              <p className="text-base text-ink-2">
+                Fit one question in the frame, in good light.
                 {!touch && ' You can also paste or drop an image here.'}
               </p>
+              <div className="w-full space-y-3">
+                <Button size="lg" block onClick={() => (isNative() ? native('camera') : cam.current?.click())}>Take a photo</Button>
+                <Button variant="secondary" block onClick={() => gal.current?.click()}>Choose image or PDF</Button>
+              </div>
+              {fileError && <p role="alert" className="rounded-md bg-bad-soft px-3 py-2 text-base text-bad">{fileError}</p>}
               <Button variant="ghost" size="sm" className="min-h-[44px]" onClick={() => setLangs(true)}>Scan languages</Button>
-              {fileError && <p role="alert" className="text-base text-bad">{fileError}</p>}
               {loading && <Spinner />}
               <input ref={cam} type="file" accept="image/*" capture="environment" hidden onChange={pick} />
               <input ref={gal} type="file" accept="image/*,application/pdf" hidden onChange={pick} />

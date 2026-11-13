@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AiError, askQuestion } from '@/lib/ai';
+import { AiError, askQuestion, previewAnswer } from '@/lib/ai';
 import type { AiErrorCode } from '@/lib/ai/errors';
 import type { Mode, Subject } from '@/types';
 
@@ -13,6 +13,7 @@ export function useAsk() {
   const [retryAt, setRetryAt] = useState<number | undefined>();
   const [error, setError] = useState('');
   const [errorCode, setErrorCode] = useState<AiErrorCode | undefined>();
+  const [preview, setPreview] = useState<string[]>([]);
   const ctrl = useRef<AbortController | null>(null);
 
   useEffect(() => () => ctrl.current?.abort(), []);
@@ -23,14 +24,22 @@ export function useAsk() {
     ctrl.current = c;
     setError('');
     setErrorCode(undefined);
+    setPreview([]);
     setStatus('busy');
     try {
-      const r = await askQuestion(input, c.signal);
-      if ('queued' in r) { setRetryAt(r.retryAt); setStatus('queued'); return true; }
+      // Streamed replies: show the step titles written so far. Display only; the saved answer is parsed from the finished reply.
+      const onPartial = (t: string) => {
+        if (c.signal.aborted) return;
+        const titles = (previewAnswer(t)?.steps ?? []).map(x => x.title.trim()).filter(Boolean);
+        setPreview(prev => (titles.length === prev.length ? prev : titles));
+      };
+      const r = await askQuestion(input, c.signal, { onPartial });
+      if ('queued' in r) { setPreview([]); setRetryAt(r.retryAt); setStatus('queued'); return true; }
       navigate(`/answer/${r.answerId}`);
       return true;
     } catch (e) {
       setStatus('idle');
+      setPreview([]);
       if (!(e instanceof AiError && e.code === 'cancelled')) {
         setError(e instanceof AiError ? e.message : 'Something went wrong. Please try again.');
         setErrorCode(e instanceof AiError ? e.code : 'unknown');
@@ -42,5 +51,5 @@ export function useAsk() {
   const cancel = useCallback(() => ctrl.current?.abort(), []);
   const reset = useCallback(() => { setStatus('idle'); setError(''); setErrorCode(undefined); }, []);
   const clearError = useCallback(() => { setError(''); setErrorCode(undefined); }, []);
-  return { status, error, errorCode, submit, cancel, reset, clearError, retryAt };
+  return { status, error, errorCode, preview, submit, cancel, reset, clearError, retryAt };
 }

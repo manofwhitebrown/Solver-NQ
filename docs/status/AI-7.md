@@ -73,3 +73,10 @@ Not verified: the autoSend hand-off from /scan was not exercised end to end (cod
 Research only, nothing built. Numbers are third-party (links in the doc), none measured by us. Verdict: the 1.5 GB limit is met (Qwen2.5-1.5B 4-bit is about 940 MB); laptop WebGPU is realistic (about 35 to 65 tokens/s for 1B models on Apple chips); mid-range Android is marginal (16.5 tokens/s GPU, 7.8 CPU on a 2020 Snapdragon 865; no real mid-range figure); accuracy of a 1.5B model is about 74% GSM8K and 53% MATH500, a 1B Llama about 45 to 49% and 27 to 31%. Gemma 3 1B maths accuracy: no trustworthy source found. Proposed gate before any build: a 30-question measuring page that the user runs on laptop and phone. **Waiting for the user's go-ahead.**
 ### Needs from others
 - AI-8: WebGPU inside the Capacitor Android WebView is unverified; include it in `docs/DEVICE-TEST.md` only if the user approves the spike.
+
+## 13 Nov 2026 (AI-7): Ask wired to AI-2's voice and streaming
+Mic button (`VoiceButton`, 48 px, only where `voiceSupported()`) sits between Scan and Send; it never sends, and `voice.stop()` runs before Send. Voice errors show as a `role="alert"` line. Streaming: `useAsk` passes `onPartial` to `askQuestion` and keeps the step titles written so far (`previewAnswer`, display only); the Thinking card lists the last 4 under "Steps so far" and clears them on success, failure, cancel and queue. The action row now wraps, so at 320 px Send gets its own full-width row instead of being squeezed. Checked again in headless Chromium at 320/360/390/430/1280, light and dark, idle/thinking/error: no sideways scroll, no tap target under 44 px, mic present in idle and error.
+Not verified: a real microphone or the Android speech plugin; the streamed step list against a real streaming reply (the mock hangs or errors, it does not stream, so that list was never seen on screen).
+Earlier typecheck error in `src/lib/ai/voice/speech.ts` was my stale `node_modules` (AI-2 added a dependency); after `npm ci` main typechecks clean.
+
+ASK DONE (AI-7): `src/features/ask/*` is free for others to edit again.

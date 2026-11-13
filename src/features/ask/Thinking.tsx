@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Button, Card, Spinner } from '@/components/ui';
+import { mathToPlain } from '@/features/answer/plainText';
 
 /** After this many seconds we say why it is slow: a resting model hands over to the next one. */
 const SLOW_AFTER_S = 12;
 
 /** Shown while the AI works: the question being answered, a spinner, a slow-reply hint after 12 s, Cancel. */
-export function Thinking({ question, hasPhoto, onCancel }: { question: string; hasPhoto?: boolean; onCancel: () => void }) {
+export function Thinking({ question, hasPhoto, preview = [], onCancel }: { question: string; hasPhoto?: boolean; preview?: string[]; onCancel: () => void }) {
   const [secs, setSecs] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setSecs(s => s + 1), 1000);
@@ -27,6 +28,11 @@ export function Thinking({ question, hasPhoto, onCancel }: { question: string; h
         <p className="line-clamp-2 w-full break-words rounded-md bg-raised px-4 py-3 text-sm text-ink-2">
           {shown || 'Your photo'}
         </p>
+      )}
+      {preview.length > 0 && (
+        <ol className="w-full space-y-1 text-left text-sm text-ink-2" aria-label="Steps so far">
+          {preview.slice(-4).map((t, i) => <li key={i} className="line-clamp-1 break-words">{preview.length > 4 ? preview.length - 4 + i + 1 : i + 1}. {mathToPlain(t)}</li>)}
+        </ol>
       )}
       <Button variant="secondary" onClick={onCancel}>Cancel</Button>
     </Card>

@@ -1,8 +1,9 @@
-import { useEffect, useState, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, Card, Page, PageHeader, Section, Stack, Textarea } from '@/components/ui';
 
 import { IMAGE_ONLY_TEXT } from '@/lib/ai';
+import { useVoiceInput, VoiceButton } from '@/lib/ai/voice';
 import { useSettings } from '@/lib/settings';
 import type { Mode, Subject } from '@/types';
 import { NoKeyCard, useNoKey } from './NoKeyCard';
@@ -25,8 +26,11 @@ export function AskPage() {
   const [subject, setSubject] = useState<Subject>(settings.defaultSubject);
   const [mode, setMode] = useState<Mode>(settings.defaultMode);
   const [image, setImage] = useState<string | undefined>();
-  const { status, error, errorCode, submit, cancel, reset, clearError, retryAt } = useAsk();
+  const { status, error, errorCode, preview, submit, cancel, reset, clearError, retryAt } = useAsk();
   const noKey = useNoKey();
+  const textRef = useRef(text);
+  textRef.current = text;
+  const voice = useVoiceInput(() => textRef.current, setText);
   const location = useLocation();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -61,6 +65,7 @@ export function AskPage() {
   const canSend = text.trim().length > 0 || !!image;
   const send = async () => {
     if (!canSend || status === 'busy') return;
+    voice.stop();
     const ok = await submit({ text: text.trim() || IMAGE_ONLY_TEXT, subject, mode, imageDataUrl: image });
     if (ok) { setText(''); setImage(undefined); }
   };
@@ -75,7 +80,7 @@ export function AskPage() {
         {noKey ? (
           <NoKeyCard />
         ) : status === 'busy' ? (
-          <Thinking question={text} hasPhoto={!!image} onCancel={cancel} />
+          <Thinking question={text} hasPhoto={!!image} preview={preview} onCancel={cancel} />
         ) : status === 'queued' ? (
           <QueuedCard retryAt={retryAt} onAskAnother={reset} />
         ) : (
@@ -85,13 +90,15 @@ export function AskPage() {
                 <Textarea aria-label="Your question" placeholder="e.g. Solve 2x + 5 = 17" value={text}
                   onChange={e => setText(e.target.value)} onKeyDown={onKey} className="!min-h-[140px] !resize-none !border-transparent !bg-transparent !px-0 text-read focus:!ring-0 lg:!min-h-[160px]" />
                 {image && <ImagePreview src={image} onRemove={() => setImage(undefined)} />}
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   <ScanSlot />
-                  <Button className="min-w-0 flex-1" disabled={!canSend} onClick={() => void send()}>
+                  {voice.supported && <VoiceButton listening={voice.listening} onToggle={voice.toggle} />}
+                  <Button className="min-w-[8rem] flex-1" disabled={!canSend} onClick={() => void send()}>
                     Send
                     <span className="hidden text-xs font-medium opacity-70 [@media(hover:hover)_and_(pointer:fine)]:inline">Ctrl+Enter</span>
                   </Button>
                 </div>
+                {voice.error && <p role="alert" className="text-sm text-bad">{voice.error}</p>}
                 <FallbackNote />
               </Stack>
             </Card>

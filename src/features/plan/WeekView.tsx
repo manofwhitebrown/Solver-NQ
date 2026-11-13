@@ -6,7 +6,7 @@ export function WeekView({ days, selected, onSelect, doneIds }: {
   days: PlanDay[]; selected: string; onSelect: (day: string) => void; doneIds: string[];
 }) {
   return (
-    <div className="grid grid-cols-7 gap-1 sm:gap-2" role="group" aria-label="This week">
+    <div className="grid grid-flow-col auto-cols-[minmax(44px,1fr)] gap-1 overflow-x-auto sm:gap-2" role="group" aria-label="This week">
       {days.slice(0, 7).map((d) => {
         const real = d.tasks.filter((t) => t.kind !== 'rest');
         const all = real.length > 0 && real.every((t) => doneIds.includes(t.id));

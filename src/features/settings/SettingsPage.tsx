@@ -3,14 +3,19 @@ import { Link } from 'react-router-dom';
 import { Button, Card, Dialog, Field, Input, PageHeader, Section as Group, Select, Stack, Tabs, toast } from '@/components/ui';
 import { SUGGESTED_MODELS, updateSettings, useSettings, type Provider, type ThemePref } from '@/lib/settings';
 import type { Mode, Subject } from '@/types';
+import { DataIcon, InfoIcon, PaletteIcon, SlidersIcon, SparklesIcon } from '@/components/ui/icons';
 import { AiSettingsPanel } from '@/features/ai-settings';
 import { ApiKeyField } from './ApiKeyField';
 import { clearAllData } from './clearData';
 import { MODES, OCR_LANGS, PROVIDERS, SUBJECTS } from './options';
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({ title, icon, children }: { title: string; icon: ReactNode; children: ReactNode }) {
   return (
-    <Group title={title}>
+    <Group className="mb-6">
+      <div className="mb-3 flex items-center gap-3">
+        <span className="flex h-9 w-9 items-center justify-center rounded-md bg-accent-soft text-accent">{icon}</span>
+        <h2 className="text-xl font-bold text-ink">{title}</h2>
+      </div>
       <Card><Stack gap={5}>{children}</Stack></Card>
     </Group>
   );
@@ -30,12 +35,12 @@ export function SettingsPage() {
     <>
       <PageHeader title="Settings" />
 
-      <Section title="Appearance">
+      <Section title="Appearance" icon={<PaletteIcon size={20} />}>
         <Tabs<ThemePref> label="Theme" value={s.theme} onChange={(theme) => updateSettings({ theme })}
           items={[{ value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]} />
       </Section>
 
-      <Section title="AI">
+      <Section title="AI" icon={<SparklesIcon size={20} />}>
         <p className="text-sm text-muted">Free Gemini works best. <Link to="/welcome" className="inline-flex min-h-[44px] items-center font-semibold text-accent underline">Show setup guide</Link></p>
         <AiSettingsPanel />
         <details className="group">
@@ -60,7 +65,7 @@ export function SettingsPage() {
         </details>
       </Section>
 
-      <Section title="Defaults">
+      <Section title="Defaults" icon={<SlidersIcon size={20} />}>
         <Field label="Subject" htmlFor="subject">
           <Select id="subject" value={s.defaultSubject} options={SUBJECTS} onChange={(e) => updateSettings({ defaultSubject: e.target.value as Subject })} />
         </Field>
@@ -72,14 +77,14 @@ export function SettingsPage() {
         </Field>
       </Section>
 
-      <Section title="Data">
+      <Section title="Data" icon={<DataIcon size={20} />}>
         <p className="text-base text-muted">
           Removes your library, flashcards, queue and settings from this device. Export a backup first if you want to keep them.
         </p>
         <Button variant="danger" onClick={() => setConfirm(true)}>Clear all data</Button>
       </Section>
 
-      <Section title="About">
+      <Section title="About" icon={<InfoIcon size={20} />}>
         <p className="text-base text-muted">Solver-NQ keeps everything on this device. Your key is sent only to your AI provider.</p>
         <p className="mt-3 text-base font-semibold text-ink">Built by Mohammed Abdul Nayeem</p>
       </Section>

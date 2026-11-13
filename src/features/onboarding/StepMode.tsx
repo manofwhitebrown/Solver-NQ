@@ -15,7 +15,7 @@ export function StepMode() {
         <button
           key={o.value} type="button" role="radio" aria-checked={defaultMode === o.value}
           onClick={() => updateSettings({ defaultMode: o.value })}
-          className={`rounded-lg border p-5 text-left transition ${defaultMode === o.value ? 'border-accent bg-accent-soft' : 'border-line-strong bg-surface hover:bg-raised'}`}
+          className={`rounded-lg border-2 p-5 text-left transition ${defaultMode === o.value ? 'border-accent bg-accent-soft shadow-soft' : 'border-line bg-surface hover:border-line-strong'}`}
         >
           <div className="text-lg font-bold text-ink">{o.title}</div>
           <div className="mt-1 text-base text-ink-2">{o.text}</div>

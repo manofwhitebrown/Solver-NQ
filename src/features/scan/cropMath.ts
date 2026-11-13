@@ -1,6 +1,9 @@
 // Pure crop-rectangle helpers (normalised 0..1 coordinates), easy to unit test.
 export interface Rect { x: number; y: number; w: number; h: number }
 const MIN = 0.05;
+
+/** The crop box a new photo starts with: the whole image. An inset chopped the first and last letters of tight photos. */
+export const DEFAULT_CROP: Rect = { x: 0, y: 0, w: 1, h: 1 };
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 export function clampRect(r: Rect): Rect {

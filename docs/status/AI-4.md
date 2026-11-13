@@ -70,3 +70,63 @@
 ## Design v3, Scan lane (13 Nov 2026)
 - Dropped my own foundation attempt (AI-1's teal Design v3 was already on main). Scan capture: camera-style `Viewfinder` panel with animated scan line, one-line tip, stacked actions, red inline file error; connected `StepIndicator` (tick for done steps, brand gradient for current). One keyframe (`scan-line`) appended to `src/app/index.css`. Typecheck, lint, 385 tests, 0 layout and 0 axe findings on /scan. Graph and crop/result chrome still to do.
 - Graph: controls grouped in a Card, plot on an elevated rounded panel with thicker curves, "Zeros and intersections" checkbox now a 44 px hit area (it was the last tap-target finding on /graph). 385 tests, 0 layout findings.
+
+## Phase 6 leftovers (13 Nov 2026)
+### Done
+- **R1 fixed: `/scan` no longer scrolls sideways.** Cause: the step names ("Capture", "Crop", "Check text") were `whitespace-nowrap`, so the three steps needed 363 px. Now below 400 px only the current step shows its name; the others show the number or tick (the names stay in the page for screen readers via `sr-only`). Also the action bar buttons use less padding below 360 px (at 320 px "Read another" was clipped by its own button).
+  - Measured in headless Chromium (mobile emulation) before and after: before, 320 and 360 px were both 363 px wide; after, scroll width equals the screen width at **320, 360, 390 and 430 px, light and dark, on the capture step, the crop step and the result step** (checked each of the three steps, not only the first). I looked at the 320 px dark screenshot of the result step: tick, tick, "3 Check text", action bar not clipped. The script was a throwaway and is not committed.
+  - Regression test: `StepIndicator.test.tsx` (5 tests) guards the rule that fixed it (every label except the current one is narrow-hidden, for steps 1, 2 and 3). **It checks the markup, not pixels.** Real widths are only checked by the headless run above, so AI-3 still needs to do what R1 asks (see Needs from others).
+- **7b (wrong file type) verified and tightened.** Through the real file inputs in headless Chromium at 320 px: a `.txt` file, a file with no extension (empty type), an unknown-extension file and a `.heic` file each show a red message inside the page, and it is **still there 9 seconds later** (the toast is gone by then). The `.txt` also checked through the camera input. No sideways scroll with the message showing.
+  - What changed: (a) new `fileCheck.ts` (`fileKind`) decides pdf / image / heic / unsupported, and falls back to the file extension when the picker gives an empty or generic type (a `scan.jpg` with empty type used to be refused, now it opens); (b) HEIC gets its own message ("This phone saved the photo as HEIC...Take it as a JPG...") instead of the generic "couldn't read that image"; (c) the message now also shows on the crop step (a bad file picked or pasted while a photo is open used to show only a toast); (d) dropping any file goes through the same check, so a dropped `.txt` shows the persistent message too.
+  - Tests: `fileCheck.test.ts` (5 tests: .txt, empty type, HEIC by type and by name, normal photos/PDF, message wording).
+  - **Limit:** my `.heic` test file was random bytes, not a real HEIC. On a real phone a WebView that can decode HEIC will open it instead of showing the message. That is fine, but it has not been tried.
+- **Tight photo read through the default crop is complete (job 4):** the default box is now one exported constant `DEFAULT_CROP` (whole image) used by `ScanPage`. 7 new tests in `cropMath.test.ts`: it is the whole image; `toPixels` covers every pixel for tight and odd sizes (1000x120, 3000x200, 4032x3024, 641x77, 1x1, 120x1000); the 1600 px downscale keeps the shape; a handle touched without moving leaves the box unchanged. **These test the crop rectangle and size maths; they do not run OCR on a photo.** The real read of a tight photo was verified earlier by the manager (B1).
+- Checks run before this push: `npm run typecheck` clean, `npm run lint` clean, `npm test` 407 passed (62 files), `npm run e2e` 15/15.
+
+### Real-phone steps: share a photo to Solver-NQ (Android only; not verified by me)
+I wrote this feature from code and docs only. Nobody has run it on a phone, and the Java (`ShareTargetPlugin.java`) is only compiled in the APK build. The laptop/web app has no share target.
+
+**Before you start**
+1. On GitHub: Actions > latest green **Android APK** run on `main` > download the artifact > unzip > install the APK over the old one (allow "install unknown apps" if asked).
+2. Open Solver-NQ once and finish or skip onboarding.
+3. Put 2 different photos of a printed question in the phone Gallery or Google Photos (call them Photo A and Photo B). Optional: one photo over 25 MB, one HEIC.
+
+**Test 1: app closed (cold start)**
+1. Phone Settings > Apps > Solver-NQ > Force stop.
+2. Open Gallery, open Photo A, tap Share.
+3. In the share sheet find **Solver-NQ** (scroll the app row or tap "More"). Tap it.
+4. Expect: the app opens straight on **Scan a question** showing Photo A with a crop box around the whole photo, the bottom bar has Rotate / Enhance / Read text, and the tab bar is hidden.
+5. Tap **Read text**. Expect the question text to appear.
+- Pass: Photo A is the picture shown. Fail: Solver-NQ is not in the share sheet, the app opens on Ask or Home, the screen is blank, or the app closes.
+
+**Test 2: app open on another screen**
+1. Open Solver-NQ, go to Library. Press the Home button (do not close the app).
+2. Share Photo B from Gallery to Solver-NQ.
+3. Expect: the app comes back on **Scan** with **Photo B** (not Photo A).
+- Fail: it opens on Library, or shows an old photo.
+
+**Test 3: photo only once**
+1. After Test 2, tap the Back arrow, then press Home, then reopen Solver-NQ from the recent apps list (do not share anything).
+2. Expect: no photo is loaded again. The Scan page shows the capture card (or whatever you left), not Photo B again.
+
+**Test 4: too big (only if you have an image over 25 MB)**
+1. Share it to Solver-NQ.
+2. Expect: a message "That image is over 25 MB. Choose a smaller one." and the app stays on the screen it was on.
+
+**Test 5: HEIC (only if your phone makes them)**
+1. Share a HEIC photo to Solver-NQ.
+2. Expect one of two things: the crop step opens (your phone's WebView can read HEIC), or a red message on the Scan page that starts "This phone saved the photo as HEIC". Anything else (blank screen, crash, no message) is a failure.
+
+**Test 6: not offered for other files**
+1. Share a PDF or a text file from Files. Solver-NQ should **not** appear in that share sheet (it only accepts images).
+
+**What to send back**
+- For each test: Pass or Fail, a screenshot of the failure, the phone model, the Android version, and the number of the Android APK run you installed.
+- If the APK build itself fails on `ShareTargetPlugin.java`, paste the error from the Actions log.
+
+### Needs from others
+- **AI-3:** R1 asks you to add 320 and 360 to the route-overflow check in `scripts/e2e.mjs`. Please also check the scan page in its **crop and result states**, not only the empty capture state: upload an image through `input[type=file]` (second input), and for the result state seed `sessionStorage['solvernq.scanQueue']` with one `{id, dataUrl, text, confidence, busy:false}` item before load. Compare `document.documentElement.scrollWidth` with the width you asked for, **not** `window.innerWidth`: with `isMobile: true`, Chromium widens the layout to the page width, so `innerWidth` also reads 363 and the check passes while the page is broken (I got fooled by this). Use a fresh `createBrowserContext()` per state because `localStorage` is shared between pages.
+- **AI-8:** `docs/DEVICE-TEST.md` still says the .txt message is "We can only read photos and PDFs". It now reads "We can only read photos (JPG, PNG, WebP) and PDFs. Please choose one of those." Also add the HEIC message, and replace the "Share to Solver-NQ" section with the steps above when you next merge.
+### Notes for the manager
+- Cross-owner touch: none beyond my own paths (`src/features/scan/**`, `src/lib/ocr/errors.ts`).
+- Nothing in R1 or 7b needed a phone, but the share steps do. Items still unverified by anyone: share-to-app on a real device, real HEIC from a phone, ML Kit and camera.

@@ -10,14 +10,15 @@ import { LangPacks } from './LangPacks';
 import { StepIndicator } from './StepIndicator';
 import { Viewfinder } from './Viewfinder';
 import { blobToDataUrl, cropBlob, loadBitmap, rotate90 } from './imageTools';
-import type { Rect } from './cropMath';
+import { DEFAULT_CROP, type Rect } from './cropMath';
+import { fileKind } from './fileCheck';
 import { takeNativePhoto } from './nativeCamera';
 import { PdfPicker } from './PdfPicker';
 import { loadQueue, saveQueue } from './queue';
 import { ResultCard, type ScanItem } from './ResultCard';
 import type { ScanResult } from './result';
 
-const FULL: Rect = { x: 0, y: 0, w: 1, h: 1 }; // whole image: an inset chopped the first and last letters of tight photos
+const FULL: Rect = DEFAULT_CROP;
 
 export function ScanPage() {
   const nav = useNavigate();
@@ -37,13 +38,18 @@ export function ScanPage() {
   const cancelPdf = useCallback(() => setPdf(null), []);
   const open = useCallback(async (blob: Blob) => {
     setFileError('');
-    if (blob.type === 'application/pdf') { setPdf(blob); return; }
-    if (!/^image\/(jpeg|png|webp|gif|bmp|heic|heif)$/.test(blob.type)) { const m = friendlyMessage(new OcrError('unsupported')); setFileError(m); toast(m, 'error'); return; }
+    const kind = fileKind(blob as Blob & { name?: string });
+    if (kind === 'pdf') { setPdf(blob); return; }
+    if (kind === 'unsupported') { const m = friendlyMessage(new OcrError('unsupported')); setFileError(m); toast(m, 'error'); return; }
     setLoading(true);
     try {
       (await loadBitmap(blob)).close(); // validates size and that it decodes
       setSource(blob); setRect(FULL);
-    } catch (e) { const m = friendlyMessage(e); setFileError(m); toast(m, 'error'); }
+    } catch (e) {
+      // A HEIC the browser cannot decode gets its own, specific message.
+      const m = friendlyMessage(kind === 'heic' && !(e instanceof OcrError && e.code === 'too-large') ? new OcrError('heic') : e);
+      setFileError(m); toast(m, 'error');
+    }
     setLoading(false);
   }, []);
 
@@ -154,7 +160,7 @@ export function ScanPage() {
 
   const onDrop = (e: React.DragEvent) => {
     e.preventDefault(); setDragging(false);
-    const f = [...e.dataTransfer.files].find(x => x.type.startsWith('image/') || x.type === 'application/pdf');
+    const f = e.dataTransfer.files[0]; // open() shows the same persistent message as the picker for a wrong file
     if (f) void open(f); else toast('Please drop an image or PDF file.', 'error');
   };
 
@@ -201,6 +207,7 @@ export function ScanPage() {
                 <Button variant="ghost" size="sm" className="whitespace-nowrap" onClick={dismissHint}>Got it</Button>
               </p>
             )}
+            {fileError && <p role="alert" className="rounded-md bg-bad-soft px-3 py-2 text-base text-bad">{fileError}</p>}
             <CropEditor url={url} rect={rect} onChange={r => { setRect(r); if (hint) dismissHint(); }} />
           </Stack>
         )}
@@ -213,9 +220,9 @@ export function ScanPage() {
       </Stack>
       {source && !pdf && (
         <ActionBar>
-          <Button variant="secondary" className="whitespace-nowrap !px-3" onClick={async () => { setSource(await rotate90(source)); setRect(FULL); }}>Rotate</Button>
-          <Button variant={enhance ? 'secondary' : 'ghost'} className="whitespace-nowrap !px-3" aria-pressed={enhance} onClick={() => setEnhance(v => !v)}>Enhance</Button>
-          <Button className="ml-auto min-w-0 flex-1 whitespace-nowrap !px-4 sm:flex-none" onClick={addCrop}>{items.length ? 'Read another' : 'Read text'}</Button>
+          <Button variant="secondary" className="whitespace-nowrap !px-3 max-[359px]:!px-2" onClick={async () => { setSource(await rotate90(source)); setRect(FULL); }}>Rotate</Button>
+          <Button variant={enhance ? 'secondary' : 'ghost'} className="whitespace-nowrap !px-3 max-[359px]:!px-2" aria-pressed={enhance} onClick={() => setEnhance(v => !v)}>Enhance</Button>
+          <Button className="ml-auto min-w-0 flex-1 whitespace-nowrap !px-4 max-[359px]:!px-2 sm:flex-none" onClick={addCrop}>{items.length ? 'Read another' : 'Read text'}</Button>
         </ActionBar>
       )}
       <LangPacks open={langs} onClose={() => setLangs(false)} />

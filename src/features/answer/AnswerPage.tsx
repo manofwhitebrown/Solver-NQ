@@ -82,7 +82,7 @@ function IncompleteState({ q }: { q: Question }) {
   return (
     <Stack gap={4}>
       <QuestionCard subject={q.subject} text={q.text} />
-      <EmptyState title={t.incompleteTitle} text={t.incompleteText}
+      <EmptyState icon={<Icon name="warn" className="h-12 w-12 text-warn" />} title={t.incompleteTitle} text={t.incompleteText}
         action={<Button onClick={() => void askAgain()} disabled={busy}>{busy ? t.asking : t.askAgain}</Button>} />
     </Stack>
   );

@@ -16,7 +16,7 @@ import { loadQueue, saveQueue } from './queue';
 import { ResultCard, type ScanItem } from './ResultCard';
 import type { ScanResult } from './result';
 
-const FULL: Rect = { x: 0.05, y: 0.05, w: 0.9, h: 0.9 };
+const FULL: Rect = { x: 0, y: 0, w: 1, h: 1 }; // whole image: an inset chopped the first and last letters of tight photos
 
 export function ScanPage() {
   const nav = useNavigate();

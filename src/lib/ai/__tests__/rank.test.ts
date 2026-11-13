@@ -32,10 +32,16 @@ describe('classify', () => {
 });
 
 describe('migrate', () => {
-  it('keeps the old key and model, then adds the suggested chain', () => {
+  it('keeps the old key and a still-existing model first, then adds the suggested chain', () => {
+    const s = migrate({ provider: 'gemini', model: 'gemini-2.5-flash', apiKey: 'AIzaOLD1234' });
+    expect(s.keys).toHaveLength(1);
+    expect(s.chain[0].model).toBe('gemini-2.5-flash');
+    expect(s.chain.length).toBeGreaterThan(3);
+  });
+  it('drops the retired gemini-2.0-flash so it never wastes a 404', () => {
     const s = migrate({ provider: 'gemini', model: 'gemini-2.0-flash', apiKey: 'AIzaOLD1234' });
     expect(s.keys).toHaveLength(1);
-    expect(s.chain[0].model).toBe('gemini-2.0-flash');
+    expect(s.chain.map(c => c.model)).not.toContain('gemini-2.0-flash');
     expect(s.chain.length).toBeGreaterThan(3);
   });
   it('gives a new user an empty key pool and a suggested chain', () => {

@@ -69,8 +69,12 @@ Checks run before push: typecheck, lint, 388 unit tests, 15/15 e2e (all green).
 Not verified: `/answer/:id` and `/learn/review|quiz` at 200% (needs saved data; not in my probe). 200% was simulated with CSS on the root element, not the Android system font scale. Design gallery needed no change (no visual change to documented components).
 
 ### Needs from others
-- AI-2 (R5, your half): `getAiConfig()` in `src/lib/ai/config.ts` sends `s.model` to the proxy, and `api/ask.ts` rejects an empty model, so with the new empty Gemini default proxy mode needs `s.model.trim() || getPrimaryModel() || ''`. Also `migrate()` in `src/lib/ai/fallback/store.ts` still puts a saved `gemini-2.0-flash` first (and `rank.test.ts` expects that): keep a migrated model only if ListModels lists it, and mark guessed `SUGGESTED_MODELS` unverified.
+- (DONE by AI-1 in the follow-up commit, AI-2 please review; these are AI-2 files) AI-2 (R5, your half): `getAiConfig()` in `src/lib/ai/config.ts` sends `s.model` to the proxy, and `api/ask.ts` rejects an empty model, so with the new empty Gemini default proxy mode needs `s.model.trim() || getPrimaryModel() || ''`. Also `migrate()` in `src/lib/ai/fallback/store.ts` still puts a saved `gemini-2.0-flash` first (and `rank.test.ts` expects that): keep a migrated model only if ListModels lists it, and mark guessed `SUGGESTED_MODELS` unverified.
 - AI-3: add 320 and 360 to the e2e route-overflow check; a 200%-font variant would have caught the tab bar bug.
 
 ### Tablet two-pane (AI-5)
 No request to approve yet. AI-5's status says they are waiting for a `TwoPane` primitive from AI-1; none exists. Until AI-5 posts a concrete proposal (props, breakpoint, how it behaves under 1024 px) I neither approve nor reject. My conditions: phone layout unchanged below 768 px, no sideways scroll at 320/360/390, 44 px targets, one `<main>`.
+
+### Follow-up (AI-1, same day)
+- R5 finished in AI-2's files so main is not half-changed: `getAiConfig()` falls back to `getPrimaryModel()` when the saved model is empty (proxy mode), `migrate()` and `importLegacy()` drop a saved `gemini-2.0-flash` (new `RETIRED` set in `store.ts`), `rank.test.ts` updated plus a new test for the dropped model. Still open for AI-2: mark the guessed `SUGGESTED_MODELS` as unverified in the UI/rank, and run R7's real-API smoke script.
+- 200% pass extended with real saved data: `/answer/:id` (with a long display equation), `/learn/review`, `/learn/quiz`, `/learn/cards`, `/library`, `/graph` at 320/360/390 px, 100% and 200%: no sideways scroll, nothing outside the viewport. Learn review/quiz/cards were reached with only one saved answer, so they may have shown empty states rather than full cards.

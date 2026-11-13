@@ -11,6 +11,9 @@ function suggestedChain(keyId = ''): ModelSlot[] {
   return SUGGESTED_MODELS.map(model => ({ id: newId(), provider: 'gemini', model, keyId, enabled: true }));
 }
 
+/** Model names Google has shut down. A saved one is dropped so it does not cost a 404 on every first question. */
+const RETIRED = new Set(['gemini-2.0-flash']);
+
 /** First load: fold the old single provider/model/apiKey settings into the pool. No data is lost. */
 export function migrate(old: { provider?: string; model?: string; apiKey?: string; baseUrl?: string }): FallbackState {
   const s: FallbackState = { version: 1, keys: [], chain: [], cooldowns: {}, invalidKeys: [], saveQuota: false, perMinute: 10, fetchedFor: [] };
@@ -19,7 +22,7 @@ export function migrate(old: { provider?: string; model?: string; apiKey?: strin
   if (apiKey) {
     const k: KeyEntry = { id: newId(), provider, label: 'My key', key: apiKey, baseUrl: old.baseUrl?.trim() || undefined };
     s.keys.push(k);
-    const model = (old.model ?? '').trim();
+    const model = RETIRED.has((old.model ?? '').trim()) ? '' : (old.model ?? '').trim();
     // Keep the user's own model first; add the suggested Gemini chain behind it if they were on Gemini.
     if (model) s.chain.push({ id: newId(), provider, model, keyId: '', enabled: true });
     if (provider === 'gemini') s.chain.push(...suggestedChain().filter(x => x.model !== model));
@@ -113,7 +116,7 @@ export function importLegacy(): void {
     st.legacySeen = fingerprint(apiKey);
     if (!st.chain.some(c => c.provider === provider)) {
       const model = (old.model ?? '').trim();
-      if (model) st.chain.unshift({ id: newId(), provider, model, keyId: '', enabled: true });
+      if (model && !RETIRED.has(model)) st.chain.unshift({ id: newId(), provider, model, keyId: '', enabled: true });
     }
   });
 }

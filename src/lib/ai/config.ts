@@ -1,7 +1,7 @@
 import { getSettings } from '@/lib/settings';
 import type { AiConfig } from './types';
 import { AiError } from './errors';
-import { importLegacy, loadState } from './fallback/store';
+import { getPrimaryModel, importLegacy, loadState } from './fallback/store';
 
 export const usesProxy = () => !!getSettings().proxyUrl.trim();
 
@@ -9,7 +9,7 @@ export const usesProxy = () => !!getSettings().proxyUrl.trim();
 export function getAiConfig(): AiConfig {
   const s = getSettings();
   return {
-    provider: s.provider, model: s.model.trim(), apiKey: s.apiKey.trim() || undefined,
+    provider: s.provider, model: s.model.trim() || getPrimaryModel() || '', apiKey: s.apiKey.trim() || undefined,
     baseUrl: s.baseUrl.trim() || undefined, proxyUrl: s.proxyUrl.trim() || undefined,
   };
 }

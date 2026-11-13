@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ActionBar, Button, Chip, Cluster, EmptyState, PageHeader, Section, Spinner, Stack, toast } from '@/components/ui';
 import { listLibrary } from '@/lib/db';
+import { useT } from '@/lib/i18n';
 import {
   buildExport, defaultOptions, loadItems,
   type BuildResult, type ExportFormat, type ResolvedOptions, type StudyPackFilter,
@@ -15,6 +16,7 @@ import { FORMATS } from './subjects';
 const Preview = lazy(() => import('./Preview'));
 
 export default function ExportPage() {
+  const { t } = useT();
   const [params] = useSearchParams();
   const ids = useMemo(() => (params.get('ids') ?? '').split(',').filter(Boolean), [params]);
   const isPack = ids.length === 0;
@@ -58,19 +60,24 @@ export default function ExportPage() {
   }
 
   if (items && !items.length && !isPack) {
-    return <EmptyState title="Nothing to export" text="Pick answers in your library, then choose Export."
-      action={<Link to="/library" className="inline-flex"><Button>Open library</Button></Link>} />;
+    return (
+      <>
+        <h1 className="sr-only">{t('export.title')}</h1>
+        <EmptyState title={t('export.nothingTitle')} text={t('export.nothingText')}
+          action={<Link to="/library" className="inline-flex"><Button>Open library</Button></Link>} />
+      </>
+    );
   }
 
   const pct = Math.round((progress[0] / Math.max(1, progress[1])) * 100);
   const isPdf = format === 'pdf';
 
-  const count = items === null ? 'Loading…' : `${items.length} answer${items.length === 1 ? '' : 's'}`;
+  const count = items === null ? 'Loading…' : items.length === 1 ? t('export.countOne') : t('export.count', { n: items.length });
   return (
     <>
       <div data-no-print>
-        <PageHeader title={isPack ? 'Study pack' : 'Export'} subtitle={`${count}${isPack ? ' · cover, contents, answers' : ''} · works offline`}
-          actions={<Button variant="secondary" size="md" onClick={() => setSheet(true)}>Options</Button>} />
+        <PageHeader title={isPack ? t('export.studyPack') : t('export.title')} subtitle={`${count}${isPack ? ' · cover, contents, answers' : ''} · works offline`}
+          actions={<Button variant="secondary" size="md" onClick={() => setSheet(true)}>{t('export.options')}</Button>} />
         {!isPack && (
           <Cluster className="mb-8" role="group" aria-label="Format">
             {FORMATS.map((f) => (
@@ -80,7 +87,7 @@ export default function ExportPage() {
         )}
       </div>
 
-      <Section title="Preview">
+      <Section title={t('export.preview')}>
         {items === null ? (
           <div className="flex justify-center py-12"><Spinner /></div>
         ) : items.length === 0 ? (
@@ -107,7 +114,7 @@ export default function ExportPage() {
 
         <ActionBar>
           <Button block loading={busy} disabled={!items?.length} onClick={run}>
-            {isPack ? 'Build study pack' : `Export ${FORMATS.find((f) => f.value === format)?.label}`}
+            {isPack ? t('export.buildPack') : t('export.build', { format: FORMATS.find((f) => f.value === format)?.label ?? '' })}
           </Button>
           {busy && <Button variant="secondary" onClick={() => abortRef.current?.abort()}>Cancel</Button>}
           <Button variant="secondary" className="hidden lg:inline-flex" disabled={!items?.length} onClick={() => window.print()}>Print</Button>

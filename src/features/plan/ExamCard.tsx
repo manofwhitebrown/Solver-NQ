@@ -7,7 +7,7 @@ export function ExamCard({ exam, today, onRemove }: { exam: Exam; today: string;
   const n = daysUntil(exam, today);
   return (
     <Card className="flex items-center gap-4">
-      <div className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-lg bg-accent-soft text-accent">
+      <div className={`flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-lg ${n < 0 ? 'bg-accent-soft text-accent' : 'brand-grad text-white'}`}>
         <span className="text-xl font-bold leading-none">{n < 0 ? '✓' : n}</span>
         <span className="text-caption">{n < 0 ? '' : n === 1 ? 'day' : 'days'}</span>
       </div>

@@ -90,3 +90,26 @@
 
 ## Needs from others
 - AI-2: with `incomplete` now a failure kind, the transient-cooldown edge case: for 30 s after a server failure a retry can still say "limits used up" (cooldown counted by `earliestRetry`). Suggest cooldown kind `transient` that `earliestRetry` ignores; add a test.
+
+# Phase 6 round (AI-6, 13 Nov 2026)
+
+## Done (all run, not just written)
+- **Non-Latin export.** Measured first: the selectable-text PDF printed Hindi/Telugu as `?` and dropped Urdu (`pdfSafe` plus Helvetica). Fix: `src/lib/export/script.ts` detects such text; `buildExport` now switches a text-mode PDF or study pack to the browser-drawn (pretty) pages for those answers, even for big packs, and the result card says so (`usedPrettyForScript`).
+- **DOCX.** Unicode text was already stored. Added right-to-left paragraphs and runs for Urdu, and complex-script fonts (`cs`: Nirmala UI for Indic, Arial for Arabic/Urdu). English-only documents get no RTL markup. Tests read `word/document.xml`.
+- **Interface languages.** `src/lib/i18n`: dependency-free `t(key, params)` with English fallback (then the key), `setLanguage`/`initLanguage` (saved in `solver-nq:lang`, sets `<html lang dir>`, Urdu = rtl), `useT()` hook. Hindi, Telugu and Urdu are separate lazy chunks. `src/features/i18n/LanguagePicker.tsx` is ready to drop in. 29 keys (answer strings, export, plan, picker).
+- **Missing-key test** (`src/lib/i18n/i18n.test.ts`): fails when a shipped language lacks a key, has an extra key, drops or changes a `{placeholder}`, or leaves a string identical to English. Found and fixed a real bug on the way (a junk saved language kept the previous language's strings).
+- **Design v3.** Plan: progress ring in the brand gradient (reduced-motion aware, flips in RTL), Today card with glow, week strip with brand-gradient selected day and a marked today (scrolls inside itself at 320), exam day-count tile in the brand gradient, task title links now 44 px tall (were 26 px). Export: preview is one white paper card per answer with a page label (was one long sheet); empty state now has an h1.
+- Seen in headless Chromium with demo data: `/plan` and `/export?ids=...` at 320/360/390/430/1280, light and dark: no sideways scroll, no console errors, no tap target under 44 px (the shared Chip is 36 px plus an invisible 8 px hit area by design). Checked: typecheck, lint, 408 unit tests, 15/15 e2e.
+
+## NOT done / not verified (be honest)
+- **No Noto font is embedded.** jsPDF does no text shaping, so an embedded font would still print Hindi/Telugu with wrong letter order and Urdu unjoined and left-to-right. A correct selectable-text PDF needs a shaper (e.g. harfbuzzjs, wasm) plus font subsets. I chose the pretty-PDF fallback instead, so no font licence text was needed. The text-PDF test only proves Latin extraction still works; no test extracts Hindi/Telugu/Urdu from a PDF.
+- **Not verified:** that the pretty PDF itself draws Hindi/Telugu/Urdu correctly. It relies on the device having a font for the script; headless Chromium here may not, and I did not render a PDF page. Needs a real phone check. DOCX was not opened in Word.
+- Hindi, Telugu and Urdu strings are machine-written first drafts and need a native speaker's review.
+- RTL: `dir="rtl"` is set, but most screens use physical left/right Tailwind classes (`pl-`, `pr-`, `-ml-`), so Urdu layouts are not mirrored properly yet. Only the ring is handled.
+- Only my own Export and Plan labels use `t()`. Everything else is still English until owners switch over.
+
+## Needs from others
+- **AI-1:** where should `<LanguagePicker />` (from `@/features/i18n`) go in Settings? I did not edit Settings.
+- **AI-5:** `src/features/answer/strings.ts` could read from `t('answer.*')` (same wording, keys exist in en/hi/te/ur); I did not touch your file.
+- **AI-3:** `scripts/shots-config.mjs` opens `#/export?ids=` with answer ids (`demo-a01...`) but Export looks up question ids, so the screenshot always shows "Nothing to export". Use `demo-q01,demo-q02,demo-q03`.
+- Cross-owner edit (one small): `src/main.tsx` now awaits `initLanguage()` before rendering, so a saved language shows from the first frame.

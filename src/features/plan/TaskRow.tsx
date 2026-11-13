@@ -20,7 +20,7 @@ export function TaskRow({ task, done, onToggle }: { task: Task; done: boolean; o
       )}
       <div className="min-w-0 flex-1">
         {rest ? <p className="text-base text-ink">{task.title}</p> : (
-          <Link to={task.to} className={cn('block text-base font-semibold text-ink', done && 'text-muted line-through')}>{task.title}</Link>
+          <Link to={task.to} className={cn('flex min-h-11 items-center text-base font-semibold text-ink', done && 'text-muted line-through')}>{task.title}</Link>
         )}
         {!rest && <p className="text-sm text-muted">{task.minutes} min</p>}
       </div>

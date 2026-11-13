@@ -34,15 +34,19 @@ export default function Preview({ items, opts }: { items: ExportItem[]; opts: Re
 
   if (!html) return <div className="flex justify-center py-10"><Spinner /></div>;
   return (
-    <div className="w-full min-w-0">
-      {/* A sheet of paper: always white with dark ink, whatever the app theme; shrinks with the screen. */}
-      <div className="w-full min-w-0 overflow-hidden rounded-md border border-line bg-white p-5 text-base leading-relaxed text-black elev-2 sm:p-8 lg:p-10">
-        {html.map((h, i) => (
-          <div key={i} className={`print-item min-w-0 overflow-x-auto break-words border-b border-black/10 py-4 first:pt-0 last:border-0 last:pb-0 [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mt-4 [&_h3]:font-semibold [&_h4]:mt-3 [&_h4]:font-semibold [&_img]:max-w-full [&_.meta]:text-sm [&_.meta]:text-black/60 ${i >= 3 ? 'hidden print:block' : ''}`}
+    <div className="w-full min-w-0 space-y-4">
+      {/* One sheet of paper per answer: always white with dark ink, whatever the app theme; shrinks with the screen. */}
+      {html.map((h, i) => (
+        <article key={i} aria-label={`Answer ${i + 1} of ${html.length}`}
+          className={`print-item w-full min-w-0 overflow-hidden rounded-lg border border-line bg-white text-base leading-relaxed text-black elev-2 print:rounded-none print:border-0 print:shadow-none ${i >= 3 ? 'hidden print:block' : ''}`}>
+          <div data-no-print className="flex items-center justify-between border-b border-black/10 px-4 py-2 text-caption font-semibold text-black/60 sm:px-6">
+            <span>Page {i + 1}</span><span>{items[i]?.q.subject}</span>
+          </div>
+          <div className="min-w-0 overflow-x-auto break-words p-4 sm:p-6 lg:p-8 [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mt-4 [&_h3]:font-semibold [&_h4]:mt-3 [&_h4]:font-semibold [&_img]:max-w-full [&_.meta]:text-sm [&_.meta]:text-black/60"
             dangerouslySetInnerHTML={{ __html: h }} />
-        ))}
-      </div>
-      {html.length > 3 && <p data-no-print className="mt-3 text-center text-sm text-muted">+ {html.length - 3} more in the export</p>}
+        </article>
+      ))}
+      {html.length > 3 && <p data-no-print className="text-center text-sm text-muted">+ {html.length - 3} more in the export</p>}
     </div>
   );
 }

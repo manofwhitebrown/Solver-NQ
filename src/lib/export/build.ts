@@ -6,6 +6,7 @@ import { makeFilename } from './filename';
 import { filterItems } from './pack';
 import { dropIncomplete, PRETTY_PACK_LIMIT } from './complete';
 import { loadImage } from './image';
+import { itemsNeedUnicodeFont } from './script';
 import { resolveOptions, type ExportConfig, type StudyPackFilter } from './options';
 
 export type ExportFormat = 'pdf' | 'md' | 'docx' | 'txt' | 'json' | 'pack';
@@ -15,7 +16,7 @@ export interface BuildRequest {
   config?: ExportConfig; onProgress?: Progress;
   signal?: AbortSignal; onWarn?: (failed: number) => void;
 }
-export interface BuildResult { blob: Blob; filename: string; ms: number; count: number; skipped: number; usedTextMode?: boolean }
+export interface BuildResult { blob: Blob; filename: string; ms: number; count: number; skipped: number; usedTextMode?: boolean; usedPrettyForScript?: boolean }
 
 const MIME: Record<string, string> = {
   md: 'text/markdown', txt: 'text/plain', json: 'application/json',
@@ -41,8 +42,15 @@ export async function buildExport(req: BuildRequest): Promise<BuildResult> {
     : await loadItems(req.ids ?? []);
   const { items, skipped } = dropIncomplete(loaded); // cut-off or blank answers are not exported
   // Very big pack: drawing every answer as an image would take many minutes, so use the fast text pages.
+  // Hindi, Telugu, Urdu etc. cannot be drawn by the text PDF's built-in font (they would print as "?"),
+  // so those exports always use the browser-drawn pages, even for big packs.
+  const nonLatin = itemsNeedUnicodeFont(items);
   let usedTextMode = false;
-  if (req.format === 'pack' && opts.pdfMode === 'pretty' && items.length > PRETTY_PACK_LIMIT) {
+  let usedPrettyForScript = false;
+  if (nonLatin && opts.pdfMode === 'text' && (req.format === 'pdf' || req.format === 'pack')) {
+    opts = { ...opts, pdfMode: 'pretty' }; usedPrettyForScript = true;
+  }
+  if (req.format === 'pack' && opts.pdfMode === 'pretty' && items.length > PRETTY_PACK_LIMIT && !nonLatin) {
     opts = { ...opts, pdfMode: 'text' }; usedTextMode = true;
   }
   if (opts.includeImage && ['pdf', 'pack', 'docx'].includes(req.format)) {
@@ -75,5 +83,5 @@ export async function buildExport(req: BuildRequest): Promise<BuildResult> {
     const md = itemsToMarkdown(items, opts, title, req.format === 'md'); // front matter for Obsidian, Markdown only
     blob = new Blob([req.format === 'txt' ? markdownToPlain(md) : md], { type: MIME[req.format] });
   }
-  return { blob, filename: makeFilename(subject, title, ext), ms: Math.round(performance.now() - t0), count: items.length, skipped, usedTextMode };
+  return { blob, filename: makeFilename(subject, title, ext), ms: Math.round(performance.now() - t0), count: items.length, skipped, usedTextMode, usedPrettyForScript };
 }

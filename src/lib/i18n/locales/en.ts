@@ -1,0 +1,40 @@
+// English is the source of truth: every other language must have exactly these keys (see i18n.test.ts).
+// Use {name} for values that are filled in at run time.
+export const en = {
+  'lang.label': 'Language',
+  'lang.hint': 'Changes the words in the app. Your questions and answers stay as they are.',
+  'common.save': 'Save',
+  'common.cancel': 'Cancel',
+  'common.retry': 'Retry',
+  'common.open': 'Open',
+  'answer.queuedTitle': 'Saved - will answer when it can',
+  'answer.queuedText': "Your question is safe. It will be answered when you're back online or the free quota resets, and the answer will appear here and in your library.",
+  'answer.goToLibrary': 'Go to library',
+  'answer.missingTitle': 'Answer not found',
+  'answer.missingText': 'It may have been deleted.',
+  'answer.askNew': 'Ask a new question',
+  'answer.errorTitle': 'Could not open this answer',
+  'answer.incompleteTitle': 'This answer is incomplete',
+  'answer.incompleteText': 'The AI stopped before it finished. Nothing useful was saved, so ask again.',
+  'answer.askAgain': 'Ask again',
+  'answer.asking': 'Asking...',
+  'export.title': 'Export',
+  'export.studyPack': 'Study pack',
+  'export.options': 'Options',
+  'export.preview': 'Preview',
+  'export.count': '{n} answers',
+  'export.countOne': '1 answer',
+  'export.build': 'Export {format}',
+  'export.buildPack': 'Build study pack',
+  'export.ready': 'Ready',
+  'export.saveShare': 'Save / Share',
+  'export.nothingTitle': 'Nothing to export',
+  'export.nothingText': 'Pick answers in your library, then choose Export.',
+  'plan.title': 'Study plan',
+  'plan.today': 'Today',
+  'plan.addExam': 'Add exam',
+  'plan.week': 'This week',
+} as const;
+
+export type Key = keyof typeof en;
+export type Dict = Record<Key, string>;

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button, Card, Cluster, EmptyState, PageHeader, Section, Skeleton, Stack } from '@/components/ui';
 import { progressOf, type Exam } from '@/lib/plan';
+import { useT } from '@/lib/i18n';
 import { ExamCard } from './ExamCard';
 import { ExamSheet } from './ExamSheet';
 import { Ring } from './Ring';
@@ -10,6 +11,7 @@ import { usePlan } from './usePlan';
 import { WeekView } from './WeekView';
 
 export default function PlanPage() {
+  const { t: tr } = useT();
   const { state, plan, today, update, toggle, loading } = usePlan();
   const [adding, setAdding] = useState(false);
   const [settings, setSettings] = useState(false);
@@ -26,9 +28,9 @@ export default function PlanPage() {
   // The app's route wrapper already provides <Page> (gutters), so this screen starts with the header.
   return (
     <>
-      <PageHeader title="Study plan" subtitle="A calm plan, one day at a time." />
+      <PageHeader title={tr('plan.title')} subtitle="A calm plan, one day at a time." />
       <Cluster gap={3} className="-mt-4 mb-8">
-        <Button size="md" onClick={() => setAdding(true)}>Add exam</Button>
+        <Button size="md" onClick={() => setAdding(true)}>{tr('plan.addExam')}</Button>
         <Button variant="secondary" size="md" onClick={() => setSettings(true)}>Settings</Button>
       </Cluster>
       {!upcoming.length ? (
@@ -43,8 +45,8 @@ export default function PlanPage() {
             ))}</Stack>
           </Section>
 
-          <Section title="Today">
-            <Card>
+          <Section title={tr('plan.today')}>
+            <Card className="shadow-glow">
               <div className="flex items-center gap-5">
                 <Ring ratio={prog.ratio} label={`${prog.done}/${prog.total}`} />
                 <p className="text-base text-ink-2">
@@ -55,14 +57,14 @@ export default function PlanPage() {
               </div>
               {!!todayDay?.tasks.length && (
                 <ul className="mt-4 divide-y divide-line">
-                  {todayDay.tasks.map((t) => <TaskRow key={t.id} task={t} done={state.done.includes(t.id)} onToggle={toggle} />)}
+                  {todayDay.tasks.map((x) => <TaskRow key={x.id} task={x} done={state.done.includes(x.id)} onToggle={toggle} />)}
                 </ul>
               )}
             </Card>
           </Section>
 
-          <Section title="This week">
-            <WeekView days={plan} selected={selected} onSelect={setPicked} doneIds={state.done} />
+          <Section title={tr('plan.week')}>
+            <WeekView days={plan} selected={selected} onSelect={setPicked} doneIds={state.done} today={today} />
             {day && day.day !== today && (
               <Card className="mt-4">
                 {day.exams.length ? <p className="text-base text-ink">Exam day: {day.exams.map((e) => e.name).join(', ')}. You are ready.</p>

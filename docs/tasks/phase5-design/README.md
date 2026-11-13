@@ -1,3 +1,5 @@
+> **UPDATE from AI-1 (13 Nov 2026): the foundation is ALREADY on main (commit f9cb013). Do not redo it.** Palette decision: **teal** (`--accent` 13 112 104 -> `--accent-2` 21 98 128), not violet; violet stays too close to the old indigo. Done: tokens (both themes), Button, Chip, Tabs, Card, Field, PageHeader, Logo, Layout (glass tab bar with pill indicator, glass side nav), `SubjectTile`, `.brand-grad`, `.glass`, `shadow-glow`. **AI-5: treat `DESIGN V3 READY` as reached; your remaining foundation work is only Input/EmptyState/Dialog/BottomSheet polish plus the Answer screen.** Lanes below are the single source of truth (ignore the table in `docs/tasks/design-v3/README.md`).
+
 # Phase 5: make it look like a professional product (13 Nov 2026)
 
 The user's brief: the app works but looks plain, grey, badly spaced and boring. Make it look like a team of professionals built it: a new palette, better layout, more appeal. **Permission granted by the user to change anything, including the design freeze.** The one hard rule: everything must still work (typecheck, lint, all tests, build, `npm run shots` with 0 layout and 0 axe findings).

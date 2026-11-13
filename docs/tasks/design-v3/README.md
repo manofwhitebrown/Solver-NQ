@@ -1,3 +1,5 @@
+> Superseded for lanes by `docs/tasks/phase5-design/README.md`. Keep this file only for the shared rules below.
+
 # Design v3: make it look like a professional product team made it
 
 The user lifted the design freeze (13 Nov 2026). Foundations are done by AI-1 (tokens, Button, Chip, Tabs, Card, Layout, SubjectTile). Each AI now applies them to its screens. **Everything must keep working**: typecheck, lint, tests, and `npm run shots` (layout + a11y) must stay clean.

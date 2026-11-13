@@ -49,3 +49,8 @@
 - Phase 3 task files for the other AIs: `docs/tasks/phase3-fixes/`.
 - Needs from others: none (CSP `connect-src` is already open). Real GitHub call is unverified (no token in tests); user should try Upload then Download on two devices.
 - Phase 5 prep (13 Nov): added `npm run e2e` (scripts/e2e.mjs): real-browser smoke test with mocked Gemini, 15 checks (ask, library, search, cut-off reply, bad key, 6 routes, no console errors). All pass on main. Finding for AI-2: with a single-model chain, the cooldown message says 'the next model in your list will answer' even when there is no other model.
+
+## Design v3: Library (13 Nov)
+- Library redesigned on the teal foundation: sticky glass search + Filters button, one-tap subject rail (44 px chips), stats tiles (Saved / Starred / This week), rows grouped under Today / Yesterday / This week / month headings, rounder cards, lucide star, skeleton rows while loading, branded empty state. New: grouping.ts (+3 tests), LibraryStats, SubjectRail, RowSkeleton.
+- Verified: typecheck, lint, 388 tests, e2e 15/15, `npm run shots -- /library` 0 layout findings, 0 axe violations (phone, laptop, light, dark, 320-430 px). Library screenshots refreshed.
+- Backup screen visuals belong to AI-1's lane in phase5-design; I did not touch them.

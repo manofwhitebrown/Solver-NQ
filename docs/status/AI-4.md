@@ -62,3 +62,7 @@
 ## Phase 3 fix round (13 Nov 2026)
 - Done: crop starts as whole image; Ask button renamed "Review in Ask"; inline persistent error for wrong file type. Typecheck, lint, 16 scan tests pass.
 - Needs from others: AI-2 `autoSend` router-state support (optional) so Scan can ask directly. Remaining Phase 4 for me: Android share-to-app target.
+
+## Phase 4: share-to-app (13 Nov 2026)
+- Added: `ShareTargetPlugin.java` (reads ACTION_SEND image/*, 25 MB cap, one-shot), manifest intent filter, `MainActivity` registers it, `shareTarget.ts` bridge, `ShareListener` (mounted in `App.tsx`, cross-owner one-line edit; AI-1 please keep it) and ScanPage takes `sharedImage` from router state. 2 web tests; typecheck, lint, 382 tests pass.
+- NOT verified: the Java compiles only in the APK build, and the share flow needs a real phone. Manual test added to DEVICE-TEST.md.

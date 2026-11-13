@@ -48,3 +48,9 @@ Tick these on a real phone / laptop. Other AIs add steps to their status file un
 - [ ] Rotate to landscape: nothing breaks or is cut off.
 - [ ] Android Settings -> Display -> Font size / Display size at maximum (200%): nothing is clipped.
 - [ ] Smallest phone you have: no horizontal scrolling, buttons still tappable.
+
+## Share to Solver-NQ (Phase 4, Android)
+1. In Gallery or Chrome, share a photo and pick Solver-NQ. The app should open on Scan with the crop step showing that photo.
+2. With the app already open on another screen, share another photo: it should jump to Scan with the new one.
+3. Share a photo over 25 MB: you should see "That image is over 25 MB".
+(Native code is not compiled by CI tests; if the APK build fails on `ShareTargetPlugin.java`, send me the error.)

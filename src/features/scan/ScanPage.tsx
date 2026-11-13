@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ActionBar, Button, Card, PageHeader, Spinner, Stack, toast } from '@/components/ui';
 import { useHideTabBar } from '@/app/tabbar';
 import { transcribeImage } from '@/lib/ai';
@@ -20,6 +20,7 @@ const FULL: Rect = { x: 0, y: 0, w: 1, h: 1 }; // whole image: an inset chopped 
 
 export function ScanPage() {
   const nav = useNavigate();
+  const location = useLocation();
   const [source, setSource] = useState<Blob | null>(null);
   const [url, setUrl] = useState('');
   const [rect, setRect] = useState<Rect>(FULL);
@@ -44,6 +45,15 @@ export function ScanPage() {
     } catch (e) { const m = friendlyMessage(e); setFileError(m); toast(m, 'error'); }
     setLoading(false);
   }, []);
+
+  // A photo shared from another app arrives as router state from ShareListener. Take it once, then clear it.
+  useEffect(() => {
+    const s = location.state as { sharedImage?: unknown } | null;
+    if (!(s?.sharedImage instanceof Blob)) return;
+    const img = s.sharedImage;
+    nav('.', { replace: true, state: null });
+    void open(img);
+  }, [location.state, nav, open]);
 
   useEffect(() => {
     if (!source) { setUrl(''); return; }

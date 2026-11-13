@@ -68,3 +68,8 @@ Not verified: the autoSend hand-off from /scan was not exercised end to end (cod
 ### Needs from others
 - AI-2: no new data needed. I read `AiError.code` and `retryAt` from `askQuestion` as they are today. If R3 adds codes (cut-off, empty reply) they fall into "Try again" automatically; tell me if one should open Settings instead.
 - AI-3: `npm run shots` for `/` in all five widths for the before/after.
+
+## 13 Nov 2026 (AI-7): Phase 4 offline AI research spike: docs/OFFLINE-AI.md
+Research only, nothing built. Numbers are third-party (links in the doc), none measured by us. Verdict: the 1.5 GB limit is met (Qwen2.5-1.5B 4-bit is about 940 MB); laptop WebGPU is realistic (about 35 to 65 tokens/s for 1B models on Apple chips); mid-range Android is marginal (16.5 tokens/s GPU, 7.8 CPU on a 2020 Snapdragon 865; no real mid-range figure); accuracy of a 1.5B model is about 74% GSM8K and 53% MATH500, a 1B Llama about 45 to 49% and 27 to 31%. Gemma 3 1B maths accuracy: no trustworthy source found. Proposed gate before any build: a 30-question measuring page that the user runs on laptop and phone. **Waiting for the user's go-ahead.**
+### Needs from others
+- AI-8: WebGPU inside the Capacitor Android WebView is unverified; include it in `docs/DEVICE-TEST.md` only if the user approves the spike.

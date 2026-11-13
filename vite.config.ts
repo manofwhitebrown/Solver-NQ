@@ -35,7 +35,7 @@ export default defineConfig({
     react(),
     process.env.ANALYZE ? visualizer({ filename: 'stats.json', template: 'raw-data' }) : null,
     VitePWA({
-      registerType: 'prompt', // <UpdatePrompt /> asks before reloading
+      registerType: 'autoUpdate', // new versions install and apply on their own (no stale cached app after a deploy)
       includeAssets: ['icons/*.png'],
       manifest: {
         name: 'Solver-NQ',
@@ -53,6 +53,7 @@ export default defineConfig({
         ],
       },
       workbox: {
+        skipWaiting: true, clientsClaim: true, cleanupOutdatedCaches: true,
         navigateFallback: `${base}index.html`, // offline fallback
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,wasm}', 'tesseract/lang/eng.traineddata.gz'], // English OCR data: first scan works offline
         globIgnores: ['tesseract/tesseract-core-lstm.wasm.js'], // non-SIMD core: runtime-cached only, saves 4 MB on install

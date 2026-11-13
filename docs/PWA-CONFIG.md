@@ -6,7 +6,7 @@ Replace the `VitePWA({...})` block with the one below, and render `<UpdatePrompt
 
 ```ts
 VitePWA({
-  registerType: 'prompt', // lets <UpdatePrompt /> ask before reloading
+  registerType: 'autoUpdate', // new deploys apply automatically (was 'prompt': people kept seeing the old cached version)
   includeAssets: ['icons/*.png'],
   manifest: {
     name: 'Solver-NQ',

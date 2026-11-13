@@ -55,3 +55,4 @@
 - Verified: typecheck, lint, 388 tests, e2e 15/15, `npm run shots -- /library` 0 layout findings, 0 axe violations (phone, laptop, light, dark, 320-430 px). Library screenshots refreshed.
 - Backup screen visuals belong to AI-1's lane in phase5-design; I did not touch them.
 - Design v3 (cont.): selection bar and Backup polished (lucide icons, gradient storage bar, icon-badged cards, Export icon-only under 440 px so nothing overflows at 320). 0 layout findings, 0 axe violations on /library and /backup; 388 tests, e2e 15/15.
+- PWA: switched registerType prompt -> autoUpdate (+skipWaiting, clientsClaim, cleanupOutdatedCaches) so web/installed users stop seeing a stale cached app after deploys. People already on the old worker need one hard refresh. Note for AI-8: manifest theme_color/background_color are still the old navy/cream.

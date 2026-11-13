@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Section, SubjectTile } from '@/components/ui';
+import { mathToPlain } from '@/features/answer/plainText';
 import { SUBJECTS } from '@/features/settings/options';
 import { listLibrary } from '@/lib/db';
 import type { LibraryEntry } from '@/types';
@@ -25,7 +26,7 @@ export function RecentList() {
             <Link to={`/answer/${a!.id}`} className="flex min-h-[72px] items-center gap-4 px-5 py-4 transition hover:bg-raised">
               <SubjectTile subject={q.subject} />
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="line-clamp-1 text-base font-semibold">{q.text}</span>
+                <span className="line-clamp-1 text-base font-semibold">{mathToPlain(q.text).replace(/\s+/g, ' ').trim() || 'Scanned question'}</span>
                 <span className="text-sm text-muted">{label(q.subject)}</span>
               </span>
               <span aria-hidden className="text-lg text-muted">›</span>
